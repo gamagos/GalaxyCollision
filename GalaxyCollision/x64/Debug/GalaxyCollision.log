@@ -1,0 +1,58 @@
+﻿  In file included from src\Main.c:10:
+C:\Users\gamag\source\repos\GalaxyCollision\packages\raylib.5.5.0\build\native\include\raylib.h(260,3): error : redefinition of 'Rectangle' as different kind of symbol
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h(4639,24): message : previous definition is here
+  In file included from src\Main.c:10:
+C:\Users\gamag\source\repos\GalaxyCollision\packages\raylib.5.5.0\build\native\include\raylib.h(298,5): error : must use 'struct' tag to refer to type 'Rectangle'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h(4639,24): message : struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+  In file included from src\Main.c:10:
+C:\Users\gamag\source\repos\GalaxyCollision\packages\raylib.5.5.0\build\native\include\raylib.h(321,5): error : must use 'struct' tag to refer to type 'Rectangle'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h(4639,24): message : struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+  In file included from src\Main.c:10:
+C:\Users\gamag\source\repos\GalaxyCollision\packages\raylib.5.5.0\build\native\include\raylib.h(969,12): error : conflicting types for 'CloseWindow'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winuser.h(4728,1): message : previous declaration is here
+  In file included from src\Main.c:10:
+C:\Users\gamag\source\repos\GalaxyCollision\packages\raylib.5.5.0\build\native\include\raylib.h(1019,12): error : conflicting types for 'ShowCursor'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winuser.h(9387,1): message : previous declaration is here
+  In file included from src\Main.c:10:
+C:\Users\gamag\source\repos\GalaxyCollision\packages\raylib.5.5.0\build\native\include\raylib.h(1242,48): error : must use 'struct' tag to refer to type 'Rectangle'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h(4639,24): message : struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+  In file included from src\Main.c:10:
+C:\Users\gamag\source\repos\GalaxyCollision\packages\raylib.5.5.0\build\native\include\raylib.h(1244,7): error : must use 'struct' tag to refer to type 'Rectangle'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h(4639,24): message : struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+  In file included from src\Main.c:10:
+C:\Users\gamag\source\repos\GalaxyCollision\packages\raylib.5.5.0\build\native\include\raylib.h(1267,29): error : must use 'struct' tag to refer to type 'Rectangle'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h(4639,24): message : struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+  In file included from src\Main.c:10:
+C:\Users\gamag\source\repos\GalaxyCollision\packages\raylib.5.5.0\build\native\include\raylib.h(1268,29): error : must use 'struct' tag to refer to type 'Rectangle'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h(4639,24): message : struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+  In file included from src\Main.c:10:
+C:\Users\gamag\source\repos\GalaxyCollision\packages\raylib.5.5.0\build\native\include\raylib.h(1271,36): error : must use 'struct' tag to refer to type 'Rectangle'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h(4639,24): message : struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+  In file included from src\Main.c:10:
+C:\Users\gamag\source\repos\GalaxyCollision\packages\raylib.5.5.0\build\native\include\raylib.h(1273,33): error : must use 'struct' tag to refer to type 'Rectangle'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h(4639,24): message : struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+  In file included from src\Main.c:10:
+C:\Users\gamag\source\repos\GalaxyCollision\packages\raylib.5.5.0\build\native\include\raylib.h(1274,33): error : must use 'struct' tag to refer to type 'Rectangle'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h(4639,24): message : struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+  In file included from src\Main.c:10:
+C:\Users\gamag\source\repos\GalaxyCollision\packages\raylib.5.5.0\build\native\include\raylib.h(1275,38): error : must use 'struct' tag to refer to type 'Rectangle'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h(4639,24): message : struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+  In file included from src\Main.c:10:
+C:\Users\gamag\source\repos\GalaxyCollision\packages\raylib.5.5.0\build\native\include\raylib.h(1276,40): error : must use 'struct' tag to refer to type 'Rectangle'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h(4639,24): message : struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+  In file included from src\Main.c:10:
+C:\Users\gamag\source\repos\GalaxyCollision\packages\raylib.5.5.0\build\native\include\raylib.h(1305,31): error : must use 'struct' tag to refer to type 'Rectangle'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h(4639,24): message : struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+  In file included from src\Main.c:10:
+C:\Users\gamag\source\repos\GalaxyCollision\packages\raylib.5.5.0\build\native\include\raylib.h(1305,47): error : must use 'struct' tag to refer to type 'Rectangle'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h(4639,24): message : struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+  In file included from src\Main.c:10:
+C:\Users\gamag\source\repos\GalaxyCollision\packages\raylib.5.5.0\build\native\include\raylib.h(1307,66): error : must use 'struct' tag to refer to type 'Rectangle'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h(4639,24): message : struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+  In file included from src\Main.c:10:
+C:\Users\gamag\source\repos\GalaxyCollision\packages\raylib.5.5.0\build\native\include\raylib.h(1309,50): error : must use 'struct' tag to refer to type 'Rectangle'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h(4639,24): message : struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+  In file included from src\Main.c:10:
+C:\Users\gamag\source\repos\GalaxyCollision\packages\raylib.5.5.0\build\native\include\raylib.h(1315,7): error : must use 'struct' tag to refer to type 'Rectangle'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h(4639,24): message : struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+  fatal error: too many errors emitted, stopping now [-ferror-limit=]
