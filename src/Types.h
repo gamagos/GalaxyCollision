@@ -2,6 +2,7 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
 
@@ -32,8 +33,12 @@ typedef struct RGBAColor {
 } RGBAColor;
 
 
-// Star object using a maximum of 32 bit precision for it's values
-//! Beware that the entire struct is largr than 32 bits
+/*
+SYNOPSIS:
+    Star object using a maximum of 32 bit precision for it's values
+REMARKS:
+    Beware that the entire struct is larger than 32 bits
+*/
 typedef struct StarFloat32
 {
     Vector3Float32 position;
@@ -47,8 +52,12 @@ typedef struct StarFloat32
 } StarFloat32;
 
 
-// Star object using a maximum of 64 bit precision
-//! Beware that the struct is larger than 64 bits
+/*
+SYNOPSIS:
+    Star object using a maximum of 64 bit precision
+REMARKS:
+    Beware that the struct is larger than 64 bits
+*/
 typedef struct StarDouble64
 {
     Vector3Double64 position;
@@ -62,24 +71,37 @@ typedef struct StarDouble64
 } StarDouble64;
 
 
-// Black hole struct using 32 bit precision
-//! Beware that the entire struct is largr than 32 bits
+/*
+SYNOPSIS:
+    Black hole struct using 32 bit precision
+REMARKS:
+    Beware that the entire struct is larger than 32 bits!
+ */
 typedef struct BlackHoleFloat32
 {
     Vector3Float32 position;
     Vector3Float32 velocityKiloMetersPerSecond;
     Vector3Float32 rotationAxis;
+    bool rotatesClockwise;
     float gravity;
 } BlackHoleFloat32;
 
 
-// Black hole struct using 64 bit precision
-//! Beware that the struct is larger than 64 bits
+/* 
+SYNOPSIS:
+    Black hole struct using 64 bit precision
+DESCRIPTION:
+    Black hole struct with all values needed for simulation and generation
+    Note that the rotation values only serve as orientation for star generation
+REMARKS:
+    Beware that the struct is larger than 64 bits!
+*/
 typedef struct BlackHoleDouble64
 {
     Vector3Double64 position;
     Vector3Double64 velocityKiloMetersPerSecond;
     Vector3Double64 rotationAxis;
+    bool rotatesClockwise;
     double gravity;
 } BlackHoleDouble64;
 
