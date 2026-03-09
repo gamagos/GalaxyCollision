@@ -25,19 +25,39 @@ Useful data type information:
         Min positive double64 number: ~2.2 * 10^-308
         Remarks: Double64 runs much slower on modern GPUs than float32!
 
-Useful measurements:
-    In constants.h
+Useful numbers:
+    Age of universe: ~14 * 10^6 years = ~4.41806 * 10^17 Seconds (s)
+    Mass of largest observed black hole: ~1 * 10^11 Solar masses (SU) = 1.989 * 10^14 Quettagrams
+    Size of Milky-way: ~9 Kiloparsec (kpc) =
+    See constants.h for more
+    Time to Andromeda galaxy collision = ~4.5 * 10^6 years = 1.42 * 10^17 Seconds (s)
 
 Useful constants:
-    In constants.h
+    Minimal star mass: ~0.06 Solar masses = 119.34 Quettagrams (Qq)
+    See constants.h for more
 
 Useful SI prefixes:
-    quetta: 10^30
-    exa: 10^18
+    Quetta (Q): 10^30
+    Ronna (R): 10^27
+    Zetta (Z): 10^21
+    Exa (E): 10^18
+    Peta (P): 10^15
+    Terra (T): 10^12
+    Giga (G): 10^9
+
+Useful units:
+    1 Astronomical Unit (AU) = 1.495979 * 10^11 Meters (m) = 149.5979 Gigameters (Gm)
+    1 Lightyear (ly) = 9.4607 * 10^15 Meters (m) = 9.4607 Petameters (Pm)
+    1 Parsec (pc) = 3.0857 * 10^16 Meters (m) = 30.857 Petameters (Pm)
+    1 Sun mass = 1.989 * 10^30 Kilograms (kg) = 1.989 * 10^3 Quettagrams = 1.989 Ronnatons (Rt)
+    1 Ton (t) = 1000 Kilograms (kg)
+    1 Year = 3.15506 * 10^7 Seconds (s)
 
 Units used:
-    Velocity: Meters per Second (m/s)
-    Time: Seconds
+    Distances: Petameters (Pm)
+    Time: Petaseconds (Ps)
+    Velocity: Kilometers per Second (km/s)
+    Weight: 10^6 Quettagrams (Qg)
 */
 
 #include <process.h>
@@ -49,7 +69,7 @@ Units used:
 #include <Windows.h>
 
 #include "raylib.h" // for frontend rendering
-//TODO #include "vulkan/vulkan.h" // for backend simulation compute
+#include "vulkan/vulkan.h" // for backend simulation compute
 
 #include "Types.h"
 
@@ -63,7 +83,7 @@ int main(int argc, char **argv)
     vkEnumerateInstanceVersion(&version);
     printf("Using Vulkan version %d.%d.%d", VK_VERSION_MAJOR(version), VK_VERSION_MINOR(version), VK_VERSION_PATCH(version));
     
-    printf("\n\n\n");
+    printf("\n\n");
     return 0;
 }
 
@@ -72,5 +92,16 @@ int main(int argc, char **argv)
 
 //! Note to self, make as many calculations as possible via vulkan and let raylib only handle
 //! presentation so we don't have to deal with platform specific GUIs
+
+/*
+GOALS
+    - Make galaxy simulation
+    - Make it multithreaded
+    - Make it render on and compute on GPU
+    - Make it use vulkan
+    - Make it optimized
+    - Make it really pretty
+    - Make it cluster computing
+*/
 
 //* Space is so cool

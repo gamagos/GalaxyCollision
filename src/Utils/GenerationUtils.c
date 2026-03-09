@@ -8,6 +8,66 @@
 #include "../Constants.h"
 #include "../Types.h"
 
+
+/*
+SYNOPSIS:
+    Generates a random float
+*/
+float randFloat() {
+    unsigned int seed; // Take advantage of undefined behavior of undefined ints as random number seed
+    srand(seed);
+
+    
+}
+
+/*
+SYNOPSIS:
+    Generates a random double
+*/
+double randDouble() 
+{
+    unsigned seed; // Take advantage of undefined behavior of undefined ints as random number seed
+    srand(seed);
+
+       
+}
+
+
+/*
+SYNOPSIS:
+    Generates a Vector3Float32 with random values from -maxValueAbsolute to maxValueAbsolute
+    using 32 bit floats
+DESCRIPTION:
+    Generates a Vector3Float32 with random values in the range from -maxValueAbsolute to maxValueAbsolute
+    using 32 bit floats.
+    It takes the smallest representable precision across the range from -maxValueAbsolute to maxValueAbsolute
+    as the step size for generation.
+    It needs to do this to keep distribution even because of how floats work.
+*/
+Vector3Float32 generatePositionFloat32(float maxValueAbsolute)
+{
+    float x = randFloat();
+    float y = randFloat();
+    float z = randFloat();
+}
+
+/*
+SYNOPSIS:
+    Generates a Vector3Float64 with random values from -maxValueAbsolute to maxValueAbsolute
+    using 64 bit floats
+DESCRIPTION:
+    Generates a Vector3Float64 with random values in the range from -maxValueAbsolute to maxValueAbsolute
+    using 64 bit floats.
+    It takes the smallest representable precision across the range from -maxValueAbsolute to maxValueAbsolute
+    as the step size for generation.
+    It needs to do this to keep distribution even because of how floats work.
+*/
+Vector3Double64 generatePositionDouble64(double maxValueAbsolute)
+{
+    
+}
+
+
 /*
 SYNOPSIS:
     Generates an array of StarFloat32 stars around a black hole
