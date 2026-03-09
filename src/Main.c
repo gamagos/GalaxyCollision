@@ -68,7 +68,6 @@ Units used:
 #include <string.h>
 #include <Windows.h>
 
-#include "raylib.h" // for frontend rendering
 #include "vulkan/vulkan.h" // for backend simulation compute
 
 #include "Types.h"
@@ -77,8 +76,7 @@ double timeSinceStartSeconds = 0.0;
 
 int main(int argc, char **argv) 
 {
-    printf("Starting program\n"); 
-    printf("Using raylib version %s\n", RAYLIB_VERSION);
+    printf("Starting program\n");
     uint32_t version;
     vkEnumerateInstanceVersion(&version);
     printf("Using Vulkan version %d.%d.%d", VK_VERSION_MAJOR(version), VK_VERSION_MINOR(version), VK_VERSION_PATCH(version));
