@@ -25,3 +25,7 @@ Learned about unions
 Learned about the namespace difference of struct tags and typedef aliases
 Learned about matrix and vector math
 
+## 3.10
+
+Learned about math.h
+Learned how to handle int out of bounds errors
