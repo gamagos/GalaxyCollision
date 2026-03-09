@@ -6,41 +6,36 @@
 
 #include "../Types.h"
 
+#ifndef isInt(x)
+#define isInt(x) _Generic((x), \
+    short:     true,     unsigned short:     true \
+    int:       true,     unsigned int:       true \
+    long:      true,     unsigned long:      true, \
+    long long: true,     unsigned long long: true, \
+    default:   false \
+)
+#endif
 
-/* 
+/*
 SYNOPSIS:
-    A union to convert int64s to 8 int8s and everything in between
+    Generates a random int with 32 bits
+DESCRIPTION:
+    Uses the regular rand() function and adapts the output
+    to be 32 bits to avoid platform specific errors where rand() does
+    not yield 32 bits
 */
-typedef union int64Conversion
-{
-    struct // 8 bit
-    {
-        int8_t a8;
-        int8_t b8;
-        int8_t c8;
-        int8_t d8;
-        int8_t e8;
-        int8_t f8;
-        int8_t g8;
-        int8_t h8;
-    };
-    struct // 16 bit
-    {
-        int16_t a16;
-        int16_t b16;
-        int16_t c16;
-        int16_t d16;
-    };
-    struct // 32 bit
-    {
-        int32_t a32;
-        int32_t b32;
-    };
-    struct // 64 bit
-    {
-        int64_t a64;
-    };
-} intConversion;
+int32_t randint32(int32_t max);
+
+/*
+SYNOPSIS:
+    Generates a random int with 64 bits
+DESCRIPTION:
+    Uses the regular rand() function and adapts the output
+    to be 64 bits to avoid platform specific errors where rand() does
+    not yield 64 bits
+*/
+int64_t randint64(int64_t max);
+
 
 /*
 SYNOPSIS:
@@ -55,7 +50,7 @@ ARGS:
 RETURNS:
     An array of StarFloat32 stars, with it's fields adjusted so that all the stars together look like a galaxy
 */
-StarFloat32* generateStarsFloat32Galaxy(uint32_t amount, BlackHoleFloat32 parentBlackHole);
+Star32* generateStarsFloat32Galaxy(uint32_t amount, BlackHole32 parentBlackHole);
 
 /*
 SYNOPSIS:
@@ -70,6 +65,6 @@ ARGS:
 RETURNS:
     An array of StarFloat64 stars, with it's fields adjusted so that all the stars together look like a galaxy
 */
-StarDouble64* generateStarsDouble64Galaxy(uint64_t amount, BlackHoleDouble64 parentBlackHole);
+Star64* generateStarsDouble64Galaxy(uint64_t amount, BlackHole64 parentBlackHole);
 
 #endif

@@ -18,29 +18,19 @@ typedef struct Vector3Int32
 // int64 Vector3 
 typedef struct Vector3Int64
 {
-    int32_t x;
-    int32_t y;
-    int32_t z;
+    int64_t x;
+    int64_t y;
+    int64_t z;
 } Vector3Int64;
 
-// 32 bit precision float Vector3
-typedef struct Vector3Float32
-{
-    float x;
-    float y;
-    float z;
-} Vector3Float32;
 
-// 64 bit precision double Vector3
-typedef struct Vector3Double64
-{
-    double x;
-    double y;
-    double z;
-} Vector3Double64;
-
-
-// RGB color with alpha value (RGBA)
+/*
+SYNOPSIS:
+    RGB color with alpha value(RGBA)
+DESCRIPTION:
+    Each value and the alpha value are represented as an 8 bit
+    unsigned integer.
+*/
 typedef struct RGBAColor {
     uint8_t Red;
     uint8_t Green;
@@ -59,7 +49,7 @@ typedef struct Star32
 {
     // Values for physics
     Vector3Int32 position;
-    Vector3Float32 velocityKiloMetersPerSecond;
+    Vector3Int32 velocityKiloMetersPerSecond;
     float mass;
     float gravity;
 
@@ -67,7 +57,7 @@ typedef struct Star32
     float brightness;
     float distanceCamera;
     RGBAColor color;
-} StarFloat32;
+} Star32;
 
 
 /*
@@ -80,7 +70,7 @@ typedef struct Star64
 {
     // Values for physics
     Vector3Int64 position;
-    Vector3Double64 velocityKiloMetersPerSecond;
+    Vector3Int64 velocityKiloMetersPerSecond;
     double mass;
     double gravity;               
 
@@ -88,7 +78,7 @@ typedef struct Star64
     double brightness;
     double distanceCamera;
     RGBAColor color;
-} StarDouble64;
+} Star64;
 
 
 /*
@@ -101,8 +91,9 @@ REMARKS:
 typedef struct DarkMatter32
 {
     Vector3Int32 position;
-    Vector3Float32 velocity;
+    Vector3Int32 velocity;
     float mass;
+    float gravity;
 } DarkMatter32;
 
 /*
@@ -115,8 +106,9 @@ REMARKS:
 typedef struct DarkMatter64
 {
     Vector3Int64 position;
-    Vector3Double64 velocity;
+    Vector3Int64 velocity;
     double mass;
+    double gravity;
 } DarkMatter64;
 
 
@@ -130,14 +122,14 @@ typedef struct BlackHole32
 {
     // Values for physics
     Vector3Int32 position;
-    Vector3Float32 velocityKiloMetersPerSecond;
+    Vector3Int32 velocityKiloMetersPerSecond;
     float mass;
     float gravity;
 
     // Additional values for galaxy generation
-    Vector3Float32 rotationAxis;
+    Vector3Int32 rotationAxis;
     bool rotatesClockwise;
-} BlackHoleFloat32;
+} BlackHole32;
 
 
 /* 
@@ -153,13 +145,13 @@ typedef struct BlackHole64
 {
     // Values for physics
     Vector3Int64 position;
-    Vector3Double64 velocityKiloMetersPerSecond;
+    Vector3Int64 velocityKiloMetersPerSecond;
     double mass;
     double gravity;
     
     // Additional values for galaxy collision
-    Vector3Double64 rotationAxis;
+    Vector3Int64 rotationAxis;
     bool rotatesClockwise;
-} BlackHoleDouble64;
+} BlackHole64;
 
 #endif
