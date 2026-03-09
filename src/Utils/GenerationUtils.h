@@ -6,6 +6,42 @@
 
 #include "../Types.h"
 
+
+/* 
+SYNOPSIS:
+    A union to convert int64s to 8 int8s and everything in between
+*/
+typedef union int64Conversion
+{
+    struct // 8 bit
+    {
+        int8_t a8;
+        int8_t b8;
+        int8_t c8;
+        int8_t d8;
+        int8_t e8;
+        int8_t f8;
+        int8_t g8;
+        int8_t h8;
+    };
+    struct // 16 bit
+    {
+        int16_t a16;
+        int16_t b16;
+        int16_t c16;
+        int16_t d16;
+    };
+    struct // 32 bit
+    {
+        int32_t a32;
+        int32_t b32;
+    };
+    struct // 64 bit
+    {
+        int64_t a64;
+    };
+} intConversion;
+
 /*
 SYNOPSIS:
     Generates an array of StarFloat32 stars around a black hole
