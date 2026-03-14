@@ -2,7 +2,7 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 	#ifndef FATAL_TAG
-	#define FATAL_TAG "FATAL: "
+	#define FATAL_TAG "[FATAL] "
 	#endif
 
 	#ifndef ERROR_TAG
