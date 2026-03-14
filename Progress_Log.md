@@ -29,3 +29,9 @@ Learned about matrix and vector math
 
 Learned about math.h
 Learned how to handle int out of bounds errors
+
+## 3.14
+
+Learned more about the heap and malloc, calloc, realloc and free
+Learned more about using pointers
+Made position generation logic halfway finished

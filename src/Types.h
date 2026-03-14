@@ -129,7 +129,7 @@ typedef struct BlackHole32
     // Additional values for galaxy generation
     Vector3Int32 rotationAxis;
     bool rotatesClockwise;
-} BlackHoleInt32;
+} BlackHole32;
 
 
 /* 
@@ -152,6 +152,6 @@ typedef struct BlackHole64
     // Additional values for galaxy collision
     Vector3Int64 rotationAxis;
     bool rotatesClockwise;
-} BlackHoleInt64;
+} BlackHole64;
 
 #endif

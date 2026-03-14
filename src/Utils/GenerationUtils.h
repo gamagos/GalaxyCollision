@@ -50,7 +50,7 @@ ARGS:
 RETURNS:
     An array of StarFloat32 stars, with it's fields adjusted so that all the stars together look like a galaxy
 */
-StarFloat32* generateStarsFloat32Galaxy(uint32_t amount, BlackHoleFloat32 parentBlackHole);
+Star32* generateStarsFloat32Galaxy(uint32_t amount, BlackHole32 parentBlackHole);
 
 /*
 SYNOPSIS:
@@ -65,6 +65,6 @@ ARGS:
 RETURNS:
     An array of StarFloat64 stars, with it's fields adjusted so that all the stars together look like a galaxy
 */
-StarDouble64* generateStarsDouble64Galaxy(uint64_t amount, BlackHoleDouble64 parentBlackHole);
+Star64* generateStarsDouble64Galaxy(uint64_t amount, BlackHole64 parentBlackHole);
 
 #endif
