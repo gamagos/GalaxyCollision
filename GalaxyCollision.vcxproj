@@ -105,10 +105,11 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdclatest</LanguageStandard_C>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessKeepComments>true</PreprocessKeepComments>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -133,12 +134,27 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.c" />
+    <ClCompile Include="src\Utils\DataUtils.c" />
+    <ClCompile Include="src\Utils\DebugUtils.c" />
     <ClCompile Include="src\Utils\GenerationUtils.c" />
+    <ClCompile Include="src\Utils\MathUtils.c" />
+    <ClCompile Include="tests\MainTests.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Utils\DataUtils.h" />
+    <ClInclude Include="src\Utils\DebugUtils.h" />
     <ClInclude Include="src\Utils\GenerationUtils.h" />
     <ClInclude Include="src\Types.h" />
     <ClInclude Include="src\Constants.h" />
+    <ClInclude Include="src\Utils\MathUtils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitattributes" />
+    <None Include=".gitignore" />
+    <None Include="GalaxyCollision.slnx" />
+    <None Include="LICENSE" />
+    <None Include="Progress_Log.md" />
+    <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

@@ -76,12 +76,17 @@ double timeSinceStartSeconds = 0.0;
 
 int main(int argc, char **argv) 
 {
-    printf("Starting program\n");
+    printf("Starting program \n");
+    
+    // Vulkan version
     uint32_t version;
     vkEnumerateInstanceVersion(&version);
-    printf("Using Vulkan version %d.%d.%d", VK_VERSION_MAJOR(version), VK_VERSION_MINOR(version), VK_VERSION_PATCH(version));
+    printf("Using Vulkan version %d.%d.%d \n", VK_VERSION_MAJOR(version), VK_VERSION_MINOR(version), VK_VERSION_PATCH(version));
+
+    printf("Compiled with C Version: %ld \n", __STDC_VERSION__);
+    printf("System integer size  %llu bytes (%llu bits) \n", sizeof(int), sizeof(int) * 8);
     
-    printf("\n\n");
+    printf("\n");
     return 0;
 }
 
@@ -94,7 +99,7 @@ int main(int argc, char **argv)
 /*
 GOALS
     - Make galaxy simulation
-    - Make it multithreaded
+    - Make it multi-threaded
     - Make it render on and compute on GPU
     - Make it use vulkan
     - Make it optimized
