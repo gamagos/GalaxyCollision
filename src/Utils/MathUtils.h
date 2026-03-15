@@ -14,6 +14,44 @@
 
 /*
 SYNOPSIS:
+	Get's the distance of 2 points as a positive number
+DEPENDECIES:
+	Vector3Int32 struct from Types.h
+ARGS:
+	point1, point2:
+		The points to get the distance from
+RETURNS
+	The distance of the 2 points as a positive long int.
+REMARKS:
+	Looses some precision because math functions use double
+EXAMPLE:
+	Vector3Int32 pointA = {2,1,1}, pointB = {2,2,1};
+	unsigned long distance = getPointsDistance(pointA, pointB);
+	printf("Distance points: %ld", distance); ==> Distance points: 1
+*/
+unsigned long getPointsDistance32(Vector3Int32 point1, Vector3Int32 point2);
+
+/*
+SYNOPSIS:
+	Get's the distance of 2 points as a positive number
+DEPENDECIES:
+	Vector3Int64 struct from Types.h
+ARGS:
+	point1, point2:
+		The points to get the distance from
+RETURNS
+	The distance of the 2 points as a positive long int.
+REMARKS:
+	Looses some precision because math functions use double
+EXAMPLE:
+	Vector3Int64 pointA = {2,1,1}, pointB = {2,2,1};
+	unsigned long distance = getPointsDistance32(pointA, pointB);
+	printf("Distance points: %ld", distance); ==> Distance points: 1
+*/
+unsigned long getPointsDistance64(Vector3Int64 point1, Vector3Int64 point2);
+
+/*
+SYNOPSIS:
 	Logarithm for any base
 DESCRIPTION:
 	Gets the result of the logarithm for any base using
@@ -80,6 +118,8 @@ SYNOPSIS:
 DESCRIPTION:
 	The function does this by mapping each probability of the points coordinate to e(-x) normalized for maxX/Y/Z
 	to be 100%, if all points return true on their existence the function returns true.
+DEPENDENCIES:
+	VectorInt32 struct from Types.h
 ARGS:
 	point:
 		The point to be mapped for
@@ -113,6 +153,8 @@ SYNOPSIS:
 DESCRIPTION:
 	The function does this by mapping each probability of the points coordinate to e(-x) normalized for maxX/Y/Z
 	to be 100%, if all points return true on their existence the function returns true.
+DEPENDENCIES:
+	VectorInt64 struct from Types.h
 ARGS:
 	point:
 		The point to be mapped for

@@ -84,7 +84,7 @@ int main(int argc, char **argv)
     printf("Using Vulkan version %d.%d.%d \n", VK_VERSION_MAJOR(version), VK_VERSION_MINOR(version), VK_VERSION_PATCH(version));
 
     printf("Compiled with C Version: %ld \n", __STDC_VERSION__);
-    printf("System integer size  %llu bytes (%llu bits) \n", sizeof(int), sizeof(int) * 8);
+    printf("System integer size is %llu bytes (%llu bits) \n", sizeof(int), sizeof(int) * 8);
     
     printf("\n");
     return 0;

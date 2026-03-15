@@ -127,9 +127,12 @@ Star32* generateStars32Galaxy(uint32_t amount, BlackHole32 parentBlackHole)
     }
 
     bool starExists = false;
+    unsigned long distanceFromBlackHole = 0;
 
     for (unsigned long i = 0; i < amount; i++)
     {
+        starExists = false; // NOSONAR
+        
         do
         {
             stars[i].position = generatePosition32(maxX, maxY, maxZ, minX, minY, minZ);
@@ -137,7 +140,7 @@ Star32* generateStars32Galaxy(uint32_t amount, BlackHole32 parentBlackHole)
         }
         while (!starExists);
 
-        starExists = false;
+        distanceFromBlackHole = getPointsDistance32(parentBlackHole.position, stars[i].position);
     }
 
     return stars;
@@ -179,9 +182,12 @@ Star64* generateStars64Galaxy(uint64_t amount, BlackHole64 parentBlackHole)
     }
 
     bool starExists = false;
+    unsigned long distanceFromBlackHole = 0;
 
     for (unsigned long long i = 0; i < amount; i++)
     {
+        starExists = false; // NOSONAR
+
         do
         {
             stars[i].position = generatePosition64(maxX, maxY, maxZ, minX, minY, minZ);
@@ -189,7 +195,8 @@ Star64* generateStars64Galaxy(uint64_t amount, BlackHole64 parentBlackHole)
         } 
         while (!starExists);
 
-        starExists = false;
+        distanceFromBlackHole = getPointsDistance64(parentBlackHole.position, stars[i].position);
+
     }
     return stars;
 }
