@@ -8,59 +8,25 @@
 
 #include "../Constants.h"
 #include "../Types.h"
+#include "DataUtils.h"
+#include "MathUtils.h"
 
 /*
 SYNOPSIS:
-	Get's the distance of 2 points as a positive number
-DEPENDECIES:
-	Vector3Int32 struct from Types.h
+	Get the absolute value of a floating point number
 ARGS:
-	point1, point2:
-		The points to get the distance from
-RETURNS
-	The distance of the 2 points as a positive long int.
-REMARKS:
-	Looses some precision because math functions use double
+	number:
+		The number to get the absolute value from
+RETURNS:
+	The absolute value of the number
 EXAMPLE:
-	Vector3Int32 pointA = {2,1,1}, pointB = {2,2,1};
-	unsigned long distance = getPointsDistance32(pointA, pointB);
-	printf("Distance points: %ld", distance); ==> Distance points: 1
+double a = -2;
+a = myAbs(a); ==> 2
 */
-unsigned long getPointsDistance32(Vector3Int32 point1, Vector3Int32 point2)
+static double myAbs(double number)
 {
-	unsigned long distance = 0;
-	double dx = point1.x - point2.x;
-	double dy = point1.y - point2.y;
-	double dz = point1.y - point2.y;
-	distance = (unsigned long)sqrt( dx * dx + dy * dy + dz * dz );
-	return distance;
-}
-
-/*
-SYNOPSIS:
-	Get's the distance of 2 points as a positive number
-DEPENDECIES:
-	Vector3Int64 struct from Types.h
-ARGS:
-	point1, point2:
-		The points to get the distance from
-RETURNS
-	The distance of the 2 points as a positive long int.
-REMARKS:
-	Looses some precision because math functions use double
-EXAMPLE:
-	Vector3Int64 pointA = {2,1,1}, pointB = {2,2,1};
-	unsigned long distance = getPointsDistance64(pointA, pointB);
-	printf("Distance points: %ld", distance); ==> Distance points: 1
-*/
-unsigned long getPointsDistance64(Vector3Int64 point1, Vector3Int64 point2)
-{
-	unsigned long distance = 0;
-	double dx = (double)(point1.x - point2.x);
-	double dy = (double)(point1.y - point2.y);
-	double dz = (double)(point1.y - point2.y);
-	distance = (unsigned long)sqrt(dx * dx + dy * dy + dz * dz);
-	return distance;
+	number = sqrt(number * number);
+	return number;
 }
 
 /*
@@ -170,6 +136,60 @@ bool mapNumberExistenceProbabilityExponential(long long number, long long thresh
 
 /*
 SYNOPSIS:
+	Get's the distance of 2 points as a positive number
+DEPENDECIES:
+	Vector3Int32 struct from Types.h
+ARGS:
+	point1, point2:
+		The points to get the distance from
+RETURNS
+	The distance of the 2 points as a positive long int.
+REMARKS:
+	Looses some precision because math functions use double
+EXAMPLE:
+	Vector3Int32 pointA = {2,1,1}, pointB = {2,2,1};
+	unsigned long distance = getPointsDistance32(pointA, pointB);
+	printf("Distance points: %ld", distance); ==> Distance points: 1
+*/
+unsigned long getPointsDistance32(Vector3Int32 point1, Vector3Int32 point2)
+{
+	unsigned long distance = 0;
+	double dx = point1.x - point2.x;
+	double dy = point1.y - point2.y;
+	double dz = point1.y - point2.y;
+	distance = (unsigned long)sqrt( dx * dx + dy * dy + dz * dz );
+	return distance;
+}
+
+/*
+SYNOPSIS:
+	Get's the distance of 2 points as a positive number
+DEPENDECIES:
+	Vector3Int64 struct from Types.h
+ARGS:
+	point1, point2:
+		The points to get the distance from
+RETURNS
+	The distance of the 2 points as a positive long int.
+REMARKS:
+	Looses some precision because math functions use double
+EXAMPLE:
+	Vector3Int64 pointA = {2,1,1}, pointB = {2,2,1};
+	unsigned long distance = getPointsDistance64(pointA, pointB);
+	printf("Distance points: %ld", distance); ==> Distance points: 1
+*/
+unsigned long getPointsDistance64(Vector3Int64 point1, Vector3Int64 point2)
+{
+	unsigned long distance = 0;
+	double dx = (double)(point1.x - point2.x);
+	double dy = (double)(point1.y - point2.y);
+	double dz = (double)(point1.y - point2.y);
+	distance = (unsigned long)sqrt(dx * dx + dy * dy + dz * dz);
+	return distance;
+}
+
+/*
+SYNOPSIS:
 	Maps the existence probability of a point to e(-x) for each coordinate
 	normalized for some value minX/Y/Z that represent the value that is used for 100% probability.
 	And then returns the wether the point exists or not as a bool, the closer the points is to the origin the
@@ -196,7 +216,8 @@ EXAMPLE:
 	Vector3Int32 point = {35,545,46};
 	bool doesMyPointExist = mapPointExistenceProbabilityExponential(point, 0, 0, 0);
 */
-bool mapPointExistenceProbabilityExponential32(
+bool mapPointExistenceProbabilityExponential32
+(
 	Vector3Int32 point,
 	long thresholdX,
 	long thresholdY,
@@ -239,7 +260,8 @@ EXAMPLE:
 	Vector3Int32 point = {35,545,46};
 	bool doesMyPointExist = mapPointExistanceProbabilityExponential(point, 0, 0, 0);
 */
-bool mapPointExistenceProbabilityExponential64(
+bool mapPointExistenceProbabilityExponential64
+(
 	Vector3Int64 point,
 	long long thresholdX,
 	long long thresholdY,
@@ -252,4 +274,154 @@ bool mapPointExistenceProbabilityExponential64(
 	bool pointExists = xExists && yExists && zExists;
 
 	return pointExists;
+}
+
+// Vector Math
+
+/*
+SYNOPSIS:
+	Normalizes a vector's components for 1
+DESCRIPTION:
+	Normalizes a vector's components for 1 by
+	getting the ratios for all components to the largest components
+	in %
+DEPENDENCIES:
+	Vector3Float32 from Types.h
+ARGS:
+	vector:
+		The vector to be normalized
+RETURNS:
+	The normalized vector
+EXAMPLE:
+	Vector3Float32 myVector = {1.0f, 2.0f, 2.0f};
+	myVector = normalizeVector32(myVector); ==> {0.5f, 1.0f, 1.0f}
+*/
+static Vector3Float32 normalizeVector3Float32(Vector3Float32 vector)
+{
+	float vectorSumComponentsAbsolute = 0;
+
+	vectorSumComponentsAbsolute = (float)(myAbs(vector.x)
+                                        + myAbs(vector.y)
+									    + myAbs(vector.z));
+
+	vector.x = vector.x / vectorSumComponentsAbsolute;
+	vector.y = vector.y / vectorSumComponentsAbsolute;
+	vector.z = vector.z / vectorSumComponentsAbsolute;
+
+	return vector;
+}
+
+/*
+SYNOPSIS:
+	Normalizes a vector's components for 1
+DESCRIPTION:
+	Normalizes a vector's components for 1 by
+	getting the ratios for all components to the largest components
+	in %
+DEPENDENCIES:
+	Vector3Double64 from Types.h
+ARGS:
+	vector:
+		The vector to be normalized
+RETURNS:
+	The normalized vector
+EXAMPLE:
+	Vector3Double64 myVector = {1.0, 2.0, 0.5};
+	myVector = normalizeVector32(myVector); ==> {0.5, 1.0, 0.25}
+*/
+static Vector3Double64 normalizeVector3Double64(Vector3Double64 vector)
+{
+	double vectorLargestComponentAbsolute = 0;
+
+	vectorLargestComponentAbsolute = myAbs(vector.x)
+                                   + myAbs(vector.y)
+		                           + myAbs(vector.z);
+
+	vector.x = vector.x / vectorLargestComponentAbsolute;
+	vector.y = vector.y / vectorLargestComponentAbsolute;
+	vector.z = vector.z / vectorLargestComponentAbsolute;
+
+	return vector;
+}
+
+/*
+SYNOPSIS:
+	Aligns a vector with the direction of a target vector while keeping it's amplitude
+DEPENDENCIES:
+	Vector3Int32 and Vector3Float32 from Types.h
+ARGS:
+	vector:
+		The vector that is to be aligned
+	targetVector:
+		The vector to align the vector to. 
+		Vector is a Vector3Float32 so that input can already be
+		normalized and to aid precision of alignment
+RETURNS:
+	Vector with the same amplitude as the provided vector with the direction of the target vector
+REMARKS:
+	Looses precision because of floating point math utilization under the hood
+EXAMPLE:
+	Vector3Int32 myVector = {1,1,2};
+	Vector3Float32 direction = {0.0f, 1.0f, 0.0f};
+	myVector = allignVectorWithTargetVector32(myVector, targetVector); ==> {0, sqrt(6), 0}
+*/
+static Vector3Int32 allignVectorWithTargetVector32
+(
+	Vector3Int32 vector, 
+	Vector3Float32 targetVector // targetVector already as Vector3Float32 so that input can already be normalized
+) 
+{
+	Vector3Float32 targetVectorDirectionNormalized = {0};
+	targetVectorDirectionNormalized = normalizeVector3Float32(targetVector); // Target vector should already be normalized but normalize it anyway just in case
+
+	float vectorMagnitude = 0.0f;
+	vectorMagnitude = (float)getPointsDistance32(ORIGIN_POINT_VECTOR3_INT32, vector);
+	
+	Vector3Int32 resultVector = {0};
+	resultVector.x = (int32_t)(targetVectorDirectionNormalized.x * vectorMagnitude);
+	resultVector.y = (int32_t)(targetVectorDirectionNormalized.y * vectorMagnitude);
+	resultVector.z = (int32_t)(targetVectorDirectionNormalized.z * vectorMagnitude);
+
+	return resultVector;
+}
+
+/*
+SYNOPSIS:
+	Aligns a vector with the direction of a target vector while keeping it's amplitude
+DEPENDENCIES:
+	Vector3Int64 and Vector3Double64 from Types.h
+ARGS:
+	vector:
+		The vector that is to be aligned
+	targetVector:
+		The vector to align the vector to.
+		Vector is a Vector3Double64 so that input can already be
+		normalized and to aid precision of alignment
+RETURNS:
+	Vector with the same amplitude as the provided vector with the direction of the target vector
+REMARKS:
+	Looses precision because of floating point math utilization under the hood
+EXAMPLE:
+	Vector3Int64 myVector = {1,1,2};
+	Vector3Double64 direction = {0.0, 1.0, 0.0};
+	myVector = allignVectorWithTargetVector64(myVector, targetVector); ==> {0, sqrt(6), 0}
+*/
+static Vector3Int64 allignVectorWithTargetVector64
+(
+	Vector3Int64 vector,
+	Vector3Double64 targetVector // targetVector already as Vector3Float32 so that input can already be normalized
+)
+{
+	Vector3Double64 targetVectorDirectionNormalized = { 0 };
+	targetVectorDirectionNormalized = normalizeVector3Double64(targetVector); // Target vector should already be normalized but normalize it anyway just in case
+
+	double vectorMagnitude = 0.0;
+	vectorMagnitude = (double)getPointsDistance64(ORIGIN_POINT_VECTOR3_INT64, vector);
+
+	Vector3Int64 resultVector = { 0 };
+	resultVector.x = (int64_t)(targetVectorDirectionNormalized.x * vectorMagnitude);
+	resultVector.y = (int64_t)(targetVectorDirectionNormalized.y * vectorMagnitude);
+	resultVector.z = (int64_t)(targetVectorDirectionNormalized.z * vectorMagnitude);
+
+	return resultVector;
 }

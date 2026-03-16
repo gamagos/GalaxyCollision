@@ -12,6 +12,22 @@
 #include "../Constants.h"
 #include "../Types.h"
 
+#ifndef ORIGIN_POINT_VECTOR3_INT32
+#define ORIGIN_POINT_VECTOR3_INT32 (Vector3Int32){0,0,0}
+#endif
+
+#ifndef ORIGIN_POINT_VECTOR3_INT64
+#define ORIGIN_POINT_VECTOR3_INT64 (Vector3Int64){0,0,0}
+#endif
+
+#ifndef ORIGIN_POINT_VECTOR3_FLOAT32
+#define ORIGIN_POINT_VECTOR3_FLOAT32 (Vector3Float32){0.0f, 0.0f, 0.0f}
+#endif
+
+#ifndef ORIGIN_POINT_VECTOR3_DOUBLE64
+#define ORIGIN_POINT_VECTOR3_DOUBLE64 (Vector3Double64){0.0, 0.0, 0.0}
+#endif
+
 /*
 SYNOPSIS:
 	Get's the distance of 2 points as a positive number
@@ -135,9 +151,10 @@ REMARKS:
 	Not 100% precise but pretty precise
 EXAMPLE:
 	Vector3Int32 point = {35,545,46};
-	bool doesMyPointExist = mapPointExistanceProbabilityExponential(point, 0, 0, 0);
+	bool doesMyPointExist = mapPointExistenceProbabilityExponential(point, 0, 0, 0);
 */
-bool mapPointExistenceProbabilityExponential32(
+bool mapPointExistenceProbabilityExponential32
+(
 	Vector3Int32 point,
 	long thresholdX,
 	long thresholdY,
@@ -172,11 +189,106 @@ EXAMPLE:
 	Vector3Int32 point = {35,545,46};
 	bool doesMyPointExist = mapPointExistanceProbabilityExponential(point, 0, 0, 0);
 */
-bool mapPointExistenceProbabilityExponential64(
+bool mapPointExistenceProbabilityExponential64
+(
 	Vector3Int64 point,
 	long long thresholdX,
 	long long thresholdY,
 	long long thresholdZ
+);
+
+/*
+SYNOPSIS:
+	Normalizes a vector's components for 1
+DESCRIPTION:
+	Normalizes a vector's components for 1 by
+	getting the ratios for all components to the largest components
+	in %
+DEPENDENCIES:
+	Vector3Float32 from Types.h
+ARGS:
+	vector:
+		The vector to be normalized
+RETURNS:
+	The normalized vector
+EXAMPLE:
+	Vector3Float32 myVector = {1.0f, 2.0f, 2.0f};
+	myVector = normalizeVector32(myVector); ==> {0.5f, 1.0f, 1.0f}
+*/
+static Vector3Float32 normalizeVector3Float32(Vector3Float32 vector);
+
+/*
+SYNOPSIS:
+	Normalizes a vector's components for 1
+DESCRIPTION:
+	Normalizes a vector's components for 1 by
+	getting the ratios for all components to the largest components
+	in %
+DEPENDENCIES:
+	Vector3Double64 from Types.h
+ARGS:
+	vector:
+		The vector to be normalized
+RETURNS:
+	The normalized vector
+EXAMPLE:
+	Vector3Double64 myVector = {1.0, 2.0, 0.5};
+	myVector = normalizeVector32(myVector); ==> {0.5, 1.0, 0.25}
+*/
+static Vector3Double64 normalizeVector3Double64(Vector3Double64 vector);
+
+/*
+SYNOPSIS:
+	Aligns a vector with the direction of a target vector while keeping it's amplitude
+DEPENDENCIES:
+	Vector3Int32 and Vector3Float32 from Types.h
+ARGS:
+	vector:
+		The vector that is to be aligned
+	targetVector:
+		The vector to align the vector to.
+		Vector is a Vector3Float32 so that input can already be
+		normalized and to aid precision of alignment
+RETURNS:
+	Vector with the same amplitude as the provided vector with the direction of the target vector
+REMARKS:
+	Looses precision because of floating point math utilization under the hood
+EXAMPLE:
+	Vector3Int32 myVector = {1,1,2};
+	Vector3Float32 direction = {0.0f, 1.0f, 0.0f};
+	myVector = allignVectorWithTargetVector32(myVector, targetVector); ==> {0, sqrt(6), 0}
+*/
+static Vector3Int32 allignVectorWithTargetVector32
+(
+	Vector3Int32 vector,
+	Vector3Float32 targetVector // targetVector already as Vector3Float32 so that input can already be normalized
+);
+
+/*
+SYNOPSIS:
+	Aligns a vector with the direction of a target vector while keeping it's amplitude
+DEPENDENCIES:
+	Vector3Int64 and Vector3Double64 from Types.h
+ARGS:
+	vector:
+		The vector that is to be aligned
+	targetVector:
+		The vector to align the vector to.
+		Vector is a Vector3Double64 so that input can already be
+		normalized and to aid precision of alignment
+RETURNS:
+	Vector with the same amplitude as the provided vector with the direction of the target vector
+REMARKS:
+	Looses precision because of floating point math utilization under the hood
+EXAMPLE:
+	Vector3Int64 myVector = {1,1,2};
+	Vector3Double64 direction = {0.0, 1.0, 0.0};
+	myVector = allignVectorWithTargetVector64(myVector, targetVector); ==> {0, sqrt(6), 0}
+*/
+static Vector3Int64 allignVectorWithTargetVector64
+(
+	Vector3Int64 vector,
+	Vector3Double64 targetVector // targetVector already as Vector3Float32 so that input can already be normalized
 );
 
 #endif

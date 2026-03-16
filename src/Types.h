@@ -23,6 +23,21 @@ typedef struct Vector3Int64
     int64_t z;
 } Vector3Int64;
 
+// 32 bit float Vector3 
+typedef struct Vector3Float32
+{
+    float x;
+    float y;
+    float z;
+} Vector3Float32;
+
+// 64 bit double Vector3 
+typedef struct Vector3Double64
+{
+    double x;
+    double y;
+    double z;
+} Vector3Double64;
 
 /*
 SYNOPSIS:

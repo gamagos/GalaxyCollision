@@ -56,7 +56,6 @@ unsigned long long buildWideIntFromNarrowInts(void* narrowInts, size_t intSize, 
     return result;
 }
 
-
 /*
 SYNOPSIS:
     Generates a random int of the specified size in bytes,
@@ -123,7 +122,6 @@ unsigned long long wideRandint(short int size)
     return result;
 }
 
-
 /*
 SYNOPSIS:
     Generates a random int with 32 bits
@@ -131,6 +129,8 @@ DESCRIPTION:
     Uses the regular rand() function and adapts the output
     to be 32 bits to avoid platform specific errors where rand() does
     not yield 32 bits
+DEPENDENCIES:
+    int32_t from stdint.h
 ARGS:
     The maximum absolute size of the generated random number
 RETURNS:
@@ -152,7 +152,6 @@ int32_t randint32(int32_t max)
     return result % max;
 }
 
-
 /*
 SYNOPSIS:
     Generates a random int with 64 bits
@@ -160,6 +159,8 @@ DESCRIPTION:
     Uses the regular rand() function and adapts the output
     to be 64 bits to avoid platform specific errors where rand() does
     not yield 64 bits
+DEPENDENCIES:
+    int64_t from stdint.h
 ARGS:
     The maximum absolute size of the generated random number
 RETURNS:
@@ -179,4 +180,58 @@ int64_t randint64(int64_t max)
     }
     int32_t result = (int32_t)wideRandint(sizeof(int32_t));
     return result % max;
+}
+
+/*
+SYNOPSIS:
+    Casts a Vector3Int32 struct to a Vector3Float32 struct
+DESCRIPTION:
+    Casts all individual components of a Vector3Int32 struct to floats,
+    then builds a Vector3Float32 struct from them and returns the new Vector3Float32 struct
+DEPENDENCIES:
+    Vector3Float32 and Vector3Int32 from Types.h
+ARGS:
+    vectorToConvet:
+        The vector to convert
+RETURNS:
+    The provided Vector3Int32 struct with it's components cast to float, creating a Vector3Float32 struct
+EXAMPLE:
+    Vector3Int32 myVector = {1,3,4};
+    Vector3Float32 = Vector3Int32_To_Vector3Float32(myVector); ==> {1.0f, 3.0f, 4.0f}
+*/
+Vector3Float32 Vector3Int32_To_Vector3Float32(Vector3Int32 vectorToConvert)
+{
+    Vector3Float32 result = {0};
+    result.x = (float)vectorToConvert.x;
+    result.y = (float)vectorToConvert.y;
+    result.z = (float)vectorToConvert.z;
+
+    return result;
+}
+
+/*
+SYNOPSIS:
+    Casts a Vector3Int64 struct to a Vector3Double64 struct
+DESCRIPTION:
+    Casts all individual components of a Vector3Int64 struct to doubles,
+    then builds a Vector3Double64 struct from them and returns the new Vector3Float32 struct
+DEPENDENCIES:
+    Vector3Double64 and Vector3Int64 from Types.h
+ARGS:
+    vectorToConvet:
+        The vector to convert
+RETURNS:
+    The provided Vector3Int64 struct with it's components cast to doubles, creating a Vector3Double64 struct
+EXAMPLE:
+    Vector3Int64 myVector = {1,3,4};
+    Vector3Double64 = Vector3Int64_To_Vector3Double64(myVector); ==> {1.0, 3.0, 4.0}
+*/
+Vector3Double64 Vector3Int64_To_Vector3Double64(Vector3Int64 vectorToConvert)
+{
+    Vector3Double64 result = { 0 };
+    result.x = (double)vectorToConvert.x;
+    result.y = (double)vectorToConvert.y;
+    result.z = (double)vectorToConvert.z;
+
+    return result;
 }
