@@ -130,6 +130,9 @@ typedef struct DarkMatter64
 /*
 SYNOPSIS:
     Black hole struct using 32 bit precision
+DESCRIPTION:
+    Black hole struct with all values needed for simulation and generation
+    Note that the rotation values only serve as orientation for star generation
 REMARKS:
     Beware that the entire struct itself is actually larger than 32 bits!
  */
@@ -142,7 +145,7 @@ typedef struct BlackHole32
     float gravity;
 
     // Additional values for galaxy generation
-    Vector3Int32 rotationAxis;
+    Vector3Float32 rotationAxis;
     bool rotatesClockwise;
 } BlackHole32;
 
@@ -165,7 +168,7 @@ typedef struct BlackHole64
     double gravity;
     
     // Additional values for galaxy collision
-    Vector3Int64 rotationAxis;
+    Vector3Double64 rotationAxis;
     bool rotatesClockwise;
 } BlackHole64;
 

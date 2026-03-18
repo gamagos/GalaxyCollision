@@ -2,9 +2,18 @@
 #ifndef GENERATION_UTILS_H
 #define GENERATION_UTILS_H
 
+#include <math.h>
+#include <process.h>
+#include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+#include <Windows.h>
 
+#include "../Constants.h"
 #include "../Types.h"
+#include "DataUtils.h"
+#include "MathUtils.h"
 
 /*
 SYNOPSIS:

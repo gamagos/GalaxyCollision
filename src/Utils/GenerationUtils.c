@@ -10,7 +10,8 @@
 #include "../Constants.h"
 #include "../Types.h"
 #include "DataUtils.h"
-#include "Mathutils.h"
+#include "PhysicsUtils.h"
+#include "MathUtils.h"
 
 /*
 SYNOPSIS:
@@ -140,7 +141,7 @@ Star32* generateStars32Galaxy(uint32_t amount, BlackHole32 parentBlackHole)
         }
         while (!starExists);
 
-        distanceFromBlackHole = getPointsDistance32(parentBlackHole.position, stars[i].position);
+        distanceFromBlackHole = getPointsDistanceInt32(parentBlackHole.position, stars[i].position);
     }
 
     return stars;
@@ -182,7 +183,10 @@ Star64* generateStars64Galaxy(uint64_t amount, BlackHole64 parentBlackHole)
     }
 
     bool starExists = false;
-    unsigned long distanceFromBlackHole = 0;
+    unsigned long long distanceFromBlackHole = 0;
+    double velocity = 0.0;
+    Vector3Double64 tmpVector = {0};
+    Vector3Double64 velocityInitialDirection = {0};
 
     for (unsigned long long i = 0; i < amount; i++)
     {
@@ -195,7 +199,14 @@ Star64* generateStars64Galaxy(uint64_t amount, BlackHole64 parentBlackHole)
         } 
         while (!starExists);
 
-        distanceFromBlackHole = getPointsDistance64(parentBlackHole.position, stars[i].position);
+        distanceFromBlackHole = getPointsDistanceInt64(parentBlackHole.position, stars[i].position);
+        velocity = getRequiredOrbitVelocity((double)distanceFromBlackHole, parentBlackHole.mass);
+    
+        tmpVector.x = (double)(parentBlackHole.position.x - stars[i].position.x);
+        tmpVector.y = (double)(parentBlackHole.position.y - stars[i].position.y);
+        tmpVector.z = (double)(parentBlackHole.position.z - stars[i].position.z);
+
+        velocityInitialDirection = Vector3Double64CrossProduct(tmpVector, parentBlackHole.rotationAxis);
 
     }
     return stars;

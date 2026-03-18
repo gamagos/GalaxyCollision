@@ -138,6 +138,7 @@
     <ClCompile Include="src\Utils\DebugUtils.c" />
     <ClCompile Include="src\Utils\GenerationUtils.c" />
     <ClCompile Include="src\Utils\MathUtils.c" />
+    <ClCompile Include="src\Utils\PhysicsUtils.c" />
     <ClCompile Include="tests\MainTests.c" />
   </ItemGroup>
   <ItemGroup>
@@ -147,6 +148,7 @@
     <ClInclude Include="src\Types.h" />
     <ClInclude Include="src\Constants.h" />
     <ClInclude Include="src\Utils\MathUtils.h" />
+    <ClInclude Include="src\Utils\PhysicsUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitattributes" />

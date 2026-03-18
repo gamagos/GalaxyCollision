@@ -11,6 +11,7 @@
 
 #include "../Constants.h"
 #include "../Types.h"
+#include "DebugUtils.h"
 
 #ifndef ORIGIN_POINT_VECTOR3_INT32
 #define ORIGIN_POINT_VECTOR3_INT32 (Vector3Int32){0,0,0}
@@ -28,43 +29,6 @@
 #define ORIGIN_POINT_VECTOR3_DOUBLE64 (Vector3Double64){0.0, 0.0, 0.0}
 #endif
 
-/*
-SYNOPSIS:
-	Get's the distance of 2 points as a positive number
-DEPENDECIES:
-	Vector3Int32 struct from Types.h
-ARGS:
-	point1, point2:
-		The points to get the distance from
-RETURNS
-	The distance of the 2 points as a positive long int.
-REMARKS:
-	Looses some precision because math functions use double
-EXAMPLE:
-	Vector3Int32 pointA = {2,1,1}, pointB = {2,2,1};
-	unsigned long distance = getPointsDistance(pointA, pointB);
-	printf("Distance points: %ld", distance); ==> Distance points: 1
-*/
-unsigned long getPointsDistance32(Vector3Int32 point1, Vector3Int32 point2);
-
-/*
-SYNOPSIS:
-	Get's the distance of 2 points as a positive number
-DEPENDECIES:
-	Vector3Int64 struct from Types.h
-ARGS:
-	point1, point2:
-		The points to get the distance from
-RETURNS
-	The distance of the 2 points as a positive long int.
-REMARKS:
-	Looses some precision because math functions use double
-EXAMPLE:
-	Vector3Int64 pointA = {2,1,1}, pointB = {2,2,1};
-	unsigned long distance = getPointsDistance32(pointA, pointB);
-	printf("Distance points: %ld", distance); ==> Distance points: 1
-*/
-unsigned long getPointsDistance64(Vector3Int64 point1, Vector3Int64 point2);
 
 /*
 SYNOPSIS:
@@ -104,6 +68,44 @@ REMARKS:
 	Remember negative numbers don't have roots!
 */
 double nthRoot(long long n, double number);
+
+/*
+SYNOPSIS:
+	Get's the distance of 2 points as a positive number
+DEPENDECIES:
+	Vector3Int32 struct from Types.h
+ARGS:
+	point1, point2:
+		The points to get the distance from
+RETURNS
+	The distance of the 2 points as a positive long int.
+REMARKS:
+	Looses some precision because math functions use double
+EXAMPLE:
+	Vector3Int32 pointA = {2,1,1}, pointB = {2,2,1};
+	unsigned long distance = getPointsDistanceInt32(pointA, pointB);
+	printf("Distance points: %ld", distance); ==> Distance points: 1
+*/
+unsigned long getPointsDistanceInt32(Vector3Int32 point1, Vector3Int32 point2);
+
+/*
+SYNOPSIS:
+	Get's the distance of 2 points as a positive number
+DEPENDECIES:
+	Vector3Int64 struct from Types.h
+ARGS:
+	point1, point2:
+		The points to get the distance from
+RETURNS
+	The distance of the 2 points as a positive long int.
+REMARKS:
+	Looses some precision because math functions use double
+EXAMPLE:
+	Vector3Int64 pointA = {2,1,1}, pointB = {2,2,1};
+	unsigned long distance = getPointsDistance32(pointA, pointB);
+	printf("Distance points: %ld", distance); ==> Distance points: 1
+*/
+unsigned long long getPointsDistanceInt64(Vector3Int64 point1, Vector3Int64 point2);
 
 /*
 SYNOPSIS:
@@ -215,7 +217,7 @@ EXAMPLE:
 	Vector3Float32 myVector = {1.0f, 2.0f, 2.0f};
 	myVector = normalizeVector32(myVector); ==> {0.5f, 1.0f, 1.0f}
 */
-static Vector3Float32 normalizeVector3Float32(Vector3Float32 vector);
+Vector3Float32 normalizeVector3Float32(Vector3Float32 vector);
 
 /*
 SYNOPSIS:
@@ -235,7 +237,7 @@ EXAMPLE:
 	Vector3Double64 myVector = {1.0, 2.0, 0.5};
 	myVector = normalizeVector32(myVector); ==> {0.5, 1.0, 0.25}
 */
-static Vector3Double64 normalizeVector3Double64(Vector3Double64 vector);
+Vector3Double64 normalizeVector3Double64(Vector3Double64 vector);
 
 /*
 SYNOPSIS:
@@ -258,7 +260,7 @@ EXAMPLE:
 	Vector3Float32 direction = {0.0f, 1.0f, 0.0f};
 	myVector = allignVectorWithTargetVector32(myVector, targetVector); ==> {0, sqrt(6), 0}
 */
-static Vector3Int32 allignVectorWithTargetVector32
+Vector3Int32 allignVectorWithTargetVector32
 (
 	Vector3Int32 vector,
 	Vector3Float32 targetVector // targetVector already as Vector3Float32 so that input can already be normalized
@@ -285,10 +287,86 @@ EXAMPLE:
 	Vector3Double64 direction = {0.0, 1.0, 0.0};
 	myVector = allignVectorWithTargetVector64(myVector, targetVector); ==> {0, sqrt(6), 0}
 */
-static Vector3Int64 allignVectorWithTargetVector64
+Vector3Int64 allignVectorWithTargetVector64
 (
 	Vector3Int64 vector,
-	Vector3Double64 targetVector // targetVector already as Vector3Float32 so that input can already be normalized
+	Vector3Double64 targetVector // targetVector already as Vector3Double64 so that input can already be normalized
 );
+
+/*
+SYNOPSIS:
+	Creates a vector with a given magnitude in a given direction
+DESCRIPTION:
+	Takes a target vector, get's its direction and then creates a new vector
+	in th direction of the target vector, with the specified magnitude
+DEPENDENCIES:
+	Vector3Float32 from Types.h
+ARGS:
+	targetDirection:
+		A vector that points in the same direction the new vector is supposed to point
+	magnitude:
+		The magnitude/length the new vector is supposed to have
+RETURNS:
+	A new Vector that points the same direction as targetDirection and is as long as magnitude
+EXAMPLE:
+	Vecto3Float32 direction = {0.0f, 1.0f, 1.5f};
+	float magnitude = 10;
+	Vector3Float32 newVector = createVectorFromTargetDirectionAndMagnitude_Float32(direction, magnitude);
+*/
+Vector3Float32 createVectorFromTargetDirectionAndMagnitude_Float32(Vector3Float32 targetDirection, float magnitude);
+
+/*
+SYNOPSIS:
+	Creates a vector with a given magnitude in a given direction
+DESCRIPTION:
+	Takes a target vector, get's its direction and then creates a new vector
+	in th direction of the target vector, with the specified magnitude
+DEPENDENCIES:
+	Vector3Float32 from Types.h
+ARGS:
+	targetDirection:
+		A vector that points in the same direction the new vector is supposed to point
+	magnitude:
+		The magnitude/length the new vector is supposed to have
+RETURNS:
+	A new Vector that points the same direction as targetDirection and is as long as magnitude
+EXAMPLE:
+	Vecto3Double64 direction = {0.0, 1.0, 1.5};
+	double magnitude = 10;
+	Vector3Double64 newVector = createVectorFromTargetDirectionAndMagnitude_Float32(direction, magnitude);
+*/
+Vector3Double64 createVectorFromTargetDirectionAndMagnitude_Double64(Vector3Double64 targetDirection, double magnitude);
+
+/*
+SYNOPSIS:
+	Calculates the cross product of 2 Vector3s in a 3d coordinate system
+DEPENDENCIES:
+	Vector3Float32 from Types.h
+ARGS:
+	vectorA, vectorB:
+		The 2 vectors to get the cross product for
+RETURNS:
+	The cross product of vectorA and vectorB
+EXAMPLE:
+	Vector3Float32 a = {1, 2, 3,}, b = {3, 2, 1};
+	Vector3Float32 crossProduct = Vector3Float32CrossProduct(a, b); ==> {-4, 8, -4}
+*/
+Vector3Float32 Vector3Float32CrossProduct(Vector3Float32 vectorA, Vector3Float32 vectorB);
+
+/*
+SYNOPSIS:
+	Calculates the cross product of 2 Vector3s in a 3d coordinate system
+DEPENDENCIES:
+	Vector3Double64 from Types.h
+ARGS:
+	vectorA, vectorB:
+		The 2 vectors to get the cross product for
+RETURNS:
+	The cross product of vectorA and vectorB
+EXAMPLE:
+	Vector3Double64 a = {1, 2, 3,}, b = {3, 2, 1};
+	Vector3Double64 crossProduct = Vector3Double64CrossProduct(a, b); ==> {-4, 8, -4}
+*/
+Vector3Double64 Vector3Double64CrossProduct(Vector3Double64 vectorA, Vector3Double64 vectorB);
 
 #endif

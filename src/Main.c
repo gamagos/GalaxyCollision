@@ -92,6 +92,7 @@ int main(int argc, char **argv)
 
 //TODO add Vulkan License
 //TODO add GPLv3 License
+//TODO make functions actually use units!
 
 //! Note to self, make as many calculations as possible via vulkan and let raylib only handle
 //! presentation so we don't have to deal with platform specific GUIs
@@ -105,6 +106,8 @@ GOALS
     - Make it optimized
     - Make it really pretty
     - Make it cluster computing
+    - Make super clear docs so anyone can read code
+    - Make yt video?
 */
 
 //* Space is so cool

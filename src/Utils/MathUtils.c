@@ -23,7 +23,7 @@ EXAMPLE:
 double a = -2;
 a = myAbs(a); ==> 2
 */
-static double myAbs(double number)
+double myAbs(double number)
 {
 	number = sqrt(number * number);
 	return number;
@@ -148,10 +148,10 @@ REMARKS:
 	Looses some precision because math functions use double
 EXAMPLE:
 	Vector3Int32 pointA = {2,1,1}, pointB = {2,2,1};
-	unsigned long distance = getPointsDistance32(pointA, pointB);
+	unsigned long distance = getPointsDistanceInt32(pointA, pointB);
 	printf("Distance points: %ld", distance); ==> Distance points: 1
 */
-unsigned long getPointsDistance32(Vector3Int32 point1, Vector3Int32 point2)
+unsigned long getPointsDistanceInt32(Vector3Int32 point1, Vector3Int32 point2)
 {
 	unsigned long distance = 0;
 	double dx = point1.x - point2.x;
@@ -178,13 +178,14 @@ EXAMPLE:
 	unsigned long distance = getPointsDistance64(pointA, pointB);
 	printf("Distance points: %ld", distance); ==> Distance points: 1
 */
-unsigned long getPointsDistance64(Vector3Int64 point1, Vector3Int64 point2)
+unsigned long long getPointsDistanceInt64(Vector3Int64 point1, Vector3Int64 point2)
 {
-	unsigned long distance = 0;
+	unsigned long long distance = 0;
 	double dx = (double)(point1.x - point2.x);
 	double dy = (double)(point1.y - point2.y);
 	double dz = (double)(point1.y - point2.y);
-	distance = (unsigned long)sqrt(dx * dx + dy * dy + dz * dz);
+	distance = (unsigned long long)sqrt(dx * dx + dy * dy + dz * dz);
+
 	return distance;
 }
 
@@ -296,7 +297,7 @@ EXAMPLE:
 	Vector3Float32 myVector = {1.0f, 2.0f, 2.0f};
 	myVector = normalizeVector32(myVector); ==> {0.5f, 1.0f, 1.0f}
 */
-static Vector3Float32 normalizeVector3Float32(Vector3Float32 vector)
+Vector3Float32 normalizeVector3Float32(Vector3Float32 vector)
 {
 	float vectorSumComponentsAbsolute = 0;
 
@@ -329,7 +330,7 @@ EXAMPLE:
 	Vector3Double64 myVector = {1.0, 2.0, 0.5};
 	myVector = normalizeVector32(myVector); ==> {0.5, 1.0, 0.25}
 */
-static Vector3Double64 normalizeVector3Double64(Vector3Double64 vector)
+Vector3Double64 normalizeVector3Double64(Vector3Double64 vector)
 {
 	double vectorLargestComponentAbsolute = 0;
 
@@ -365,7 +366,7 @@ EXAMPLE:
 	Vector3Float32 direction = {0.0f, 1.0f, 0.0f};
 	myVector = allignVectorWithTargetVector32(myVector, targetVector); ==> {0, sqrt(6), 0}
 */
-static Vector3Int32 allignVectorWithTargetVector32
+Vector3Int32 allignVectorWithTargetVector32
 (
 	Vector3Int32 vector, 
 	Vector3Float32 targetVector // targetVector already as Vector3Float32 so that input can already be normalized
@@ -375,7 +376,7 @@ static Vector3Int32 allignVectorWithTargetVector32
 	targetVectorDirectionNormalized = normalizeVector3Float32(targetVector); // Target vector should already be normalized but normalize it anyway just in case
 
 	float vectorMagnitude = 0.0f;
-	vectorMagnitude = (float)getPointsDistance32(ORIGIN_POINT_VECTOR3_INT32, vector);
+	vectorMagnitude = (float)getPointsDistanceInt32(ORIGIN_POINT_VECTOR3_INT32, vector);
 	
 	Vector3Int32 resultVector = {0};
 	resultVector.x = (int32_t)(targetVectorDirectionNormalized.x * vectorMagnitude);
@@ -406,17 +407,17 @@ EXAMPLE:
 	Vector3Double64 direction = {0.0, 1.0, 0.0};
 	myVector = allignVectorWithTargetVector64(myVector, targetVector); ==> {0, sqrt(6), 0}
 */
-static Vector3Int64 allignVectorWithTargetVector64
+Vector3Int64 allignVectorWithTargetVector64
 (
 	Vector3Int64 vector,
-	Vector3Double64 targetVector // targetVector already as Vector3Float32 so that input can already be normalized
+	Vector3Double64 targetVector // targetVector already as Vector3Double64 so that input can already be normalized
 )
 {
 	Vector3Double64 targetVectorDirectionNormalized = { 0 };
 	targetVectorDirectionNormalized = normalizeVector3Double64(targetVector); // Target vector should already be normalized but normalize it anyway just in case
 
 	double vectorMagnitude = 0.0;
-	vectorMagnitude = (double)getPointsDistance64(ORIGIN_POINT_VECTOR3_INT64, vector);
+	vectorMagnitude = (double)getPointsDistanceInt64(ORIGIN_POINT_VECTOR3_INT64, vector);
 
 	Vector3Int64 resultVector = { 0 };
 	resultVector.x = (int64_t)(targetVectorDirectionNormalized.x * vectorMagnitude);
@@ -424,4 +425,168 @@ static Vector3Int64 allignVectorWithTargetVector64
 	resultVector.z = (int64_t)(targetVectorDirectionNormalized.z * vectorMagnitude);
 
 	return resultVector;
+}
+
+/*
+SYNOPSIS:
+	Creates a vector with a given magnitude in a given direction
+DESCRIPTION:
+	Takes a target vector, get's its direction and then creates a new vector
+	in th direction of the target vector, with the specified magnitude
+DEPENDENCIES:
+	Vector3Float32 from Types.h
+ARGS:
+	targetDirection:
+		A vector that points in the same direction the new vector is supposed to point
+	magnitude:
+		The magnitude/length the new vector is supposed to have
+RETURNS:
+	A new Vector that points the same direction as targetDirection and is as long as magnitude
+EXAMPLE:
+	Vecto3Float32 direction = {0.0f, 1.0f, 1.5f};
+	float magnitude = 10;
+	Vector3Float32 newVector = createVectorFromTargetDirectionAndMagnitude_Float32(direction, magnitude);
+*/
+Vector3Float32 createVectorFromTargetDirectionAndMagnitude_Float32(Vector3Float32 targetDirection, float magnitude)
+{
+	Vector3Float32 result = {0};
+	targetDirection = normalizeVector3Float32(targetDirection);
+
+	result.x = targetDirection.x * magnitude;
+	result.y = targetDirection.y * magnitude;
+	result.z = targetDirection.z * magnitude;
+
+	return result;
+}
+
+/*
+SYNOPSIS:
+	Creates a vector with a given magnitude in a given direction
+DESCRIPTION:
+	Takes a target vector, get's its direction and then creates a new vector
+	in th direction of the target vector, with the specified magnitude
+DEPENDENCIES:
+	Vector3Float32 from Types.h
+ARGS:
+	targetDirection:
+		A vector that points in the same direction the new vector is supposed to point
+	magnitude:
+		The magnitude/length the new vector is supposed to have
+RETURNS:
+	A new Vector that points the same direction as targetDirection and is as long as magnitude
+EXAMPLE:
+	Vecto3Double64 direction = {0.0, 1.0, 1.5};
+	double magnitude = 10;
+	Vector3Double64 newVector = createVectorFromTargetDirectionAndMagnitude_Float32(direction, magnitude);
+*/
+Vector3Double64 createVectorFromTargetDirectionAndMagnitude_Double64(Vector3Double64 targetDirection, double magnitude)
+{
+	Vector3Double64 result = { 0 };
+	targetDirection = normalizeVector3Double64(targetDirection);
+
+	result.x = targetDirection.x * magnitude;
+	result.y = targetDirection.y * magnitude;
+	result.z = targetDirection.z * magnitude;
+
+	return result;
+}
+
+/*
+SYNOPSIS:
+	Calculates the cross product of 2 Vector3s in a 3d coordinate system
+DEPENDENCIES:
+	Vector3Int32 from Types.h
+ARGS:
+	vectorA, vectorB:
+		The 2 vectors to get the cross product for
+RETURNS:
+	The cross product of vectorA and vectorB
+EXAMPLE:
+	Vector3Int32 a = {1, 2, 3,}, b = {3, 2, 1};
+	Vector3Int32 crossProduct = Vector3Int32CrossProduct(a, b); ==> {-4, 8, -4}
+*/
+Vector3Int32 Vector3Int32CrossProduct(Vector3Int32 vectorA, Vector3Int32 vectorB)
+{
+	Vector3Int32 result = {0};
+	
+	result.x = (vectorA.y * vectorB.z - vectorA.z * vectorB.y);
+	result.y = (vectorA.z * vectorB.x - vectorA.x * vectorB.z);
+	result.z = (vectorA.x * vectorB.y - vectorA.y * vectorB.x);
+
+	return result;
+}
+
+/*
+SYNOPSIS:
+	Calculates the cross product of 2 Vector3s in a 3d coordinate system
+DEPENDENCIES:
+	Vector3Int64 from Types.h
+ARGS:
+	vectorA, vectorB:
+		The 2 vectors to get the cross product for
+RETURNS:
+	The cross product of vectorA and vectorB
+EXAMPLE:
+	Vector3Int64 a = {1, 2, 3,}, b = {3, 2, 1};
+	Vector3Int64 crossProduct = Vector3Int64CrossProduct(a, b); ==> {-4, 8, -4}
+*/
+Vector3Int64 Vector3Int64CrossProduct(Vector3Int64 vectorA, Vector3Int64 vectorB)
+{
+	Vector3Int64 result = { 0 };
+
+	result.x = (vectorA.y * vectorB.z - vectorA.z * vectorB.y);
+	result.y = (vectorA.z * vectorB.x - vectorA.x * vectorB.z);
+	result.z = (vectorA.x * vectorB.y - vectorA.y * vectorB.x);
+
+	return result;
+}
+
+/*
+SYNOPSIS:
+	Calculates the cross product of 2 Vector3s in a 3d coordinate system
+DEPENDENCIES:
+	Vector3Float32 from Types.h
+ARGS:
+	vectorA, vectorB:
+		The 2 vectors to get the cross product for
+RETURNS:
+	The cross product of vectorA and vectorB
+EXAMPLE:
+	Vector3Float32 a = {1, 2, 3,}, b = {3, 2, 1};
+	Vector3Float32 crossProduct = Vector3Float32CrossProduct(a, b); ==> {-4, 8, -4}
+*/
+Vector3Float32 Vector3Float32CrossProduct(Vector3Float32 vectorA, Vector3Float32 vectorB)
+{
+	Vector3Float32 result = { 0 };
+
+	result.x = (vectorA.y * vectorB.z - vectorA.z * vectorB.y);
+	result.y = (vectorA.z * vectorB.x - vectorA.x * vectorB.z);
+	result.z = (vectorA.x * vectorB.y - vectorA.y * vectorB.x);
+
+	return result;
+}
+
+/*
+SYNOPSIS:
+	Calculates the cross product of 2 Vector3s in a 3d coordinate system
+DEPENDENCIES:
+	Vector3Double64 from Types.h
+ARGS:
+	vectorA, vectorB:
+		The 2 vectors to get the cross product for
+RETURNS:
+	The cross product of vectorA and vectorB
+EXAMPLE:
+	Vector3Double64 a = {1, 2, 3,}, b = {3, 2, 1};
+	Vector3Double64 crossProduct = Vector3Double64CrossProduct(a, b); ==> {-4, 8, -4}
+*/
+Vector3Double64 Vector3Double64CrossProduct(Vector3Double64 vectorA, Vector3Double64 vectorB)
+{
+	Vector3Double64 result = { 0 };
+
+	result.x = (vectorA.y * vectorB.z - vectorA.z * vectorB.y);
+	result.y = (vectorA.z * vectorB.x - vectorA.x * vectorB.z);
+	result.z = (vectorA.x * vectorB.y - vectorA.y * vectorB.x);
+
+	return result;
 }
