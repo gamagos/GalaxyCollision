@@ -11,22 +11,21 @@
 
 #include "../Constants.h"
 #include "../Types.h"
-#include "DebugUtils.h"
 
 #ifndef ORIGIN_POINT_VECTOR3_INT32
-#define ORIGIN_POINT_VECTOR3_INT32 (Vector3Int32){0,0,0}
+#define ORIGIN_POINT_VECTOR3_INT32 (Vector3_Int32){0,0,0}
 #endif
 
 #ifndef ORIGIN_POINT_VECTOR3_INT64
-#define ORIGIN_POINT_VECTOR3_INT64 (Vector3Int64){0,0,0}
+#define ORIGIN_POINT_VECTOR3_INT64 (Vector3_Int64){0,0,0}
 #endif
 
 #ifndef ORIGIN_POINT_VECTOR3_FLOAT32
-#define ORIGIN_POINT_VECTOR3_FLOAT32 (Vector3Float32){0.0f, 0.0f, 0.0f}
+#define ORIGIN_POINT_VECTOR3_FLOAT32 (Vector3_Float32){0.0f, 0.0f, 0.0f}
 #endif
 
 #ifndef ORIGIN_POINT_VECTOR3_DOUBLE64
-#define ORIGIN_POINT_VECTOR3_DOUBLE64 (Vector3Double64){0.0, 0.0, 0.0}
+#define ORIGIN_POINT_VECTOR3_DOUBLE64 (Vector3_Double64){0.0, 0.0, 0.0}
 #endif
 
 
@@ -72,8 +71,6 @@ double nthRoot(long long n, double number);
 /*
 SYNOPSIS:
 	Get's the distance of 2 points as a positive number
-DEPENDECIES:
-	Vector3Int32 struct from Types.h
 ARGS:
 	point1, point2:
 		The points to get the distance from
@@ -86,13 +83,11 @@ EXAMPLE:
 	unsigned long distance = getPointsDistanceInt32(pointA, pointB);
 	printf("Distance points: %ld", distance); ==> Distance points: 1
 */
-unsigned long getPointsDistanceInt32(Vector3Int32 point1, Vector3Int32 point2);
+unsigned long getPointsDistanceInt32(Vector3_Int32 point1, Vector3_Int32 point2);
 
 /*
 SYNOPSIS:
 	Get's the distance of 2 points as a positive number
-DEPENDECIES:
-	Vector3Int64 struct from Types.h
 ARGS:
 	point1, point2:
 		The points to get the distance from
@@ -105,7 +100,7 @@ EXAMPLE:
 	unsigned long distance = getPointsDistance32(pointA, pointB);
 	printf("Distance points: %ld", distance); ==> Distance points: 1
 */
-unsigned long long getPointsDistanceInt64(Vector3Int64 point1, Vector3Int64 point2);
+unsigned long long getPointsDistanceInt64(Vector3_Int64 point1, Vector3_Int64 point2);
 
 /*
 SYNOPSIS:
@@ -125,19 +120,17 @@ REMARKS:
 EXAMPLE:
 	bool doesMyNumberExist = mapNumberExistanceProbabilityExponential(2994, 0);
 */
-bool mapNumberExistenceProbabilityExponential(long long number, long long threshold100Percent);
+bool mapNumberExistenceProbabilityExponential(unsigned long long number, unsigned long long threshold100Percent);
 
 /*
 SYNOPSIS:
 	Maps the existence probability of a point to e(-x) for each coordinate
-	normalized for some value minX/Y/Z that represent the value that is used for 100% probability.
+	normalized for some value thresholdX/Y/Z that represent the value that is used for 100% probability.
 	And then returns the wether the point exists or not as a bool, the closer the points is to the origin the
 	more likely it is to exist.
 DESCRIPTION:
-	The function does this by mapping each probability of the points coordinate to e(-x) normalized for maxX/Y/Z
+	The function does this by mapping each probability of the points coordinate to e(-x) normalized for thresholdX/Y/Z
 	to be 100%, if all points return true on their existence the function returns true.
-DEPENDENCIES:
-	VectorInt32 struct from Types.h
 ARGS:
 	point:
 		The point to be mapped for
@@ -157,7 +150,7 @@ EXAMPLE:
 */
 bool mapPointExistenceProbabilityExponential32
 (
-	Vector3Int32 point,
+	Vector3_Int32 point,
 	long thresholdX,
 	long thresholdY,
 	long thresholdZ
@@ -166,14 +159,12 @@ bool mapPointExistenceProbabilityExponential32
 /*
 SYNOPSIS:
 	Maps the existence probability of a point to e(-x) for each coordinate
-	normalized for some value minX/Y/Z that represent the value that is used for 100% probability.
+	normalized for some value thresholdX/Y/Z that represent the value that is used for 100% probability.
 	And then returns the wether the point exists or not as a bool, the closer the points is to the origin the
 	more likely it is to exist.
 DESCRIPTION:
-	The function does this by mapping each probability of the points coordinate to e(-x) normalized for maxX/Y/Z
+	The function does this by mapping each probability of the points coordinate to e(-x) normalized for thresholdX/Y/Z
 	to be 100%, if all points return true on their existence the function returns true.
-DEPENDENCIES:
-	VectorInt64 struct from Types.h
 ARGS:
 	point:
 		The point to be mapped for
@@ -193,7 +184,7 @@ EXAMPLE:
 */
 bool mapPointExistenceProbabilityExponential64
 (
-	Vector3Int64 point,
+	Vector3_Int64 point,
 	long long thresholdX,
 	long long thresholdY,
 	long long thresholdZ
@@ -206,8 +197,6 @@ DESCRIPTION:
 	Normalizes a vector's components for 1 by
 	getting the ratios for all components to the largest components
 	in %
-DEPENDENCIES:
-	Vector3Float32 from Types.h
 ARGS:
 	vector:
 		The vector to be normalized
@@ -217,7 +206,7 @@ EXAMPLE:
 	Vector3Float32 myVector = {1.0f, 2.0f, 2.0f};
 	myVector = normalizeVector32(myVector); ==> {0.5f, 1.0f, 1.0f}
 */
-Vector3Float32 normalizeVector3Float32(Vector3Float32 vector);
+Vector3_Float32 normalizeVector3Float32(Vector3_Float32 vector);
 
 /*
 SYNOPSIS:
@@ -226,8 +215,6 @@ DESCRIPTION:
 	Normalizes a vector's components for 1 by
 	getting the ratios for all components to the largest components
 	in %
-DEPENDENCIES:
-	Vector3Double64 from Types.h
 ARGS:
 	vector:
 		The vector to be normalized
@@ -237,13 +224,11 @@ EXAMPLE:
 	Vector3Double64 myVector = {1.0, 2.0, 0.5};
 	myVector = normalizeVector32(myVector); ==> {0.5, 1.0, 0.25}
 */
-Vector3Double64 normalizeVector3Double64(Vector3Double64 vector);
+Vector3_Double64 normalizeVector3Double64(Vector3_Double64 vector);
 
 /*
 SYNOPSIS:
 	Aligns a vector with the direction of a target vector while keeping it's amplitude
-DEPENDENCIES:
-	Vector3Int32 and Vector3Float32 from Types.h
 ARGS:
 	vector:
 		The vector that is to be aligned
@@ -260,17 +245,15 @@ EXAMPLE:
 	Vector3Float32 direction = {0.0f, 1.0f, 0.0f};
 	myVector = allignVectorWithTargetVector32(myVector, targetVector); ==> {0, sqrt(6), 0}
 */
-Vector3Int32 allignVectorWithTargetVector32
+Vector3_Int32 allignVectorWithTargetVector32
 (
-	Vector3Int32 vector,
-	Vector3Float32 targetVector // targetVector already as Vector3Float32 so that input can already be normalized
+	Vector3_Int32 vector,
+	Vector3_Float32 targetVector // targetVector already as Vector3Float32 so that input can already be normalized
 );
 
 /*
 SYNOPSIS:
 	Aligns a vector with the direction of a target vector while keeping it's amplitude
-DEPENDENCIES:
-	Vector3Int64 and Vector3Double64 from Types.h
 ARGS:
 	vector:
 		The vector that is to be aligned
@@ -287,10 +270,10 @@ EXAMPLE:
 	Vector3Double64 direction = {0.0, 1.0, 0.0};
 	myVector = allignVectorWithTargetVector64(myVector, targetVector); ==> {0, sqrt(6), 0}
 */
-Vector3Int64 allignVectorWithTargetVector64
+Vector3_Int64 allignVectorWithTargetVector64
 (
-	Vector3Int64 vector,
-	Vector3Double64 targetVector // targetVector already as Vector3Double64 so that input can already be normalized
+	Vector3_Int64 vector,
+	Vector3_Double64 targetVector // targetVector already as Vector3Double64 so that input can already be normalized
 );
 
 /*
@@ -299,8 +282,6 @@ SYNOPSIS:
 DESCRIPTION:
 	Takes a target vector, get's its direction and then creates a new vector
 	in th direction of the target vector, with the specified magnitude
-DEPENDENCIES:
-	Vector3Float32 from Types.h
 ARGS:
 	targetDirection:
 		A vector that points in the same direction the new vector is supposed to point
@@ -313,7 +294,7 @@ EXAMPLE:
 	float magnitude = 10;
 	Vector3Float32 newVector = createVectorFromTargetDirectionAndMagnitude_Float32(direction, magnitude);
 */
-Vector3Float32 createVectorFromTargetDirectionAndMagnitude_Float32(Vector3Float32 targetDirection, float magnitude);
+Vector3_Float32 createVectorFromTargetDirectionAndMagnitude_Float32(Vector3_Float32 targetDirection, float magnitude);
 
 /*
 SYNOPSIS:
@@ -321,8 +302,6 @@ SYNOPSIS:
 DESCRIPTION:
 	Takes a target vector, get's its direction and then creates a new vector
 	in th direction of the target vector, with the specified magnitude
-DEPENDENCIES:
-	Vector3Float32 from Types.h
 ARGS:
 	targetDirection:
 		A vector that points in the same direction the new vector is supposed to point
@@ -335,13 +314,11 @@ EXAMPLE:
 	double magnitude = 10;
 	Vector3Double64 newVector = createVectorFromTargetDirectionAndMagnitude_Float32(direction, magnitude);
 */
-Vector3Double64 createVectorFromTargetDirectionAndMagnitude_Double64(Vector3Double64 targetDirection, double magnitude);
+Vector3_Double64 createVectorFromTargetDirectionAndMagnitude_Double64(Vector3_Double64 targetDirection, double magnitude);
 
 /*
 SYNOPSIS:
 	Calculates the cross product of 2 Vector3s in a 3d coordinate system
-DEPENDENCIES:
-	Vector3Float32 from Types.h
 ARGS:
 	vectorA, vectorB:
 		The 2 vectors to get the cross product for
@@ -351,13 +328,11 @@ EXAMPLE:
 	Vector3Float32 a = {1, 2, 3,}, b = {3, 2, 1};
 	Vector3Float32 crossProduct = Vector3Float32CrossProduct(a, b); ==> {-4, 8, -4}
 */
-Vector3Float32 Vector3Float32CrossProduct(Vector3Float32 vectorA, Vector3Float32 vectorB);
+Vector3_Float32 Vector3Float32CrossProduct(Vector3_Float32 vectorA, Vector3_Float32 vectorB);
 
 /*
 SYNOPSIS:
 	Calculates the cross product of 2 Vector3s in a 3d coordinate system
-DEPENDENCIES:
-	Vector3Double64 from Types.h
 ARGS:
 	vectorA, vectorB:
 		The 2 vectors to get the cross product for
@@ -367,6 +342,6 @@ EXAMPLE:
 	Vector3Double64 a = {1, 2, 3,}, b = {3, 2, 1};
 	Vector3Double64 crossProduct = Vector3Double64CrossProduct(a, b); ==> {-4, 8, -4}
 */
-Vector3Double64 Vector3Double64CrossProduct(Vector3Double64 vectorA, Vector3Double64 vectorB);
+Vector3_Double64 Vector3Double64CrossProduct(Vector3_Double64 vectorA, Vector3_Double64 vectorB);
 
 #endif
