@@ -1,7 +1,0 @@
-<Solution>
-  <Configurations>
-    <Platform Name="x64" />
-    <Platform Name="x86" />
-  </Configurations>
-  <Project Path="GalaxyCollision.vcxproj" Id="53ba2e1b-f700-441a-bc3e-c3acf30ed732" />
-</Solution>

@@ -1,4 +1,6 @@
-// (C) Sebastian Fiault 2026
+#ifndef DATA_UTILS_H
+#define DATA_UTILS_H
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -34,28 +36,7 @@ REMARKS:
 EXAMPLE:
 
 */
-unsigned long long buildWideIntFromNarrowInts(void* narrowInts, size_t intSize, unsigned long long intCount)
-{
-    if (intCount * intSize > 8)
-    {
-        fprintf(stderr,
-            "%s %s maximum allowed size for narrowInts is 8 bytes \t buildWideIntFromNarrowInts int GeneratorUtils.c",
-            FATAL_TAG,
-            ERROR_TAG);
-        exit(EXIT_FAILURE);
-    }
-
-    unsigned long long result = 0;
-    for (unsigned long long i = 0; i < intCount; i++)
-    {
-        unsigned long long value = 0;
-        unsigned long long readOffset = (intSize * i);
-        memcpy(&value, (char*)narrowInts + readOffset, intSize);
-        result = result | value << (i * intSize);
-    }
-    return result;
-}
-
+unsigned long long buildWideIntFromNarrowInts(void* narrowInts, size_t intSize, unsigned long long intCount);
 
 /*
 SYNOPSIS:
@@ -81,48 +62,7 @@ EXAMPLE:
     long long int randomNumber = wideRandint(8); ==> 7435984
     int16_t randomNumberSmol = (int16_t)wideRandint(2); ==> -12089
 */
-unsigned long long wideRandint(short int size)
-{
-    if (8 % sizeof(int) != 0)
-    {
-        fprintf(stderr,
-            "%s %s Cannot fit ints of size %d in 8 byte unsigned long long. \t wideRandint() in GenerationUtils.c",
-            FATAL_TAG,
-            ERROR_TAG,
-            size);
-        exit(EXIT_FAILURE);
-    }
-
-    srand((unsigned int)time(NULL));
-
-    short unsigned int amountInts = 8 / sizeof(int);
-    int* intArray = calloc(amountInts, sizeof(int));
-
-    if (intArray == NULL)
-    {
-        fprintf(stderr,
-            "%s %s Failed to allocate memory for intArray \t in wideRanint() in GeneratorUtils.c",
-            FATAL_TAG,
-            ERROR_TAG);
-        exit(EXIT_FAILURE);
-    }
-
-    for (short unsigned int i = 0; i < amountInts; i++)
-    {
-        intArray[i] = rand();
-    }
-
-    unsigned long long result = buildWideIntFromNarrowInts(intArray, sizeof(int), amountInts);
-    free(intArray);
-
-    if (size < 8) // skip size mapping if size is 8 bytes because unsigned long long is already 8 bytes
-    {
-        result = result % (1ULL << (size * 8)); // Match result to number max number range if not already mapped
-    }
-
-    return result;
-}
-
+unsigned long long wideRandint(short int size);
 
 /*
 SYNOPSIS:
@@ -138,20 +78,7 @@ RETURNS:
 EXAMPLE:
     int32_t myRandInt = randint32(500);
 */
-int32_t randint32(int32_t max)
-{
-    if (max == 0)
-    {
-        fprintf(stderr,
-            "%s %s max can't be 0 \t randint32 in GeneratorUtils.c",
-            FATAL_TAG,
-            ERROR_TAG);
-        exit(EXIT_FAILURE);
-    }
-    int32_t result = (int32_t)wideRandint(sizeof(int32_t));
-    return result % max;
-}
-
+int32_t randint32(int32_t max);
 
 /*
 SYNOPSIS:
@@ -167,16 +94,40 @@ RETURNS:
 EXAMPLE:
     int64_t myRandInt = randint64(9040);
 */
-int64_t randint64(int64_t max)
-{
-    if (max == 0)
-    {
-        fprintf(stderr,
-            "%s %s max can't be 0 \t randint32 in GeneratorUtils.c",
-            FATAL_TAG,
-            ERROR_TAG);
-        exit(EXIT_FAILURE);
-    }
-    int32_t result = (int32_t)wideRandint(sizeof(int32_t));
-    return result % max;
-}
+int64_t randint64(int64_t max);
+
+/*
+SYNOPSIS:
+    Casts a Vector3Int32 struct to a Vector3Float32 struct
+DESCRIPTION:
+    Casts all individual components of a Vector3Int32 struct to floats,
+    then builds a Vector3Float32 struct from them and returns the new Vector3Float32 struct
+ARGS:
+    vectorToConvet:
+        The vector to convert
+RETURNS:
+    The provided Vector3Int32 struct with it's components cast to float, creating a Vector3Float32 struct
+EXAMPLE:
+    Vector3Int32 myVector = {1,3,4};
+    Vector3Float32 = Vector3Int32_To_Vector3Float32(myVector); ==> {1.0f, 3.0f, 4.0f}
+*/
+Vector3_Float32 Vector3Int32_To_Vector3Float32(Vector3_Int32 vectorToConvert);
+
+/*
+SYNOPSIS:
+    Casts a Vector3Int64 struct to a Vector3Double64 struct
+DESCRIPTION:
+    Casts all individual components of a Vector3Int64 struct to doubles,
+    then builds a Vector3Double64 struct from them and returns the new Vector3Float32 struct
+ARGS:
+    vectorToConvet:
+        The vector to convert
+RETURNS:
+    The provided Vector3Int64 struct with it's components cast to doubles, creating a Vector3Double64 struct
+EXAMPLE:
+    Vector3Int64 myVector = {1,3,4};
+    Vector3Double64 = Vector3Int64_To_Vector3Double64(myVector); ==> {1.0, 3.0, 4.0}
+*/
+Vector3_Double64 Vector3Int64_To_Vector3Double64(Vector3_Int64 vectorToConvert);
+
+#endif

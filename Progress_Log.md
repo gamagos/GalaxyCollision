@@ -35,3 +35,27 @@ Learned how to handle int out of bounds errors
 Learned more about the heap and malloc, calloc, realloc and free
 Learned more about using pointers
 Made position generation logic halfway finished
+
+## 4.01
+
+- Figured out orbital calculation math
+
+## 4.02 - ~4.9
+
+- Learned about math of 3d engines
+- Thought out 3d engine
+
+## ~4.10 - 4.17
+
+- Learned how to use cmake basics
+- Refactored project to use cmake
+
+## 4.18
+
+- Created portable install of cmake, gcc and ninja to be able to work on school PC
+- Wrote PowerShell build script to be able to build source with portable
+
+## 4.19
+
+- Verified CMake migration success
+- Modified space object struct's positional storing to have more precision (main rough coordinate system + small granular coordinate system)
