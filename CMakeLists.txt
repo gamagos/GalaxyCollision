@@ -6,7 +6,17 @@ project (GalaxyCollision VERSION 0.0 LANGUAGES C)
 
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_EXE_LINKER_FLAGS "-static")
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")  # MSVC's multithreaded flag weirdly enough also makes things link statically, which we need
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
+# Custom CMake variables for building this project
+set(CGLM_INCLUDE_DIRECTORY "${CMAKE_SOURCE_DIR}/Main/Libraries/cglm-0.9.6/include/")
+set(GLAD_INCLUDE_DIRECTORY "${CMAKE_SOURCE_DIR}/Main/Libraries/glad/include/")
+set(GLFW_INCLUDE_DIRECTORY "${CMAKE_SOURCE_DIR}/Main/Libraries/glfw-3.4/include/")
+set(STBI_IMAGE_INCLUDE_DIRECTORY "${CMAKE_SOURCE_DIR}/Main/Include/stb_image/")
+
+# Add non build files to build dir
+file(COPY "${CMAKE_SOURCE_DIR}/Main/Resources/" DESTINATION "${CMAKE_BINARY_DIR}/Main/Resources")
 
 add_subdirectory("Main")
 #add_subdirectory("Tests")
