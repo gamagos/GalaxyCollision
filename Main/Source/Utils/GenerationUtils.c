@@ -394,9 +394,9 @@ Star_32* generateStars32Galaxy(uint32_t amount, BlackHole_32 parentBlackHole)
         // ### Velocity generation ###
         //! Temporarily skip velocity generation because math is broken, also srand inside it breaks rand here as well //stars[i].velocity_KilometersPerSecond = generateVelocity32(parentBlackHole, stars[i]);
         //! Temporary bypass:
-        float tmpMaxGeneratedSpeedDivisor = 24; // bigger ,means slower
+        float tmpMaxGeneratedSpeedDivisor = 23; // bigger ,means slower
         stars[i].velocity_KilometersPerSecond.x = ( ((float)rand() + 1) / (float)RAND_MAX) / tmpMaxGeneratedSpeedDivisor; // + 1 to prevent zero division
-        stars[i].velocity_KilometersPerSecond.y = ( ((float)rand() + 1) / (float)RAND_MAX) / tmpMaxGeneratedSpeedDivisor;
+        stars[i].velocity_KilometersPerSecond.y = ( ((float)rand() + 1) / (float)RAND_MAX) / (tmpMaxGeneratedSpeedDivisor);
         stars[i].velocity_KilometersPerSecond.z = ( ((float)rand() + 1) / (float)RAND_MAX) / tmpMaxGeneratedSpeedDivisor;
         stars[i].velocity_KilometersPerSecond.x *= (rand() % 2) == 1 ? 1 : -1;
         stars[i].velocity_KilometersPerSecond.y *= (rand() % 2) == 1 ? 1 : -1;
@@ -419,8 +419,8 @@ Star_32* generateStars32Galaxy(uint32_t amount, BlackHole_32 parentBlackHole)
             + LUMINOSITY_SMALLEST_RED_DWARF_QUETTALUMEN_FLOAT;
 
         // ### Color generation ###
-        stars[i].color.Red = (rand() % 100) + 155;
-        stars[i].color.Blue = (rand() % 100) + 155;
+        stars[i].color.Red = (rand() % 150) + 105;
+        stars[i].color.Blue = (rand() % 150) + 105;
         stars[i].color.Green = min(stars[i].color.Red, stars[i].color.Blue);
         // Normalize the value so that at least 1 channel is 255
         uint8_t largestColorValue = 0;

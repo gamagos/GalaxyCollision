@@ -126,7 +126,7 @@ int main(int argc, char **argv)
         .rotatesClockwise = true
     };
     parentBlackHole.standardGravitationalParameter_TerametersCubedPerPetaecondSquared = GRAVITATIONAL_CONSTANT_FLOAT * parentBlackHole.mass_10_BillionQuettagrams;
-    unsigned int amountStars = 1'100;
+    unsigned int amountStars = 1'200;
     Star_32* galaxy = generateStars32Galaxy(amountStars, parentBlackHole);
     float* positions = calloc( (size_t)(amountStars * 3), sizeof(float) );
     if (!positions)
@@ -257,13 +257,13 @@ int main(int argc, char **argv)
     float speedCap = 0.8f;
     float distance = 0.0f;
     float force = 0.0f;
-    float drag = 0.000'000'2;
+    float drag = 1.001;
     vec3 normalizedDirectionVector = { 0.0f }; //! This vector must remain normalized [1.0f; -1.0f]!
     // Variables for camera
     float camX = 0.0f;
     float camZ = 0.0f;
-    float radius = 6.0f;
-    float camRotationSpeedReductionDivisor = 1.5f; // bigger means slower
+    float radius = 4.0f;
+    float camRotationSpeedReductionDivisor = 5.5f; // bigger means slower
 
     // Render loop
     while (!glfwWindowShouldClose(primaryWindow))
@@ -299,7 +299,8 @@ int main(int argc, char **argv)
 
             for (size_t j = 0; j < (size_t)(amountStars * 3); j += 3)
             {
-                if (i == j) continue;
+                if (i == j) continue; // Skip if point is itself
+                // Apply gravity
                 distance = glm_vec3_distance(&positions[i], &positions[j]);
                 glm_vec3_sub(&positions[j], &positions[i], normalizedDirectionVector);
                 glm_vec3_normalize(normalizedDirectionVector);
@@ -307,14 +308,16 @@ int main(int argc, char **argv)
                 velocities[i]     += getAcceleration_32(force * normalizedDirectionVector[0], mass);
                 velocities[i + 1] += getAcceleration_32(force * normalizedDirectionVector[1], mass);
                 velocities[i + 2] += getAcceleration_32(force * normalizedDirectionVector[2], mass);
-                // Cap velocity
-                velocities[i]     = velocities[i]     > 0 ? min(velocities[i]    , speedCap) : max(velocities[i]    , -speedCap);
-                velocities[i + 1] = velocities[i + 1] > 0 ? min(velocities[i + 1], speedCap) : max(velocities[i + 1], -speedCap);
-                velocities[i + 2] = velocities[i + 2] > 0 ? min(velocities[i + 2], speedCap) : max(velocities[i + 2], -speedCap);
-                velocities[i]     -= velocities[i]     > 0 ? drag : -drag ;
-                velocities[i + 1] -= velocities[i + 1] > 0 ? drag : -drag ;
-                velocities[i + 2] -= velocities[i + 2] > 0 ? drag : -drag ;
-            }
+            } //! The only thing that needs to be n^2 is gravity!
+            // Cap velocity
+            velocities[i] = velocities[i] > 0 ? min(velocities[i], speedCap) : max(velocities[i], -speedCap);
+            velocities[i + 1] = velocities[i + 1] > 0 ? min(velocities[i + 1], speedCap) : max(velocities[i + 1], -speedCap);
+            velocities[i + 2] = velocities[i + 2] > 0 ? min(velocities[i + 2], speedCap) : max(velocities[i + 2], -speedCap);
+            // Apply drag
+            velocities[i] /= drag;
+            velocities[i + 1] /= drag;
+            velocities[i + 2] /= drag;
+
             memcpy_s( // Velocities
                 &bufferData[bufferDataIndex].velocity,
                 sizeof(float) * 3,

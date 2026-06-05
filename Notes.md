@@ -135,3 +135,7 @@ Use only SI Units or we loose computation on conversions!
 - Time: Petaseconds (Ps)
 - Velocity: Kilometers per second (km/s)
 - Weight: $10^7$ Quettagrams (Qg)
+
+### Other notes
+
+- **Always divide with drag NOT subtract!!**
