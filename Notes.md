@@ -4,20 +4,28 @@
 
 ## USEFUL FORMULAS
 
-### Gravity
+### Physics
 
-Gravitational force:  
-$$\; F_g = G \frac{m_1 m_2}{d^{2}} \; \big| \; µ = G m_1$$  
-$$\leftrightarrow F_g = \frac{µ m_2}{d^{2}}$$  
-Standard gravitational parameter:  
-$$µ = Gm$$
+#### Acceleration
 
-### Orbital Velocity
+$$ F = m \cdot a $$
 
-Orbital velocity when orbiting object mass is negligible:  
-$$V_{rel} = \sqrt{ \frac{GM}{R} }$$  
-When orbiting object mass is not negligible:  
-$$V_{rel} = \sqrt{ \frac{G(M + m}{R} }$$  
+#### Gravity
+
+**Gravitational force:**  
+$$ F_g = G \frac{m_1 \cdot m_2}{d^{2}} \text{ } \big| µ = G m_1 $$  
+$$ \leftrightarrow F_g = \frac{µ \cdot m_2}{d^{2}} $$  
+
+**Standard gravitational parameter:**  
+$$ µ = G \cdot m $$
+
+#### Orbital Velocity
+
+**Orbital velocity when orbiting object mass is negligible:**  
+$$ V_{rel} = \sqrt{ \frac{G \cdot M}{R} } $$  
+
+**When orbiting object mass is not negligible:**  
+$$ V_{rel} = \sqrt{ \frac{G \cdot (M + m)}{R} } $$  
 
 -----
 

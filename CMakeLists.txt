@@ -6,7 +6,7 @@ project (GalaxyCollision VERSION 0.0 LANGUAGES C)
 
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_EXE_LINKER_FLAGS "-static")
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")  # MSVC's multithreaded flag weirdly enough also makes things link statically, which we need
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")  # MSVC's multi threaded flag weirdly enough also makes things link statically, which we need
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 # Custom CMake variables for building this project
@@ -23,7 +23,7 @@ set(RESOURCE_DIR "${CMAKE_SOURCE_DIR}/Main/Resources")
 set(RESOURCE_DIR_IN_BUILD_DIR "${CMAKE_BINARY_DIR}/Main/Resources")
 add_custom_target(shaders
 	COMMAND
-		${CMAKE_COMMAND} -E copy ${RESOURCE_DIR} ${RESOURCE_DIR_IN_BUILD_DIR}
+		"${CMAKE_COMMAND}" -E copy_directory "${RESOURCE_DIR}" "${RESOURCE_DIR_IN_BUILD_DIR}"
 )
 add_dependencies(GalaxyCollision shaders)
 

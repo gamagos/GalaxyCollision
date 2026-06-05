@@ -394,9 +394,10 @@ Star_32* generateStars32Galaxy(uint32_t amount, BlackHole_32 parentBlackHole)
         // ### Velocity generation ###
         //! Temporarily skip velocity generation because math is broken, also srand inside it breaks rand here as well //stars[i].velocity_KilometersPerSecond = generateVelocity32(parentBlackHole, stars[i]);
         //! Temporary bypass:
-        stars[i].velocity_KilometersPerSecond.x = ( ((float)rand() + 1) / (float)RAND_MAX ) / 300; // + 1 to prevent zero division
-        stars[i].velocity_KilometersPerSecond.y = ( ((float)rand() + 1) / (float)RAND_MAX ) / 300; // / 100 to cap speed
-        stars[i].velocity_KilometersPerSecond.z = ( ((float)rand() + 1) / (float)RAND_MAX ) / 300;
+        float tmpMaxGeneratedSpeedDivisor = 24; // bigger ,means slower
+        stars[i].velocity_KilometersPerSecond.x = ( ((float)rand() + 1) / (float)RAND_MAX) / tmpMaxGeneratedSpeedDivisor; // + 1 to prevent zero division
+        stars[i].velocity_KilometersPerSecond.y = ( ((float)rand() + 1) / (float)RAND_MAX) / tmpMaxGeneratedSpeedDivisor;
+        stars[i].velocity_KilometersPerSecond.z = ( ((float)rand() + 1) / (float)RAND_MAX) / tmpMaxGeneratedSpeedDivisor;
         stars[i].velocity_KilometersPerSecond.x *= (rand() % 2) == 1 ? 1 : -1;
         stars[i].velocity_KilometersPerSecond.y *= (rand() % 2) == 1 ? 1 : -1;
         stars[i].velocity_KilometersPerSecond.z *= (rand() % 2) == 1 ? 1 : -1;

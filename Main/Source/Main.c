@@ -34,10 +34,11 @@ PROJECT DEPENDECIES:
 #include "Utils/FileUtils.h"
 #include "Utils/GenerationUtils.h"
 #include "Utils/OpenGLUtils.h"
+#include "Utils/PhysicsUtils.h"
 
 // THIS PROGRAM ONLY WORKS FOR WINDOWS
 
-int windowWidth = 1'000;
+int windowWidth = 1'900;
 int windowHeight = 1'000;
 
 float timeSinceStart_PetaSeconds_Float = 0.0f;
@@ -83,7 +84,7 @@ int main(int argc, char **argv)
     GLuint VAO1;
     glGenVertexArrays(1, &VAO1);
     glBindVertexArray(VAO1);
-
+    
     GLuint primaryVBO;
     glGenBuffers(1, &primaryVBO);
     glBindBuffer(GL_ARRAY_BUFFER, primaryVBO);
@@ -125,7 +126,7 @@ int main(int argc, char **argv)
         .rotatesClockwise = true
     };
     parentBlackHole.standardGravitationalParameter_TerametersCubedPerPetaecondSquared = GRAVITATIONAL_CONSTANT_FLOAT * parentBlackHole.mass_10_BillionQuettagrams;
-    unsigned int amountStars = 3'000;
+    unsigned int amountStars = 1'100;
     Star_32* galaxy = generateStars32Galaxy(amountStars, parentBlackHole);
     float* positions = calloc( (size_t)(amountStars * 3), sizeof(float) );
     if (!positions)
@@ -233,7 +234,7 @@ int main(int argc, char **argv)
     // Setup matrices
     mat4 viewMatrix = {0};
     glm_lookat(
-        (vec3){ 0.1f, 0.0f, 3.0f },
+        (vec3){ 0.1f, 0.0f, 4.0f },
         (vec3){ 0.0f, 0.0f, 0.0f },
         (vec3){ 0.0f, 1.0f, 0.0f },
         viewMatrix
@@ -242,12 +243,27 @@ int main(int argc, char **argv)
     glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, viewMatrix);
 
     mat4 perspectiveProjectionMatrix = {0};
-    glm_perspective( glm_rad(60.0f), (float)windowWidth / (float)windowHeight, 0.1f, 100'000.0f, perspectiveProjectionMatrix );
+    glm_perspective( glm_rad(60.0f), (float)windowWidth / (float)windowHeight, 0.1f, 1'000'000'000.0f, perspectiveProjectionMatrix );
     GLuint perspectiveProjectionMatrixUniformLocation = glGetUniformLocation(primaryShaderProgram, "projectionMatrix");
     glUniformMatrix4fv(perspectiveProjectionMatrixUniformLocation, 1, GL_FALSE, perspectiveProjectionMatrix);
 
     glEnable(GL_DEPTH_TEST);
     printf("Starting render-loop\n");
+
+    // ### Variable definitions for loop ###
+    // Gravity Physics, so far only movement
+    size_t bufferDataIndex = 0;
+    float mass = 36'000.0f; // All bodies weight the same for now
+    float speedCap = 0.8f;
+    float distance = 0.0f;
+    float force = 0.0f;
+    float drag = 0.000'000'2;
+    vec3 normalizedDirectionVector = { 0.0f }; //! This vector must remain normalized [1.0f; -1.0f]!
+    // Variables for camera
+    float camX = 0.0f;
+    float camZ = 0.0f;
+    float radius = 6.0f;
+    float camRotationSpeedReductionDivisor = 1.5f; // bigger means slower
 
     // Render loop
     while (!glfwWindowShouldClose(primaryWindow))
@@ -256,8 +272,18 @@ int main(int argc, char **argv)
         
         glBindBuffer(GL_ARRAY_BUFFER, primaryVBO);
         
-        // Gravity Physics, so far only movement
-        size_t bufferDataIndex = 0;
+        // Move camera
+        camX = sin(glfwGetTime() / camRotationSpeedReductionDivisor) * radius;
+        camZ = cos(glfwGetTime() / camRotationSpeedReductionDivisor) * radius;
+        mat4 viewMatrix = { 0 };
+        glm_lookat(
+            (vec3) { camX, 0.0f, camZ },
+            (vec3) { 0.0f, 0.0f, 0.0f },
+            (vec3) { 0.0f, 1.0f, 0.0f },
+            viewMatrix
+        );
+        glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, viewMatrix);
+
         for (size_t i = 0; i < (size_t)(amountStars * 3); i += 3)
         {
             bufferDataIndex = i / 3;
@@ -270,13 +296,31 @@ int main(int argc, char **argv)
                 &positions[i],
                 sizeof(float) * 3
             );
-            /* Not uses just yet
+
+            for (size_t j = 0; j < (size_t)(amountStars * 3); j += 3)
+            {
+                if (i == j) continue;
+                distance = glm_vec3_distance(&positions[i], &positions[j]);
+                glm_vec3_sub(&positions[j], &positions[i], normalizedDirectionVector);
+                glm_vec3_normalize(normalizedDirectionVector);
+                force = getGravitationalForce_32(mass, mass, distance);
+                velocities[i]     += getAcceleration_32(force * normalizedDirectionVector[0], mass);
+                velocities[i + 1] += getAcceleration_32(force * normalizedDirectionVector[1], mass);
+                velocities[i + 2] += getAcceleration_32(force * normalizedDirectionVector[2], mass);
+                // Cap velocity
+                velocities[i]     = velocities[i]     > 0 ? min(velocities[i]    , speedCap) : max(velocities[i]    , -speedCap);
+                velocities[i + 1] = velocities[i + 1] > 0 ? min(velocities[i + 1], speedCap) : max(velocities[i + 1], -speedCap);
+                velocities[i + 2] = velocities[i + 2] > 0 ? min(velocities[i + 2], speedCap) : max(velocities[i + 2], -speedCap);
+                velocities[i]     -= velocities[i]     > 0 ? drag : -drag ;
+                velocities[i + 1] -= velocities[i + 1] > 0 ? drag : -drag ;
+                velocities[i + 2] -= velocities[i + 2] > 0 ? drag : -drag ;
+            }
             memcpy_s( // Velocities
-                &bufferData[i].velocity,
+                &bufferData[bufferDataIndex].velocity,
                 sizeof(float) * 3,
-                &velocities[i3],
+                &velocities[i],
                 sizeof(float) * 3
-            );*/
+            );
         } //? Currently working on making physics calculations on CPU
         glBufferData(GL_ARRAY_BUFFER, sizeof(dataForBuffer)* amountStars, bufferData, GL_STATIC_DRAW);
 

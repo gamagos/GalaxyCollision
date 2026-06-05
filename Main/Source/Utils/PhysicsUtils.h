@@ -1,6 +1,40 @@
 #ifndef PHYSICS_UTILS_H
 #define PHYSICS_UTILS_H
 
+#include <math.h>
+
+/*
+SYNOPSIS:
+	Literally just a wrapper function for the standard physics equation a = F / m
+ARGS:
+	force:
+		The force that is applied to the object
+	mass:
+		The mass of the object
+RETURNS:
+	The resulting acceleration of the object
+REMARKS:
+	DOES NOT USE UNITS YET!
+*/
+float getAcceleration_32(float force, float mass);
+
+/*
+SYNOPSIS:
+	Get the gravitational force that 2 bodies at a given distance generate on each other
+ARGS:
+	massBody1:
+		The mass of the first body
+	massBody2:
+		The mass of the second body
+	distanceOfBodies:
+		The distance the 2 bodies have from each other
+RETURNS:
+	The resulting gravitational force
+REMARKS:
+	DOES NOT USE UNITS YET!
+*/
+float getGravitationalForce_32(float massBody1, float massBody2, float distanceOfBodies);
+
 /*
 SYNOPSIS:
 	Gets the needed velocity to orbit a given Object with a given Mass
