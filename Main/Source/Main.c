@@ -37,8 +37,8 @@ PROJECT DEPENDECIES:
 
 // THIS PROGRAM ONLY WORKS FOR WINDOWS
 
-int windowWidth = 800;
-int windowHeight = 800;
+int windowWidth = 1'000;
+int windowHeight = 1'000;
 
 float timeSinceStart_PetaSeconds_Float = 0.0f;
 double timeSinceStart_PetaSeconds_Double = 0.0;
@@ -87,9 +87,12 @@ int main(int argc, char **argv)
     GLuint primaryVBO;
     glGenBuffers(1, &primaryVBO);
     glBindBuffer(GL_ARRAY_BUFFER, primaryVBO);
-    int indexPrimaryVBO = 0;
-    glVertexAttribPointer(indexPrimaryVBO, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0); // Current buffer layout: | float posX | float posY | float posZ |
-    glEnableVertexAttribArray(indexPrimaryVBO);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 10, (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 10, (void*)(3 * sizeof(float)) );
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 10, (void*)(6 * sizeof(float)) );
+    glEnableVertexAttribArray(2);
 
     char* vertexShaderSourcePath = getAbsolutePath("Main/Resources/shaders/Vertex.glsl"); //! Apparently you need to specify paths as if we were inside the build directory!
     char* vertexShaderSource = readFileAsCharArray(vertexShaderSourcePath);
@@ -97,11 +100,13 @@ int main(int argc, char **argv)
     char* fragmentShaderSourcePath = getAbsolutePath("Main/Resources/shaders/Fragment.glsl");
     char* fragmentShaderSource = readFileAsCharArray(fragmentShaderSourcePath);
     GLuint fragmentShader = createShader(fragmentShaderSource, GL_FRAGMENT_SHADER);
+    
     GLuint shaders[] = {
         vertexShader,
         fragmentShader
     };
     GLuint primaryShaderProgram = createShaderProgram(shaders, 2);
+    glUseProgram(primaryShaderProgram);
     safer_free(&vertexShaderSourcePath);
     safer_free(&vertexShaderSource);
     safer_free(&fragmentShaderSourcePath);
@@ -120,12 +125,28 @@ int main(int argc, char **argv)
         .rotatesClockwise = true
     };
     parentBlackHole.standardGravitationalParameter_TerametersCubedPerPetaecondSquared = GRAVITATIONAL_CONSTANT_FLOAT * parentBlackHole.mass_10_BillionQuettagrams;
-    unsigned int amountStars = 1'000;
+    unsigned int amountStars = 3'000;
     Star_32* galaxy = generateStars32Galaxy(amountStars, parentBlackHole);
-    float* positions = calloc((size_t)(amountStars * 3), sizeof(float));
+    float* positions = calloc( (size_t)(amountStars * 3), sizeof(float) );
     if (!positions)
     {
         perror("Failed to allocate memory for positions (Main.c, main())");
+        glDeleteProgram(primaryShaderProgram);
+        glfwTerminate();
+        return 1;
+    }
+    float* velocities = calloc( (size_t)(amountStars * 3), sizeof(float) );
+    if (!velocities)
+    {
+        perror("Failed to allocate memory for velocities (Main.c, main())");
+        glDeleteProgram(primaryShaderProgram);
+        glfwTerminate();
+        return 1;
+    }
+    float* colors = calloc( (size_t)(amountStars * 4), sizeof(float) );
+    if (!colors)
+    {
+        perror("Failed to allocate memory for colors (Main.c, main())");
         glDeleteProgram(primaryShaderProgram);
         glfwTerminate();
         return 1;
@@ -134,11 +155,26 @@ int main(int argc, char **argv)
     for ( unsigned int i = 0; i < (amountStars * 3); i += 3 )
     {
         size_t galaxyIndex = i / 3;
-        positions[i] = galaxy[galaxyIndex].position_Terameters.x;
+        positions[i]     = galaxy[galaxyIndex].position_Terameters.x;
         positions[i + 1] = galaxy[galaxyIndex].position_Terameters.y;
         positions[i + 2] = galaxy[galaxyIndex].position_Terameters.z;
     }
-    
+    for (unsigned int i = 0; i < (amountStars * 3); i += 3)
+    {
+        size_t galaxyIndex = i / 3;
+        velocities[i]     = galaxy[galaxyIndex].velocity_KilometersPerSecond.x;
+        velocities[i + 1] = galaxy[galaxyIndex].velocity_KilometersPerSecond.y;
+        velocities[i + 2] = galaxy[galaxyIndex].velocity_KilometersPerSecond.z;
+    }
+    for (unsigned int i = 0; i < (amountStars * 4); i += 4)
+    {
+        size_t galaxyIndex = i / 4;
+        colors[i]     = (float)(galaxy[galaxyIndex].color.Red)   / 255.0f;
+        colors[i + 1] = (float)(galaxy[galaxyIndex].color.Green) / 255.0f;
+        colors[i + 2] = (float)(galaxy[galaxyIndex].color.Blue)  / 255.0f;
+        colors[i + 3] = (float)(galaxy[galaxyIndex].color.Alpha) / 255.0f;
+    }
+
     // Normalize all values in positions for 
     float positionsMaxValueAbsolute = 0.0f;
     for (unsigned int i = 0; i < (amountStars * 3); i ++)
@@ -152,20 +188,52 @@ int main(int argc, char **argv)
     {
         positions[i] /= positionsMaxValueAbsolute;
     }
-    //! This is for debugging
-    for (unsigned int i = 0; i < amountStars; i++)
+
+    typedef struct dataForBuffer { //! This also is more or less a temporary workaround
+        float position[3];
+        float velocity[3];
+        float color[4];
+    } dataForBuffer;
+
+    dataForBuffer* bufferData = calloc( (size_t)amountStars, sizeof(dataForBuffer) );
+    if (!bufferData)
     {
-        printf("%f\n", positions[i]);
-        printf("%f\n", positions[i + 1]);
-        printf("%f\n", positions[i + 2]);
-        printf("\n");
+        perror("Failed to allocate memory for bufferData (Main.c, main())");
+        glDeleteProgram(primaryShaderProgram);
+        glfwTerminate();
+        return 1;
     }
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * amountStars * 3, positions, GL_STATIC_DRAW); // Copy the newly generated galaxy into VRAM
+    size_t i3 = 0;
+    size_t i4 = 0;
+    for (size_t i = 0; i < amountStars; i++)
+    {
+        memcpy_s( // Positions 
+            &bufferData[i].position, 
+            sizeof(float) * 3,
+            &positions[i3],
+            sizeof(float) * 3
+        );
+        memcpy_s( // Velocities
+            &bufferData[i].velocity,
+            sizeof(float) * 3,
+            &velocities[i3],
+            sizeof(float) * 3
+        );
+        memcpy_s( // Colors
+            &bufferData[i].color,
+            sizeof(float) * 4,
+            &colors[i4],
+            sizeof(float) * 4
+        );
+        i3 += 3;
+        i4 += 4;
+    }
+    glBufferData(GL_ARRAY_BUFFER, sizeof(dataForBuffer) * amountStars, bufferData, GL_STATIC_DRAW); // Copy the newly generated galaxy into VRAM
     
     // Setup matrices
     mat4 viewMatrix = {0};
     glm_lookat(
-        (vec3){ 0.0f, 0.0f, 10.0f },
+        (vec3){ 0.1f, 0.0f, 3.0f },
         (vec3){ 0.0f, 0.0f, 0.0f },
         (vec3){ 0.0f, 1.0f, 0.0f },
         viewMatrix
@@ -174,17 +242,43 @@ int main(int argc, char **argv)
     glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, viewMatrix);
 
     mat4 perspectiveProjectionMatrix = {0};
-    glm_mat4_identity(perspectiveProjectionMatrix);
-    glm_perspective( glm_rad(70.0f), (float)windowWidth / (float)windowHeight, 0.1f, 1'000.0f, perspectiveProjectionMatrix );
+    glm_perspective( glm_rad(60.0f), (float)windowWidth / (float)windowHeight, 0.1f, 100'000.0f, perspectiveProjectionMatrix );
     GLuint perspectiveProjectionMatrixUniformLocation = glGetUniformLocation(primaryShaderProgram, "projectionMatrix");
     glUniformMatrix4fv(perspectiveProjectionMatrixUniformLocation, 1, GL_FALSE, perspectiveProjectionMatrix);
 
+    glEnable(GL_DEPTH_TEST);
     printf("Starting render-loop\n");
 
     // Render loop
     while (!glfwWindowShouldClose(primaryWindow))
     {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
         glBindBuffer(GL_ARRAY_BUFFER, primaryVBO);
+        
+        // Gravity Physics, so far only movement
+        size_t bufferDataIndex = 0;
+        for (size_t i = 0; i < (size_t)(amountStars * 3); i += 3)
+        {
+            bufferDataIndex = i / 3;
+            positions[i]     += velocities[i];
+            positions[i + 1] += velocities[i + 1];
+            positions[i + 2] += velocities[i + 2];
+            memcpy_s( // Positions 
+                &bufferData[bufferDataIndex].position,
+                sizeof(float) * 3,
+                &positions[i],
+                sizeof(float) * 3
+            );
+            /* Not uses just yet
+            memcpy_s( // Velocities
+                &bufferData[i].velocity,
+                sizeof(float) * 3,
+                &velocities[i3],
+                sizeof(float) * 3
+            );*/
+        } //? Currently working on making physics calculations on CPU
+        glBufferData(GL_ARRAY_BUFFER, sizeof(dataForBuffer)* amountStars, bufferData, GL_STATIC_DRAW);
 
         glDrawArrays(GL_POINTS, 0, amountStars);
 
@@ -200,6 +294,7 @@ int main(int argc, char **argv)
 
 //TODO add GPLv3 License
 //TODO make functions actually use units!
+//TODO use SSBOs to make physics calculations on the GPU
 
 /*
 GOALS

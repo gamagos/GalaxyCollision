@@ -392,7 +392,14 @@ Star_32* generateStars32Galaxy(uint32_t amount, BlackHole_32 parentBlackHole)
         stars[i].position_Terameters.z *= (rand() % 2) == 1 ? 1 : -1;
 
         // ### Velocity generation ###
-        // Temporarily skip velocity generation because math is broken //stars[i].velocity_KilometersPerSecond = generateVelocity32(parentBlackHole, stars[i]);
+        //! Temporarily skip velocity generation because math is broken, also srand inside it breaks rand here as well //stars[i].velocity_KilometersPerSecond = generateVelocity32(parentBlackHole, stars[i]);
+        //! Temporary bypass:
+        stars[i].velocity_KilometersPerSecond.x = ( ((float)rand() + 1) / (float)RAND_MAX ) / 300; // + 1 to prevent zero division
+        stars[i].velocity_KilometersPerSecond.y = ( ((float)rand() + 1) / (float)RAND_MAX ) / 300; // / 100 to cap speed
+        stars[i].velocity_KilometersPerSecond.z = ( ((float)rand() + 1) / (float)RAND_MAX ) / 300;
+        stars[i].velocity_KilometersPerSecond.x *= (rand() % 2) == 1 ? 1 : -1;
+        stars[i].velocity_KilometersPerSecond.y *= (rand() % 2) == 1 ? 1 : -1;
+        stars[i].velocity_KilometersPerSecond.z *= (rand() % 2) == 1 ? 1 : -1;
 
         // ### Mass generation ###
         //stars[i].mass_10_BillionQuettagrams = MINIMAL_STAR_MASS_SOLAR_MASSES_FLOAT;
@@ -410,7 +417,20 @@ Star_32* generateStars32Galaxy(uint32_t amount, BlackHole_32 parentBlackHole)
             )
             + LUMINOSITY_SMALLEST_RED_DWARF_QUETTALUMEN_FLOAT;
 
-        //TODO ### Color generation ###
+        // ### Color generation ###
+        stars[i].color.Red = (rand() % 100) + 155;
+        stars[i].color.Blue = (rand() % 100) + 155;
+        stars[i].color.Green = min(stars[i].color.Red, stars[i].color.Blue);
+        // Normalize the value so that at least 1 channel is 255
+        uint8_t largestColorValue = 0;
+        largestColorValue = largestColorValue < stars[i].color.Red   ? stars[i].color.Red   : largestColorValue;
+        largestColorValue = largestColorValue < stars[i].color.Green ? stars[i].color.Green : largestColorValue;
+        largestColorValue = largestColorValue < stars[i].color.Blue  ? stars[i].color.Blue  : largestColorValue;
+        double percentOf255 = (double)largestColorValue / 255.0;
+        stars[i].color.Red   = min( (uint8_t)( (double)stars[i].color.Red   / percentOf255 ), 255 );
+        stars[i].color.Green = min( (uint8_t)( (double)stars[i].color.Green / percentOf255 ), 255 );
+        stars[i].color.Blue  = min( (uint8_t)( (double)stars[i].color.Blue  / percentOf255 ), 255 );
+        stars[i].color.Alpha = 255;
     }
     return stars;
 }

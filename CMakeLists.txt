@@ -15,11 +15,17 @@ set(GLAD_INCLUDE_DIRECTORY "${CMAKE_SOURCE_DIR}/Main/Libraries/glad/include/")
 set(GLFW_INCLUDE_DIRECTORY "${CMAKE_SOURCE_DIR}/Main/Libraries/glfw-3.4/include/")
 set(STBI_IMAGE_INCLUDE_DIRECTORY "${CMAKE_SOURCE_DIR}/Main/Include/stb_image/")
 
-# Add non build files to build dir
-file(COPY "${CMAKE_SOURCE_DIR}/Main/Resources/" DESTINATION "${CMAKE_BINARY_DIR}/Main/Resources")
-
 add_subdirectory("Main")
 #add_subdirectory("Tests")
+
+# Make sure shader files are copied into build dir on every build
+set(RESOURCE_DIR "${CMAKE_SOURCE_DIR}/Main/Resources")
+set(RESOURCE_DIR_IN_BUILD_DIR "${CMAKE_BINARY_DIR}/Main/Resources")
+add_custom_target(shaders
+	COMMAND
+		${CMAKE_COMMAND} -E copy ${RESOURCE_DIR} ${RESOURCE_DIR_IN_BUILD_DIR}
+)
+add_dependencies(GalaxyCollision shaders)
 
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
