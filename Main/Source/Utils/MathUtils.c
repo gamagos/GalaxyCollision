@@ -82,49 +82,36 @@ double nthRoot(long long n, double number)
 	return pow( number, 1.0 / (double)n );
 }
 
-/*
-SYNOPSIS:
-	Maps the probability of a number existing to
-	the function e^(-x) and then returns true or false with that probability.
-ARGS:
-	number:
-		The number who's existence probability is to be mapped
-	threshold100Percent:
-		Which number on e^(-x) represents a probability of 100%
-RETURNS:
-	Either true or false, the lower the probability of number
-	existing the more likely it will return false
-REMARKS:
-	It should be avoided to input numbers smaller than thershold100Percent because
-	then their probability of existing is >=100%
-EXAMPLE:
-	bool doesMyNumberExist = mapNumberExistenceProbabilityExponential(2994, 0);
-*/
 bool mapNumberExistenceProbabilityExponential(unsigned long long number, unsigned long long threshold100Percent)
 {
+	if (threshold100Percent == 0) // This is a lazy and mathematically incorrect workaround
+	{                             //TODO fix this some time!
+		threshold100Percent = 1;
+	}
 	srand((unsigned int)time(NULL));
 	// Map the probability of the numbers existence to e^(-x) and normalize it for one x to be 100%
-	double existenceProbability = exp( -(double)number ) / exp( -(double)threshold100Percent );
-	
+	long double existenceProbability = exp( -(double)number ) / exp( -(double)threshold100Percent );
+	existenceProbability *= 0.000'000'1f; // To somewhat keep numbers from completely exploding to 0 or inf
+
 	if (existenceProbability >= 1) // Exit early if probability is 100% or more
 	{
 		return true;
 	}
 
 	// Gets probability as ratio e.g. 1:1000(1 in every thousand) but only this part 1:-->1000<--
-	double probability1OutOfX = 1 / existenceProbability;  
+	long double probability1OutOfX = 1 / existenceProbability; // Note that existenceProbability is smaller than 1
 	bool result = true;
 
 	if (probability1OutOfX <= INT_MAX)
 	{
-		result = (rand() % (int)probability1OutOfX) == 1;
+		result = (rand() % (int)probability1OutOfX) == 1; // 1 is just an arbitrary number here
 		return result;
 	}
 
 	unsigned long long powersOfINT_MAX = (unsigned long long)ceil( logCustomBase(INT_MAX, probability1OutOfX) ); // How often you need to square INT_MAX to get probability1OutOf1X(doubles can get BIG)
 	long long rangeLimit = (long long)nthRoot((long long)powersOfINT_MAX, probability1OutOfX); // The range limit so that (INT_MAX % rangeLimt)^powerOfINT_MAX = probability1OutOfX
 	
-	// Use multiple rand() mapped to the rangeLimit's range to emulate probabilities far lower than 1 / INT_MAX, since the the probability of a rare event happening gets squared when asking if it were to happen multiple times
+	// Use multiple rand() mapped to the rangeLimit's range to emulate probabilities far lower than 1 / INT_MAX, since the probability of a rare event happening gets squared when asking if it were to happen multiple times
 	for (unsigned long long i = 0; i < powersOfINT_MAX; i++)
 	{
 		int tmp = rand() % rangeLimit;
@@ -134,32 +121,6 @@ bool mapNumberExistenceProbabilityExponential(unsigned long long number, unsigne
 	return result;
 }
 
-/*
-SYNOPSIS:
-	Maps the existence probability of a point to e(-x) for each coordinate
-	normalized for some value thresholdX/Y/Z that represent the value that is used for 100% probability.
-	And then returns the wether the point exists or not as a bool, the closer the points is to the origin the
-	more likely it is to exist.
-DESCRIPTION:
-	The function does this by mapping each probability of the points coordinate to e(-x) normalized for thresholdX/Y/Z
-	to be 100%, if all points return true on their existence the function returns true.
-ARGS:
-	point:
-		The point to be mapped for
-	thresholdX:
-		The 100% probability threshold for x
-	thresholdY:
-		The 100% probability threshold for x
-	thresholdZ:
-		The 100% probability threshold for x
-RETURNS:
-	True or false, the further the point is from the origin the more likely it will return false
-REMARKS:
-	Not 100% precise but pretty precise
-EXAMPLE:
-	Vector3Int32 point = {35,545,46};
-	bool doesMyPointExist = mapPointExistenceProbabilityExponential(point, 0, 0, 0);
-*/
 bool mapPointExistenceProbabilityExponential32
 (
 	Vector3_Int32 point,
@@ -168,6 +129,16 @@ bool mapPointExistenceProbabilityExponential32
 	long thresholdZ
 ) 
 {
+	if (point.x == 0 ||
+		point.y == 0 ||
+		point.z == 0 ||
+		thresholdX == 0 ||
+		thresholdY == 0 ||
+		thresholdZ == 0 
+	)
+	{
+		perror( formatString("%s No component of point is allowed to be 0 nor is any threshold allowed to be 0! (MathUtils.c, (mapPointExistenceProbabilityExponential32))", ERROR_TAG) );
+	}
 	bool xExists = mapNumberExistenceProbabilityExponential(point.x, thresholdX);
 	bool yExists = mapNumberExistenceProbabilityExponential(point.y, thresholdY);
 	bool zExists = mapNumberExistenceProbabilityExponential(point.z, thresholdZ);

@@ -15,6 +15,7 @@ RETURNS:
 	The absolute path of the relative path provided or NULL if an error occurs
 REMARKS:
 	Does not work with paths longer than "_MAX_PATH"!
+	You have to free() the char array after use!
 */
 char* getAbsolutePath(const char* relativePath);
 

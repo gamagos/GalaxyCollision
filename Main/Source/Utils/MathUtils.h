@@ -113,12 +113,14 @@ ARGS:
 		Which number on e^(-x) represents a probability of 100%
 RETURNS:
 	Either true or false, the lower the probability of number
-	existing the more likely it will return false
+	existing the more likely it will return false.
+	Also returns false if something went wrong.
 REMARKS:
 	It should be avoided to input numbers smaller than thershold100Percent because
-	then their probability of existing is >=100%
+	then their probability of existing is >=100%.
+	None of the input values are allowed to be 0!
 EXAMPLE:
-	bool doesMyNumberExist = mapNumberExistanceProbabilityExponential(2994, 0);
+	bool doesMyNumberExist = mapNumberExistenceProbabilityExponential(2994, 0);
 */
 bool mapNumberExistenceProbabilityExponential(unsigned long long number, unsigned long long threshold100Percent);
 
@@ -141,7 +143,8 @@ ARGS:
 	thresholdZ:
 		The 100% probability threshold for x
 RETURNS:
-	True or false, the further the point is from the origin the more likely it will return false
+	True or false, the further the point is from the origin the more likely it will return false.
+	Returns false if an error occurs!
 REMARKS:
 	Not 100% precise but pretty precise
 EXAMPLE:

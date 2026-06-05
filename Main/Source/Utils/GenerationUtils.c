@@ -40,7 +40,7 @@ Vector3_Int32 generatePosition32(
     int32_t minX, int32_t minY, int32_t minZ //min
 )
 {
-    Vector3_Int32 result = {0,0,0};
+    Vector3_Int32 result = {0, 0, 0};
     result.x = randint32(maxX - minX) + minX;
     result.y = randint32(maxY - minY) + minY;
     result.z = randint32(maxZ - minZ) + minZ;
@@ -107,7 +107,7 @@ ARGS:
     amount:
         The amount of stars in the otherStars array
 RETURNS:
-    Wether the star overlaps with any of the stars in the array
+    false, if the stars do not overlap and true if they do
 REMARKS:
     Ensure that the Array otherStars does not contain star when calling this method
 */
@@ -119,11 +119,11 @@ bool checkStarPositionOverlap32(Star_32 star, Star_32* otherStars, uint32_t amou
             otherStars[i].position_Terameters.y == star.position_Terameters.y &&
             otherStars[i].position_Terameters.z == star.position_Terameters.z)
         {
-            return false;   
+            return true;
         }
     }
 
-    return true;
+    return false;
 }
 
 /*
@@ -337,12 +337,12 @@ EXAMPLE:
 */
 Star_32* generateStars32Galaxy(uint32_t amount, BlackHole_32 parentBlackHole)
 {
-    const int32_t maxX = (~0) / 8;
-    const int32_t maxY = (~0) / 8;
-    const int32_t maxZ = ( (~0) / 8 ) / 10;
-    const int32_t minX = 9'000;
-    const int32_t minY = 9'000;
-    const int32_t minZ = 9'000;
+    const int32_t maxX = 800;//LONG_MAX / 8;
+    const int32_t maxY = 800;//LONG_MAX / 8;
+    const int32_t maxZ = 800;//(LONG_MAX / 8 ) / 10;
+    const int32_t minX = 1;
+    const int32_t minY = 1;
+    const int32_t minZ = 1;
 
     float donePercent = 0.0f;
     Star_32* otherStarsTemporary = NULL;
@@ -350,7 +350,7 @@ Star_32* generateStars32Galaxy(uint32_t amount, BlackHole_32 parentBlackHole)
 
     srand((unsigned int)time(NULL));
 
-    Star_32 *stars = calloc(amount, sizeof(Star_32));
+    Star_32* stars = calloc(amount, sizeof(Star_32));
     if (stars == NULL) // check for allocation failure
     {
         fprintf(stderr, 
@@ -363,27 +363,41 @@ Star_32* generateStars32Galaxy(uint32_t amount, BlackHole_32 parentBlackHole)
     for (unsigned long i = 0; i < amount; i++)
     {
         // ### Position generation ###
-        bool positionValid = true;
-        unsigned long amountOtherStars = 0;
-        while (!positionValid) // Checks for star overlap and does not generate star if a star already exists in that position
-        {
-            stars[i].position_Terameters = generatePosition32(maxX, maxY, maxZ, minX, minY, minZ);
-            amountOtherStars = i - 1;
-            otherStarsTemporary = calloc(amountOtherStars, sizeof(Star_32));
-            for (unsigned long j = 0; j < amountOtherStars; j++)
-            {
-                otherStarsTemporary[j] = stars[j];
-            }
-            positionValid = checkStarPositionOverlap32(stars[i], otherStarsTemporary, amountOtherStars);
-            free(otherStarsTemporary);
-        }
+        //bool positionValid = false;
+        //unsigned long amountOtherStars = 0;
+        //while (!positionValid) // Checks for star overlap and does not generate star if a star already exists in that position
+        //{
+        //    stars[i].position_Terameters = generatePosition32(maxX, maxY, maxZ, minX, minY, minZ);
+        //    amountOtherStars = i - 1 <= 0 ? i - 1 : 0;
+        //    if (amountOtherStars <= 0) break;
+        //    otherStarsTemporary = calloc(amountOtherStars, sizeof(Star_32));
+        //    if (!otherStarsTemporary)
+        //    {
+        //        perror( formatString("\nFailed to allocate %.2lf Kilobytes of memory for otherStarsTemporary (GenerationUtils.c, generateStars32Galaxy())", (amountOtherStars * sizeof(Star_32)) / 1000.0) );
+        //        return NULL;
+        //    }
+        //    for (unsigned long j = 0; j < amountOtherStars - 1; j++)
+        //    {
+        //        otherStarsTemporary[j] = stars[j];
+        //    }
+        //    positionValid = !checkStarPositionOverlap32(stars[i], otherStarsTemporary, amountOtherStars);
+        //    free(otherStarsTemporary);
+        //} //! This is the original code!
+        //! This is a temporary bypass!!!!!!!!!!!!!!!
+        stars[i].position_Terameters.x = (rand() % (maxX - minX)) + minX;
+        stars[i].position_Terameters.y = (rand() % (maxY - minY)) + minY;
+        stars[i].position_Terameters.z = (rand() % (maxZ - minZ)) + minZ;
+        stars[i].position_Terameters.x *= (rand() % 2) == 1 ? 1 : -1;// Randomize sign
+        stars[i].position_Terameters.y *= (rand() % 2) == 1 ? 1 : -1;
+        stars[i].position_Terameters.z *= (rand() % 2) == 1 ? 1 : -1;
 
         // ### Velocity generation ###
-        stars[i].velocity_KilometersPerSecond = generateVelocity32(parentBlackHole, stars[i]);
+        // Temporarily skip velocity generation because math is broken //stars[i].velocity_KilometersPerSecond = generateVelocity32(parentBlackHole, stars[i]);
 
         // ### Mass generation ###
-        stars[i].mass_10_BillionQuettagrams = MINIMAL_STAR_MASS_SOLAR_MASSES_FLOAT;
-        stars[i].mass_10_BillionQuettagrams *= ((float)randint32(INT32_MAX) / ((float)INT32_MAX / MASS_MOST_MASSIVE_OBSERVED_STAR_QUETTAGRAMS_FLOAT));
+        //stars[i].mass_10_BillionQuettagrams = MINIMAL_STAR_MASS_SOLAR_MASSES_FLOAT;
+        //stars[i].mass_10_BillionQuettagrams *= ((float)randint32(INT32_MAX) / ((float)INT32_MAX / MASS_MOST_MASSIVE_OBSERVED_STAR_QUETTAGRAMS_FLOAT));
+        //! Temporary bypass for debugging. Likely srand() inside randint32 is messing with the position random generation
 
         // ### Standard gravitational parameter precomputation ###
         stars[i].standardGravitationalParameter_TerametersCubedPerPetasecondSquared = GRAVITATIONAL_CONSTANT_FLOAT * stars[i].mass_10_BillionQuettagrams;
@@ -397,15 +411,7 @@ Star_32* generateStars32Galaxy(uint32_t amount, BlackHole_32 parentBlackHole)
             + LUMINOSITY_SMALLEST_RED_DWARF_QUETTALUMEN_FLOAT;
 
         //TODO ### Color generation ###
-
-        // ### Progress meter ###
-        if (i != 0 && progressIncrement % i == 0)
-        {
-            donePercent = (float)i / (float)amount;
-            printf("%lu stars out of %lu generated %6.2f", i, amount, donePercent); // NOSONAR, false alert due to platform specificness of uint32_t
-        }
     }
-
     return stars;
 }
 
@@ -429,9 +435,9 @@ Star_64* generateStars64Galaxy(uint64_t amount, BlackHole_64 parentBlackHole)
 {
     printf("Generating Star64 stars\n");
 
-    const int64_t maxX = (~0) / 8;
-    const int64_t maxY = (~0) / 8;
-    const int64_t maxZ = ((~0) / 8) / 10;
+    const int64_t maxX = LLONG_MAX / 8;
+    const int64_t maxY = LLONG_MAX / 8;
+    const int64_t maxZ = (LLONG_MAX / 8) / 10;
     const int64_t minX = 9'000;
     const int64_t minY = 9'000;
     const int64_t minZ = 9'000;
@@ -489,13 +495,6 @@ Star_64* generateStars64Galaxy(uint64_t amount, BlackHole_64 parentBlackHole)
             + LUMINOSITY_SMALLEST_RED_DWARF_QUETTALUMEN_DOUBLE;
 
         //TODO ### Color generation ###
-
-        // ### Progress meter ###
-        if (i != 0 && progressIncrement % i == 0)
-        {
-            donePercent = (double)i / (double)amount;
-            printf("%llu stars out of %llu generated %6.2lf", i, amount, donePercent);
-        }
     }
 
     return stars;

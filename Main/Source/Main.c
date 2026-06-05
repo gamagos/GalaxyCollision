@@ -32,6 +32,7 @@ PROJECT DEPENDECIES:
 
 #include "Types.h"
 #include "Utils/FileUtils.h"
+#include "Utils/GenerationUtils.h"
 #include "Utils/OpenGLUtils.h"
 
 // THIS PROGRAM ONLY WORKS FOR WINDOWS
@@ -86,26 +87,112 @@ int main(int argc, char **argv)
     GLuint primaryVBO;
     glGenBuffers(1, &primaryVBO);
     glBindBuffer(GL_ARRAY_BUFFER, primaryVBO);
-    //TODO glBufferData();
-    //TODO glVertexAttribPointer();
-    //TODO glEnableVertexAttribArray();
+    int indexPrimaryVBO = 0;
+    glVertexAttribPointer(indexPrimaryVBO, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0); // Current buffer layout: | float posX | float posY | float posZ |
+    glEnableVertexAttribArray(indexPrimaryVBO);
 
-    char* vertexShaderSourcePath = getAbsolutePath("Main/Resources/shaders/Vertex.shader"); //! Apparently you need to specify paths as if we were inside the build directory!
+    char* vertexShaderSourcePath = getAbsolutePath("Main/Resources/shaders/Vertex.glsl"); //! Apparently you need to specify paths as if we were inside the build directory!
     char* vertexShaderSource = readFileAsCharArray(vertexShaderSourcePath);
     GLuint vertexShader = createShader(vertexShaderSource, GL_VERTEX_SHADER);
-    char* fragmentShaderSourcePath = getAbsolutePath("Main/Resources/shaders/Fragment.shader");
+    char* fragmentShaderSourcePath = getAbsolutePath("Main/Resources/shaders/Fragment.glsl");
     char* fragmentShaderSource = readFileAsCharArray(fragmentShaderSourcePath);
     GLuint fragmentShader = createShader(fragmentShaderSource, GL_FRAGMENT_SHADER);
     GLuint shaders[] = {
         vertexShader,
         fragmentShader
     };
-    GLuint shaderProgram = createShaderProgram(shaders, 2);
+    GLuint primaryShaderProgram = createShaderProgram(shaders, 2);
+    safer_free(&vertexShaderSourcePath);
+    safer_free(&vertexShaderSource);
+    safer_free(&fragmentShaderSourcePath);
+    safer_free(&fragmentShaderSource);
 
     printf_s("Using OpenGL version %s\n", glGetString(GL_VERSION));
     // ##############################################################################
 
     printf_s("Starting galaxy generation\n");
+    BlackHole_32 parentBlackHole = {
+        .position_Terameters = (Vector3_Int32){0, 0, 0},
+        .velocity_KilometersPerSecond = (Vector3_Float32){0.0f, 0.0f, 0.0f},
+        .mass_10_BillionQuettagrams = 10'000.0f,
+        .standardGravitationalParameter_TerametersCubedPerPetaecondSquared = 0.0f, // Assigned later
+        .rotationAxis = (Vector3_Float32){0.0f, 1.0f, 0.0f},
+        .rotatesClockwise = true
+    };
+    parentBlackHole.standardGravitationalParameter_TerametersCubedPerPetaecondSquared = GRAVITATIONAL_CONSTANT_FLOAT * parentBlackHole.mass_10_BillionQuettagrams;
+    unsigned int amountStars = 1'000;
+    Star_32* galaxy = generateStars32Galaxy(amountStars, parentBlackHole);
+    float* positions = calloc((size_t)(amountStars * 3), sizeof(float));
+    if (!positions)
+    {
+        perror("Failed to allocate memory for positions (Main.c, main())");
+        glDeleteProgram(primaryShaderProgram);
+        glfwTerminate();
+        return 1;
+    }
+
+    for ( unsigned int i = 0; i < (amountStars * 3); i += 3 )
+    {
+        size_t galaxyIndex = i / 3;
+        positions[i] = galaxy[galaxyIndex].position_Terameters.x;
+        positions[i + 1] = galaxy[galaxyIndex].position_Terameters.y;
+        positions[i + 2] = galaxy[galaxyIndex].position_Terameters.z;
+    }
+    
+    // Normalize all values in positions for 
+    float positionsMaxValueAbsolute = 0.0f;
+    for (unsigned int i = 0; i < (amountStars * 3); i ++)
+    {
+        if ( fabsf(positions[i]) > positionsMaxValueAbsolute )
+        {
+            positionsMaxValueAbsolute = fabsf(positions[i]);
+        }
+    }
+    for (unsigned int i = 0; i < (amountStars * 3); i ++)
+    {
+        positions[i] /= positionsMaxValueAbsolute;
+    }
+    //! This is for debugging
+    for (unsigned int i = 0; i < amountStars; i++)
+    {
+        printf("%f\n", positions[i]);
+        printf("%f\n", positions[i + 1]);
+        printf("%f\n", positions[i + 2]);
+        printf("\n");
+    }
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * amountStars * 3, positions, GL_STATIC_DRAW); // Copy the newly generated galaxy into VRAM
+    
+    // Setup matrices
+    mat4 viewMatrix = {0};
+    glm_lookat(
+        (vec3){ 0.0f, 0.0f, 10.0f },
+        (vec3){ 0.0f, 0.0f, 0.0f },
+        (vec3){ 0.0f, 1.0f, 0.0f },
+        viewMatrix
+    );
+    GLuint viewMatrixUniformLocation = glGetUniformLocation(primaryShaderProgram, "viewMatrix");
+    glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, viewMatrix);
+
+    mat4 perspectiveProjectionMatrix = {0};
+    glm_mat4_identity(perspectiveProjectionMatrix);
+    glm_perspective( glm_rad(70.0f), (float)windowWidth / (float)windowHeight, 0.1f, 1'000.0f, perspectiveProjectionMatrix );
+    GLuint perspectiveProjectionMatrixUniformLocation = glGetUniformLocation(primaryShaderProgram, "projectionMatrix");
+    glUniformMatrix4fv(perspectiveProjectionMatrixUniformLocation, 1, GL_FALSE, perspectiveProjectionMatrix);
+
+    printf("Starting render-loop\n");
+
+    // Render loop
+    while (!glfwWindowShouldClose(primaryWindow))
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, primaryVBO);
+
+        glDrawArrays(GL_POINTS, 0, amountStars);
+
+        glfwSwapBuffers(primaryWindow);
+        glfwPollEvents();
+    }
+
+    glDeleteProgram(primaryShaderProgram);
     glfwTerminate();
     printf_s("Program finished\n==========================================================");
     return 0;

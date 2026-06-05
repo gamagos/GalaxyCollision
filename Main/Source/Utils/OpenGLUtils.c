@@ -68,7 +68,13 @@ GLuint createShaderProgram(GLuint shaders[], unsigned int amountShaders)
 	{
 		perror( formatString("\n%s Linking shaders was not successful", WARNING_TAG) );
 		glGetProgramInfoLog(shaderProgram, infoLogSizeShaderProgram, NULL, infoLog);
-		perror( formatString("\nShader compilation log:\n%s", infoLog));
+		perror( formatString("\nShader linking log:\n%s", infoLog));
 		return NULL;
 	}
+
+	for (unsigned int i = 0; i < amountShaders; i++) {
+		glDeleteShader(shaders[i]);
+	}
+
+	return shaderProgram;
 }
