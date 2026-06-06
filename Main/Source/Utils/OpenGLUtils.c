@@ -2,9 +2,11 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stdio.h>
+#include <stdbool.h>
 
-#include "DataUtils.h"
 #include "../Constants.h"
+#include "DataUtils.h"
+#include "FileUtils.h"
 
 void glfw_error_callback(int code, const char* description)
 {
@@ -16,16 +18,29 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow* window) 
-{
-	
-}
-
 #ifndef infoLogSizeShader
 #define infoLogSizeShader 8192U
 #endif
-GLuint createShader(const char* shaderSource, GLenum shaderType)
+GLuint createShaderFromPath(const char* path, bool pathIsRelativePath, GLenum shaderType) //! Relative path must be relative to the build dir, not source dir!
 {
+	// Check for invalid input
+	if (!path) 
+	{
+		perror("Function createShaderFromPath()'s \"path\" can not be NULL");
+		return NULL;
+	}
+
+	const char* shaderSourcePath = 0;
+	if (pathIsRelativePath)
+	{
+		shaderSourcePath = getAbsolutePath(path);
+	}
+	else // If path already is an absolute path
+	{
+		shaderSourcePath = path;
+	}
+	const char* shaderSource = readFileAsCharArray(shaderSourcePath);
+
 	GLuint shader = 0;
 	shader = glCreateShader(shaderType);
 	glShaderSource(shader, 1, &shaderSource, NULL);
@@ -43,6 +58,8 @@ GLuint createShader(const char* shaderSource, GLenum shaderType)
 		return NULL;
 	}
 
+	safer_free(&shaderSourcePath);
+	safer_free(&shaderSource);
 	return shader;
 }
 

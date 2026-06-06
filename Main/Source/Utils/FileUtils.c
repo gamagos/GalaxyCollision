@@ -35,7 +35,6 @@ char* readFileAsCharArray(const char* path)
 	if (!file)
 	{
 		perror( formatString("\nFailed to open file \"%s\"", path) );
-		
 		return NULL;
 	}
 	

@@ -36,7 +36,7 @@ SYNOPSIS:
 ARGS:
     pointer:
         A POINTER to the pointer that we want to free the memory of and set to zero.
-        Note that this must be a pointer to the pointer so that the data can be modified (the pointer being set to 0)
+        Note that this must be a pointer to the pointer in question so that it can be modified (the pointer being set to 0)
 REMARKS:
     Remember to pass this method a pointer to a pointer with the adress-of operator "&"
 */

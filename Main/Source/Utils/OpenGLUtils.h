@@ -40,17 +40,21 @@ void processInput(GLFWwindow* window);
 SYNOPSIS:
 	Creates and compiles a shader of a specified type from a specified source.
 ARGS:
-	shaderSource:
-		The actual source code of the shader as a string
+	path:
+		The path to the shader source code IN THE BUILD DIR
+	pathIsRelativePath:
+		Wether "path" a relative path or not(absolute path).
 	shaderType:
 		Which type of shader the shader should be as a GLenum
 RETURNS:
 	The id associated by OpenGL with the created shader or NULL if not successful
+REMARKS:
+	"path" must be in the build dir!
 */
 #ifndef infoLogSizeShader
 #define infoLogSizeShader 8192U
 #endif
-GLuint createShader(const char* shaderSource, GLenum shaderType);
+GLuint createShaderFromPath(const char* path, bool pathIsRelativePath, GLenum shaderType);
 
 /*
 SYNOPSIS:

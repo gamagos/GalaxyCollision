@@ -195,6 +195,40 @@ bool mapPointExistenceProbabilityExponential64
 
 /*
 SYNOPSIS:
+	Get's the distance of 2 points as a positive number
+ARGS:
+	point1, point2:
+		The points to get the distance from
+RETURNS
+	The distance of the 2 points as a positive long int.
+REMARKS:
+	Looses some precision because math functions use double
+EXAMPLE:
+	Vector3Int32 pointA = {2,1,1}, pointB = {2,2,1};
+	unsigned long distance = getPointsDistanceInt32(pointA, pointB);
+	printf("Distance points: %ld", distance); ==> Distance points: 1
+*/
+unsigned long getPointsDistanceInt32(Vector3_Int32 point1, Vector3_Int32 point2);
+
+/*
+SYNOPSIS:
+	Get's the distance of 2 points as a positive number
+ARGS:
+	point1, point2:
+		The points to get the distance from
+RETURNS
+	The distance of the 2 points as a positive long int.
+REMARKS:
+	Looses some precision because math functions use double
+EXAMPLE:
+	Vector3Int64 pointA = {2,1,1}, pointB = {2,2,1};
+	unsigned long distance = getPointsDistance64(pointA, pointB);
+	printf("Distance points: %ld", distance); ==> Distance points: 1
+*/
+unsigned long long getPointsDistanceInt64(Vector3_Int64 point1, Vector3_Int64 point2);
+
+/*
+SYNOPSIS:
 	Normalizes a vector's components for 1
 DESCRIPTION:
 	Normalizes a vector's components for 1 by

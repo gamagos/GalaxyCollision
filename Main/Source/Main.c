@@ -40,6 +40,7 @@ PROJECT DEPENDECIES:
 
 int windowWidth = 1'900;
 int windowHeight = 1'000;
+long unsigned int amountStars = 1'250;
 
 float timeSinceStart_PetaSeconds_Float = 0.0f;
 double timeSinceStart_PetaSeconds_Double = 0.0;
@@ -67,6 +68,7 @@ int main(int argc, char **argv)
         return 1;
     }
     glfwMakeContextCurrent(primaryWindow);
+
     // Load glad
     int successGlad = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     if (!successGlad)
@@ -95,12 +97,8 @@ int main(int argc, char **argv)
     glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 10, (void*)(6 * sizeof(float)) );
     glEnableVertexAttribArray(2);
 
-    char* vertexShaderSourcePath = getAbsolutePath("Main/Resources/shaders/Vertex.glsl"); //! Apparently you need to specify paths as if we were inside the build directory!
-    char* vertexShaderSource = readFileAsCharArray(vertexShaderSourcePath);
-    GLuint vertexShader = createShader(vertexShaderSource, GL_VERTEX_SHADER);
-    char* fragmentShaderSourcePath = getAbsolutePath("Main/Resources/shaders/Fragment.glsl");
-    char* fragmentShaderSource = readFileAsCharArray(fragmentShaderSourcePath);
-    GLuint fragmentShader = createShader(fragmentShaderSource, GL_FRAGMENT_SHADER);
+    GLuint vertexShader = createShaderFromPath("Main/Resources/shaders/Vertex.glsl", true, GL_VERTEX_SHADER);
+    GLuint fragmentShader = createShaderFromPath("Main/Resources/shaders/Fragment.glsl", true, GL_FRAGMENT_SHADER);
     
     GLuint shaders[] = {
         vertexShader,
@@ -108,15 +106,14 @@ int main(int argc, char **argv)
     };
     GLuint primaryShaderProgram = createShaderProgram(shaders, 2);
     glUseProgram(primaryShaderProgram);
-    safer_free(&vertexShaderSourcePath);
-    safer_free(&vertexShaderSource);
-    safer_free(&fragmentShaderSourcePath);
-    safer_free(&fragmentShaderSource);
 
     printf_s("Using OpenGL version %s\n", glGetString(GL_VERSION));
     // ##############################################################################
 
+    // Galaxy Generation
     printf_s("Starting galaxy generation\n");
+
+    // Black hole(s)
     BlackHole_32 parentBlackHole = {
         .position_Terameters = (Vector3_Int32){0, 0, 0},
         .velocity_KilometersPerSecond = (Vector3_Float32){0.0f, 0.0f, 0.0f},
@@ -126,8 +123,10 @@ int main(int argc, char **argv)
         .rotatesClockwise = true
     };
     parentBlackHole.standardGravitationalParameter_TerametersCubedPerPetaecondSquared = GRAVITATIONAL_CONSTANT_FLOAT * parentBlackHole.mass_10_BillionQuettagrams;
-    unsigned int amountStars = 1'200;
+
     Star_32* galaxy = generateStars32Galaxy(amountStars, parentBlackHole);
+
+    // Memory allocations
     float* positions = calloc( (size_t)(amountStars * 3), sizeof(float) );
     if (!positions)
     {
@@ -136,6 +135,7 @@ int main(int argc, char **argv)
         glfwTerminate();
         return 1;
     }
+
     float* velocities = calloc( (size_t)(amountStars * 3), sizeof(float) );
     if (!velocities)
     {
@@ -144,6 +144,7 @@ int main(int argc, char **argv)
         glfwTerminate();
         return 1;
     }
+
     float* colors = calloc( (size_t)(amountStars * 4), sizeof(float) );
     if (!colors)
     {
@@ -153,6 +154,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    // Copying data from galaxy to custom buffers and doing some normalization on the dat
     for ( unsigned int i = 0; i < (amountStars * 3); i += 3 )
     {
         size_t galaxyIndex = i / 3;
@@ -176,7 +178,6 @@ int main(int argc, char **argv)
         colors[i + 3] = (float)(galaxy[galaxyIndex].color.Alpha) / 255.0f;
     }
 
-    // Normalize all values in positions for 
     float positionsMaxValueAbsolute = 0.0f;
     for (unsigned int i = 0; i < (amountStars * 3); i ++)
     {
@@ -204,6 +205,7 @@ int main(int argc, char **argv)
         glfwTerminate();
         return 1;
     }
+
     size_t i3 = 0;
     size_t i4 = 0;
     for (size_t i = 0; i < amountStars; i++)
@@ -248,42 +250,80 @@ int main(int argc, char **argv)
     glUniformMatrix4fv(perspectiveProjectionMatrixUniformLocation, 1, GL_FALSE, perspectiveProjectionMatrix);
 
     glEnable(GL_DEPTH_TEST);
-    printf("Starting render-loop\n");
+    printf_s("Starting render-loop\n\n");
+    printf_s("###########################################################\n");
+    printf_s("####################    Keybindings    ####################\n");
+    printf_s("###########################################################\n");
+    printf_s("# Decrease radius:                  W                     #\n");
+    printf_s("# Increase radius:                  S                     #\n");
+    printf_s("# Increase camera height:           Space                 #\n");
+    printf_s("# Decrease camera height:           Right Ctrl; Left Ctrl #\n");
+    printf_s("# Increase camera speed:            Q                     #\n");
+    printf_s("# Decrease camera speed:            E                     #\n");
+    printf_s("# Increase camera orbiting speed:   D                     #\n");
+    printf_s("# Decrease camera orbiting speed:   A                     #\n");
+    printf_s("# Invert camera orbiting direction: R                     #\n");
+    printf_s("###########################################################\n\n");
+    // TODO This:
+    printf_s("%s Changing camera orbiting speed currently cause glitching before speed change\n", WARNING_TAG);
+    printf_s("%s Changing camera orbiting direction currently must be done with a very quick tap of the key or else it will glitch out\n", WARNING_TAG);
 
     // ### Variable definitions for loop ###
     // Gravity Physics, so far only movement
     size_t bufferDataIndex = 0;
-    float mass = 36'000.0f; // All bodies weight the same for now
-    float speedCap = 0.8f;
     float distance = 0.0f;
     float force = 0.0f;
-    float drag = 1.001;
+    float mass = 36'000.0f; // All bodies weight the same for now
+    const float speedCap = 0.8f;
+    const float drag = 1.001;
     vec3 normalizedDirectionVector = { 0.0f }; //! This vector must remain normalized [1.0f; -1.0f]!
     // Variables for camera
     float camX = 0.0f;
+    float camY = 0.0f;
     float camZ = 0.0f;
     float radius = 4.0f;
-    float camRotationSpeedReductionDivisor = 5.5f; // bigger means slower
+    float cameraUserInputSpeed = 0.5f;
+    float camOrbitingSpeedReductionDivisor = 6.5f; // bigger means slower
 
-    // Render loop
+    // ### Render loop ###
     while (!glfwWindowShouldClose(primaryWindow))
     {
+        // Set up for next frame
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
         glBindBuffer(GL_ARRAY_BUFFER, primaryVBO);
         
+        // ### Process User Input ###
+        // Camera radius
+        if (glfwGetKey(primaryWindow, GLFW_KEY_W)) radius = max( radius - cameraUserInputSpeed, 0.0f);
+        if (glfwGetKey(primaryWindow, GLFW_KEY_S)) radius += cameraUserInputSpeed;
+
+        // Camera Y height
+        if (glfwGetKey(primaryWindow, GLFW_KEY_SPACE)) camY += cameraUserInputSpeed;
+        if (glfwGetKey(primaryWindow, GLFW_KEY_RIGHT_CONTROL)) camY -= cameraUserInputSpeed;
+        if (glfwGetKey(primaryWindow, GLFW_KEY_LEFT_CONTROL)) camY -= cameraUserInputSpeed;
+
+        // Camera speed
+        if (glfwGetKey(primaryWindow, GLFW_KEY_Q)) cameraUserInputSpeed *= 1.1f;
+        if (glfwGetKey(primaryWindow, GLFW_KEY_E)) cameraUserInputSpeed /= 1.1f;
+
+        // Camera orbiting speed and direction
+        if (glfwGetKey(primaryWindow, GLFW_KEY_A)) camOrbitingSpeedReductionDivisor *= 1.1f;
+        if (glfwGetKey(primaryWindow, GLFW_KEY_D)) camOrbitingSpeedReductionDivisor /= 1.1f;
+        if (glfwGetKey(primaryWindow, GLFW_KEY_R)) camOrbitingSpeedReductionDivisor *= -1.0f;
+
         // Move camera
-        camX = sin(glfwGetTime() / camRotationSpeedReductionDivisor) * radius;
-        camZ = cos(glfwGetTime() / camRotationSpeedReductionDivisor) * radius;
+        camX = sin(glfwGetTime() / camOrbitingSpeedReductionDivisor) * radius;
+        camZ = cos(glfwGetTime() / camOrbitingSpeedReductionDivisor) * radius;
         mat4 viewMatrix = { 0 };
         glm_lookat(
-            (vec3) { camX, 0.0f, camZ },
+            (vec3) { camX, camY, camZ },
             (vec3) { 0.0f, 0.0f, 0.0f },
             (vec3) { 0.0f, 1.0f, 0.0f },
             viewMatrix
         );
         glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, viewMatrix);
 
+        // Actual physics
         for (size_t i = 0; i < (size_t)(amountStars * 3); i += 3)
         {
             bufferDataIndex = i / 3;
@@ -324,10 +364,10 @@ int main(int argc, char **argv)
                 &velocities[i],
                 sizeof(float) * 3
             );
-        } //? Currently working on making physics calculations on CPU
-        glBufferData(GL_ARRAY_BUFFER, sizeof(dataForBuffer)* amountStars, bufferData, GL_STATIC_DRAW);
+        }
+        glBufferData(GL_ARRAY_BUFFER, sizeof(dataForBuffer)* amountStars, bufferData, GL_STATIC_DRAW); // Copy modified data from physics calculations to VRAM
 
-        glDrawArrays(GL_POINTS, 0, amountStars);
+        glDrawArrays(GL_POINTS, 0, amountStars); // Draw call
 
         glfwSwapBuffers(primaryWindow);
         glfwPollEvents();
@@ -335,13 +375,14 @@ int main(int argc, char **argv)
 
     glDeleteProgram(primaryShaderProgram);
     glfwTerminate();
-    printf_s("Program finished\n==========================================================");
+    printf_s("Program finished\n============================================================="); // This looks clean af
     return 0;
 }
 
 //TODO add GPLv3 License
 //TODO make functions actually use units!
 //TODO use SSBOs to make physics calculations on the GPU
+//TODO make methods for calloc and malloc to make that auto check for allocation success to make code more condensed
 
 /*
 GOALS
@@ -351,7 +392,7 @@ GOALS
     - Make it use vulkan
     - Make it optimized
     - Make it really pretty
-    - Make it cluster computing
+    - Make it cluster computing - Maybe not might be inefficient because of avg network bandwidth
     - Make super clear docs so anyone can read code
     - Make YouTube video?
 */
