@@ -22,6 +22,7 @@ PROJECT DEPENDECIES:
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <Windows.h>
 
 #include <cglm/cglm.h>
@@ -38,9 +39,11 @@ PROJECT DEPENDECIES:
 
 // THIS PROGRAM ONLY WORKS FOR WINDOWS
 
-int windowWidth = 1'900;
+typedef struct timespec timespec;
+
+int windowWidth = 1'000;
 int windowHeight = 1'000;
-long unsigned int amountStars = 1'250;
+long unsigned int amountStars = 25'000;
 
 float timeSinceStart_PetaSeconds_Float = 0.0f;
 double timeSinceStart_PetaSeconds_Double = 0.0;
@@ -87,15 +90,16 @@ int main(int argc, char **argv)
     glGenVertexArrays(1, &VAO1);
     glBindVertexArray(VAO1);
     
-    GLuint primaryVBO;
+    GLuint primaryVBO; //! Only holds color, because physics are on SSBO!
     glGenBuffers(1, &primaryVBO);
     glBindBuffer(GL_ARRAY_BUFFER, primaryVBO);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 10, (void*)0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 10, (void*)(3 * sizeof(float)) );
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 10, (void*)(6 * sizeof(float)) );
-    glEnableVertexAttribArray(2);
+
+    GLuint SSBO;
+    glGenBuffers(1, &SSBO);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBO);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, SSBO);
 
     GLuint vertexShader = createShaderFromPath("Main/Resources/shaders/Vertex.glsl", true, GL_VERTEX_SHADER);
     GLuint fragmentShader = createShaderFromPath("Main/Resources/shaders/Fragment.glsl", true, GL_FRAGMENT_SHADER);
@@ -127,7 +131,7 @@ int main(int argc, char **argv)
     Star_32* galaxy = generateStars32Galaxy(amountStars, parentBlackHole);
 
     // Memory allocations
-    float* positions = calloc( (size_t)(amountStars * 3), sizeof(float) );
+    float* positions = calloc( (size_t)(amountStars * 4), sizeof(float) );
     if (!positions)
     {
         perror("Failed to allocate memory for positions (Main.c, main())");
@@ -136,7 +140,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    float* velocities = calloc( (size_t)(amountStars * 3), sizeof(float) );
+    float* velocities = calloc( (size_t)(amountStars * 4), sizeof(float) );
     if (!velocities)
     {
         perror("Failed to allocate memory for velocities (Main.c, main())");
@@ -191,10 +195,30 @@ int main(int argc, char **argv)
         positions[i] /= positionsMaxValueAbsolute;
     }
 
+    // Set the average velocity to 0 so that particles do not go to far from the center
+    vec3 averageVelocity = { 0.0f };
+    for (size_t i = 0; i < (size_t)(amountStars * 3); i += 3) // Get sum of velocities on axis
+    {
+        averageVelocity[0] += velocities[i];
+        averageVelocity[1] += velocities[i + 1];
+        averageVelocity[2] += velocities[i + 2];
+    }
+    averageVelocity[0] /= amountStars;
+    averageVelocity[1] /= amountStars;
+    averageVelocity[2] /= amountStars;
+    for (size_t i = 0; i < (size_t)(amountStars * 3); i += 3) // Apply the opposite of the average velocity of all particles
+    {                                                         // to all particles to set their average velocity to 0 so that they do not drift away from the center
+        velocities[i]     -= averageVelocity[0];
+        velocities[i + 1] -= averageVelocity[1];
+        velocities[i + 2] -= averageVelocity[2];
+    }
+
     typedef struct dataForBuffer { //! This also is more or less a temporary workaround
         float position[3];
+        float padding;
         float velocity[3];
-        float color[4];
+        float padding2;
+        //float color[4];
     } dataForBuffer;
 
     dataForBuffer* bufferData = calloc( (size_t)amountStars, sizeof(dataForBuffer) );
@@ -212,70 +236,62 @@ int main(int argc, char **argv)
     {
         memcpy_s( // Positions 
             &bufferData[i].position, 
-            sizeof(float) * 3,
-            &positions[i3],
-            sizeof(float) * 3
+            sizeof(float) * 4,
+            &positions[i4],
+            sizeof(float) * 4
         );
         memcpy_s( // Velocities
             &bufferData[i].velocity,
-            sizeof(float) * 3,
-            &velocities[i3],
-            sizeof(float) * 3
-        );
-        memcpy_s( // Colors
-            &bufferData[i].color,
             sizeof(float) * 4,
-            &colors[i4],
+            &velocities[i4],
             sizeof(float) * 4
         );
-        i3 += 3;
+        //memcpy_s( // Colors
+        //    &bufferData[i].color,
+        //    sizeof(float) * 4,
+        //    &colors[i4],
+        //    sizeof(float) * 4
+        //);
         i4 += 4;
     }
-    glBufferData(GL_ARRAY_BUFFER, sizeof(dataForBuffer) * amountStars, bufferData, GL_STATIC_DRAW); // Copy the newly generated galaxy into VRAM
-    
-    // Setup matrices
-    mat4 viewMatrix = {0};
-    glm_lookat(
-        (vec3){ 0.1f, 0.0f, 4.0f },
-        (vec3){ 0.0f, 0.0f, 0.0f },
-        (vec3){ 0.0f, 1.0f, 0.0f },
-        viewMatrix
-    );
-    GLuint viewMatrixUniformLocation = glGetUniformLocation(primaryShaderProgram, "viewMatrix");
-    glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, viewMatrix);
-
-    mat4 perspectiveProjectionMatrix = {0};
-    glm_perspective( glm_rad(60.0f), (float)windowWidth / (float)windowHeight, 0.1f, 1'000'000'000.0f, perspectiveProjectionMatrix );
-    GLuint perspectiveProjectionMatrixUniformLocation = glGetUniformLocation(primaryShaderProgram, "projectionMatrix");
-    glUniformMatrix4fv(perspectiveProjectionMatrixUniformLocation, 1, GL_FALSE, perspectiveProjectionMatrix);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * amountStars, colors, GL_STATIC_DRAW); // Copy the newly generated galaxy into VRAM
+    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(vec3) * 2 * amountStars, bufferData, GL_DYNAMIC_DRAW);
 
     glEnable(GL_DEPTH_TEST);
     printf_s("Starting render-loop\n\n");
-    printf_s("###########################################################\n");
-    printf_s("####################    Keybindings    ####################\n");
-    printf_s("###########################################################\n");
-    printf_s("# Decrease radius:                  W                     #\n");
-    printf_s("# Increase radius:                  S                     #\n");
-    printf_s("# Increase camera height:           Space                 #\n");
-    printf_s("# Decrease camera height:           Right Ctrl; Left Ctrl #\n");
-    printf_s("# Increase camera speed:            Q                     #\n");
-    printf_s("# Decrease camera speed:            E                     #\n");
-    printf_s("# Increase camera orbiting speed:   D                     #\n");
-    printf_s("# Decrease camera orbiting speed:   A                     #\n");
-    printf_s("# Invert camera orbiting direction: R                     #\n");
-    printf_s("###########################################################\n\n");
+    printf_s("###############################################################\n");
+    printf_s("#####################     Keybindings     #####################\n");
+    printf_s("###############################################################\n");
+    printf_s("##  Decrease radius:                  W                      ##\n");
+    printf_s("##  Increase radius:                  S                      ##\n");
+    printf_s("##  Increase camera height:           Space                  ##\n");
+    printf_s("##  Decrease camera height:           Right Ctrl; Left Ctrl  ##\n");
+    printf_s("##  Increase camera speed:            Q                      ##\n");
+    printf_s("##  Decrease camera speed:            E                      ##\n");
+    printf_s("##  Increase camera orbiting speed:   D                      ##\n");
+    printf_s("##  Decrease camera orbiting speed:   A                      ##\n");
+    printf_s("##  Invert camera orbiting direction: R                      ##\n");//
+    printf_s("##  Increase particle mass:           X                      ##\n");
+    printf_s("##  Decrease particle mass:           C                      ##\n");
+    printf_s("##  Increase drag:                    F                      ##\n");
+    printf_s("##  Decrease drag:                    G                      ##\n");
+    printf_s("##  Increase velocity cap:            1                      ##\n");
+    printf_s("##  Decrease velocity cap:            2                      ##\n");
+    printf_s("###############################################################\n\n");
     // TODO This:
     printf_s("%s Changing camera orbiting speed currently cause glitching before speed change\n", WARNING_TAG);
-    printf_s("%s Changing camera orbiting direction currently must be done with a very quick tap of the key or else it will glitch out\n", WARNING_TAG);
+    printf_s("%s Changing camera orbiting direction currently must be done with a very quick tap of the key or else it will glitch out\n\n", WARNING_TAG);
 
     // ### Variable definitions for loop ###
     // Gravity Physics, so far only movement
+    double timeLastFrame = glfwGetTime();
+    double frameRate = 0.0;
     size_t bufferDataIndex = 0;
     float distance = 0.0f;
     float force = 0.0f;
-    float mass = 36'000.0f; // All bodies weight the same for now
-    const float speedCap = 0.8f;
-    const float drag = 1.001;
+    float mass = 320'000.0f; // All bodies weight the same for now
+    float speedCap = 901.0f;
+    float drag = 1.002;
     vec3 normalizedDirectionVector = { 0.0f }; //! This vector must remain normalized [1.0f; -1.0f]!
     // Variables for camera
     float camX = 0.0f;
@@ -285,12 +301,47 @@ int main(int argc, char **argv)
     float cameraUserInputSpeed = 0.5f;
     float camOrbitingSpeedReductionDivisor = 6.5f; // bigger means slower
 
+    // ### Setup Uniforms ###
+    // Uniforms for graphics
+    mat4 viewMatrix = {0};
+    glm_lookat(
+        (vec3){ 0.1f, 0.0f, 9.0f },
+        (vec3){ 0.0f, 0.0f, 0.0f },
+        (vec3){ 0.0f, 1.0f, 0.0f },
+        viewMatrix
+    );
+    GLuint viewMatrixUniformLocation = glGetUniformLocation(primaryShaderProgram, "viewMatrix");
+    glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, viewMatrix);
+
+    mat4 perspectiveProjectionMatrix = {0};
+    glm_perspective( glm_rad(70.0f), (float)windowWidth / (float)windowHeight, 0.1f, 5'000'000.0f, perspectiveProjectionMatrix );
+    GLuint perspectiveProjectionMatrixUniformLocation = glGetUniformLocation(primaryShaderProgram, "projectionMatrix");
+    glUniformMatrix4fv(perspectiveProjectionMatrixUniformLocation, 1, GL_FALSE, perspectiveProjectionMatrix);
+
+    // Uniforms for physics
+    GLuint massUniformLocation = glGetUniformLocation(primaryShaderProgram, "mass");
+    glUniform1f(massUniformLocation, mass);
+    
+    GLuint speedCapUniformLocation = glGetUniformLocation(primaryShaderProgram, "speedCap");
+    glUniform1f(speedCapUniformLocation, speedCap);
+    
+    GLuint dragUniformLocation = glGetUniformLocation(primaryShaderProgram, "drag");
+    glUniform1f(dragUniformLocation, drag);
+
+    // Uniforms for both
+    GLuint amountStarsUniformLocation = glGetUniformLocation(primaryShaderProgram, "amountStars");
+    glUniform1ui(amountStarsUniformLocation, amountStars);
+
+    // Make sure everything is bound technically unnecessary
+    glBindBuffer(GL_ARRAY_BUFFER, primaryVBO);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBO);
+    glUseProgram(primaryShaderProgram);
+    
     // ### Render loop ###
     while (!glfwWindowShouldClose(primaryWindow))
     {
         // Set up for next frame
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glBindBuffer(GL_ARRAY_BUFFER, primaryVBO);
         
         // ### Process User Input ###
         // Camera radius
@@ -303,13 +354,25 @@ int main(int argc, char **argv)
         if (glfwGetKey(primaryWindow, GLFW_KEY_LEFT_CONTROL)) camY -= cameraUserInputSpeed;
 
         // Camera speed
-        if (glfwGetKey(primaryWindow, GLFW_KEY_Q)) cameraUserInputSpeed *= 1.1f;
-        if (glfwGetKey(primaryWindow, GLFW_KEY_E)) cameraUserInputSpeed /= 1.1f;
+        if (glfwGetKey(primaryWindow, GLFW_KEY_Q)) cameraUserInputSpeed = min( FLT_MAX, cameraUserInputSpeed * 1.05f );
+        if (glfwGetKey(primaryWindow, GLFW_KEY_E)) cameraUserInputSpeed = max( FLT_MIN, cameraUserInputSpeed / 1.05f );
 
         // Camera orbiting speed and direction
-        if (glfwGetKey(primaryWindow, GLFW_KEY_A)) camOrbitingSpeedReductionDivisor *= 1.1f;
-        if (glfwGetKey(primaryWindow, GLFW_KEY_D)) camOrbitingSpeedReductionDivisor /= 1.1f;
+        if (glfwGetKey(primaryWindow, GLFW_KEY_A)) camOrbitingSpeedReductionDivisor = min(FLT_MAX, camOrbitingSpeedReductionDivisor * 1.1f);
+        if (glfwGetKey(primaryWindow, GLFW_KEY_D)) camOrbitingSpeedReductionDivisor = max(FLT_MIN, camOrbitingSpeedReductionDivisor / 1.1f);
         if (glfwGetKey(primaryWindow, GLFW_KEY_R)) camOrbitingSpeedReductionDivisor *= -1.0f;
+
+        // Particle mass
+        if (glfwGetKey(primaryWindow, GLFW_KEY_X)) mass = min(FLT_MAX, mass * 1.009f);
+        if (glfwGetKey(primaryWindow, GLFW_KEY_C)) mass = max(FLT_MIN, mass / 1.009f);
+
+        // Drag
+        if (glfwGetKey(primaryWindow, GLFW_KEY_F)) drag = min(FLT_MAX, drag * 1.000'01f);
+        if (glfwGetKey(primaryWindow, GLFW_KEY_G)) drag = max(1.0f, drag / 1.000'01f);
+
+        // Velocity cap
+        if (glfwGetKey(primaryWindow, GLFW_KEY_1)) speedCap = min(FLT_MAX, speedCap * 1.002f);
+        if (glfwGetKey(primaryWindow, GLFW_KEY_2)) speedCap = max(FLT_MIN, speedCap / 1.002f);
 
         // Move camera
         camX = sin(glfwGetTime() / camOrbitingSpeedReductionDivisor) * radius;
@@ -321,61 +384,26 @@ int main(int argc, char **argv)
             (vec3) { 0.0f, 1.0f, 0.0f },
             viewMatrix
         );
+        // Send updated uniforms to GPU
         glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, viewMatrix);
-
-        // Actual physics
-        for (size_t i = 0; i < (size_t)(amountStars * 3); i += 3)
-        {
-            bufferDataIndex = i / 3;
-            positions[i]     += velocities[i];
-            positions[i + 1] += velocities[i + 1];
-            positions[i + 2] += velocities[i + 2];
-            memcpy_s( // Positions 
-                &bufferData[bufferDataIndex].position,
-                sizeof(float) * 3,
-                &positions[i],
-                sizeof(float) * 3
-            );
-
-            for (size_t j = 0; j < (size_t)(amountStars * 3); j += 3)
-            {
-                if (i == j) continue; // Skip if point is itself
-                // Apply gravity
-                distance = glm_vec3_distance(&positions[i], &positions[j]);
-                glm_vec3_sub(&positions[j], &positions[i], normalizedDirectionVector);
-                glm_vec3_normalize(normalizedDirectionVector);
-                force = getGravitationalForce_32(mass, mass, distance);
-                velocities[i]     += getAcceleration_32(force * normalizedDirectionVector[0], mass);
-                velocities[i + 1] += getAcceleration_32(force * normalizedDirectionVector[1], mass);
-                velocities[i + 2] += getAcceleration_32(force * normalizedDirectionVector[2], mass);
-            } //! The only thing that needs to be n^2 is gravity!
-            // Cap velocity
-            velocities[i] = velocities[i] > 0 ? min(velocities[i], speedCap) : max(velocities[i], -speedCap);
-            velocities[i + 1] = velocities[i + 1] > 0 ? min(velocities[i + 1], speedCap) : max(velocities[i + 1], -speedCap);
-            velocities[i + 2] = velocities[i + 2] > 0 ? min(velocities[i + 2], speedCap) : max(velocities[i + 2], -speedCap);
-            // Apply drag
-            velocities[i] /= drag;
-            velocities[i + 1] /= drag;
-            velocities[i + 2] /= drag;
-
-            memcpy_s( // Velocities
-                &bufferData[bufferDataIndex].velocity,
-                sizeof(float) * 3,
-                &velocities[i],
-                sizeof(float) * 3
-            );
-        }
-        glBufferData(GL_ARRAY_BUFFER, sizeof(dataForBuffer)* amountStars, bufferData, GL_STATIC_DRAW); // Copy modified data from physics calculations to VRAM
+        glUniform1f(massUniformLocation, mass);
+        glUniform1f(speedCapUniformLocation, speedCap);
+        glUniform1f(dragUniformLocation, drag);
 
         glDrawArrays(GL_POINTS, 0, amountStars); // Draw call
 
         glfwSwapBuffers(primaryWindow);
         glfwPollEvents();
+
+        // Output
+        frameRate = 1 / (glfwGetTime() - timeLastFrame);
+        printf_s("\rFPS: %.1lf   Particle mass: %.1g   Drag: %f   Speed cap: %.2f", frameRate, mass, drag, speedCap);
+        timeLastFrame = glfwGetTime();
     }
 
     glDeleteProgram(primaryShaderProgram);
     glfwTerminate();
-    printf_s("Program finished\n============================================================="); // This looks clean af
+    printf_s("\nProgram finished\n=============================================================="); // This looks clean af
     return 0;
 }
 

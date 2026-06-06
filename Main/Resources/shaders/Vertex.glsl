@@ -2,17 +2,102 @@
 
 #version 460 core
 
-layout (location = 0) in vec3 position;
-layout (location = 1) in vec3 velocity;
-layout (location = 2) in vec4 myColor;
+#define GRAVITATIONAL_CONSTANT_FLOAT 6.67430e-11f
 
-out vec4 _color;
+struct Data 
+{
+	vec3 position;
+	float padding;
+	vec3 velocity;
+	float padding2;
+};
 
+layout(std430, binding = 0) buffer bufferData
+{
+	Data data[];
+};
+
+// Only value that can stay in a the VBO
+layout(location = 0) in vec4 color;
+
+// Uniforms for graphics
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 
+// Uniforms for physics
+uniform float mass;
+uniform float speedCap;
+uniform float drag;
+
+// Uniforms for both
+uniform uint amountStars;
+
+// Variables to pass to fragment shader
+out vec4 _color;
+
+float getGravitationalForce(float massBody1, float massBody2, float distanceBodies)
+{
+	float force = 0.0f;
+	force = GRAVITATIONAL_CONSTANT_FLOAT * (
+		(massBody1 * massBody2) / (distanceBodies * distanceBodies)
+	);
+
+	return force;
+}
+
+float getAcceleration(float force, float massBody)
+{
+	float acceleration = 0.0f;
+	acceleration = force / massBody;
+
+	return acceleration;
+}
+
+// Variables for main
+vec3 normalizedDirectionVector = {0.0f, 0.0f, 0.0f};
+float distanceBodies = 0.0f;
+float force = 0.0f;
+
 void main()
 {
-	gl_Position = projectionMatrix * viewMatrix * vec4(position.x, position.y, position.z, 1.0f);
-	_color = myColor;
+	// Update positions based on velocities
+	data[gl_VertexID].position.x += data[gl_VertexID].velocity.x;
+	data[gl_VertexID].position.y += data[gl_VertexID].velocity.y;
+	data[gl_VertexID].position.z += data[gl_VertexID].velocity.z;
+
+	// Do physics
+	for (uint i = 0; i < amountStars; i ++)
+	{
+		if (i == gl_VertexID) continue; // Skip if current point is self
+		distanceBodies = distance(data[gl_VertexID].position, data[i].position);
+		normalizedDirectionVector = data[i].position - data[gl_VertexID].position;
+		normalizedDirectionVector = normalize(normalizedDirectionVector);
+		force = getGravitationalForce(mass, mass, distanceBodies);
+		data[gl_VertexID].velocity.x += getAcceleration(force * normalizedDirectionVector.x, mass);
+		data[gl_VertexID].velocity.y += getAcceleration(force * normalizedDirectionVector.y, mass);
+		data[gl_VertexID].velocity.z += getAcceleration(force * normalizedDirectionVector.z, mass);
+	}
+	// Cap velocity
+	data[gl_VertexID].velocity.x = data[gl_VertexID].velocity.x > 0 ?
+		min(data[gl_VertexID].velocity.x, speedCap) :
+		max(data[gl_VertexID].velocity.x, -speedCap);
+	data[gl_VertexID].velocity.y = data[gl_VertexID].velocity.y > 0 ?
+		min(data[gl_VertexID].velocity.y, speedCap) :
+		max(data[gl_VertexID].velocity.y, -speedCap);
+	data[gl_VertexID].velocity.z = data[gl_VertexID].velocity.z > 0 ?
+		min(data[gl_VertexID].velocity.z, speedCap) :
+		max(data[gl_VertexID].velocity.z, -speedCap);
+	// Apply drag
+	data[gl_VertexID].velocity.x /= drag;
+	data[gl_VertexID].velocity.y /= drag;
+	data[gl_VertexID].velocity.z /= drag;
+
+	// Set variables that get passed down pipeline
+	gl_Position = projectionMatrix * viewMatrix * vec4(
+		data[gl_VertexID].position.x,
+		data[gl_VertexID].position.y,
+		data[gl_VertexID].position.z,
+		1.0f
+	);
+	_color = color;
 }
