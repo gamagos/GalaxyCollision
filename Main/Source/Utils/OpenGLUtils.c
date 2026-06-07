@@ -22,17 +22,17 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 #ifndef infoLogSizeShader
 #define infoLogSizeShader 8192U
 #endif
-GLuint createShaderFromPath(const char* path, bool pathIsRelativePath, GLenum shaderType) //! Relative path must be relative to the build dir, not source dir!
+GLuint createShaderFromPath(char* path, bool pathIsRelativePath, GLenum shaderType) //! Relative path must be relative to the build dir, not source dir!
 {
 	printf_s("Compiling shader from file %s\n", path);
 	// Check for invalid input
 	if (!path) 
 	{
 		perror("Function createShaderFromPath()'s \"path\" can not be NULL\n");
-		return NULL;
+		return (GLuint)NULL;
 	}
 
-	const char* shaderSourcePath = 0;
+	char* shaderSourcePath = 0;
 	if (pathIsRelativePath)
 	{
 		shaderSourcePath = getAbsolutePath(path);
@@ -57,12 +57,12 @@ GLuint createShaderFromPath(const char* path, bool pathIsRelativePath, GLenum sh
 		perror( formatString("\n%s Compilation was not successful of shader with source:\n%s\n", WARNING_TAG, shaderSource) );
 		glGetShaderInfoLog(shader, infoLogSizeShader, NULL, infoLog);
 		perror( formatString("\nShader compilation log:\n%s\n", infoLog) );
-		return NULL;
+		return (GLuint)NULL;
 	}
 	printf("Compilation of shader was successful\n");
 
-	safer_free(&shaderSourcePath);
-	safer_free(&shaderSource);
+	safer_free( (void**)&shaderSourcePath );
+	safer_free( (void**)&shaderSource );
 	return shader;
 }
 
@@ -90,7 +90,7 @@ GLuint createShaderProgram(GLuint shaders[], unsigned int amountShaders)
 		perror( formatString("\n%s Linking shaders was not successful", WARNING_TAG) );
 		glGetProgramInfoLog(shaderProgram, infoLogSizeShaderProgram, NULL, infoLog);
 		perror( formatString("\nShader linking log:\n%s", infoLog));
-		return NULL;
+		return (GLuint)NULL;
 	}
 	printf("Linking shaders was successful\n");
 

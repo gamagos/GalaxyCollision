@@ -55,7 +55,18 @@ int main(int argc, char **argv)
 {
     printf_s("Starting program...\n");
     printf_s("Compiled with C Version: %ld\n", __STDC_VERSION__);
-    printf_s("System default integer size is %llu bytes (%llu bits)\n", sizeof(int), sizeof(int) * 8);
+    #if defined(__clang__)
+        printf_s("Compiled with: Clang %s\n", __clang_version__);
+    #elif defined(__ICC) || defined(__INTEL_COMPILER)
+        printf_s("Compiled with: The Intel C/C++ Compiler Version %d\n", __INTEL_COMPILER);
+    #elif defined(__GNUC__)
+        printf_s("Compiled with: GCC Version: %d.%d.%d\n", __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
+    #elif defined(_MSC_VER)
+        printf_s("Compiler: MSVC Version %d\n", _MSC_VER);
+    #else
+        printf_s("Compiled with: Unknown compiler\n");
+    #endif
+    printf_s("System default integer size is %lu bytes (%lu bits)\n", sizeof(int), sizeof(int) * 8);
     
     // ##############################################################################
     // Initialize OpenGL, glad and glfw
@@ -137,7 +148,8 @@ int main(int argc, char **argv)
     if (!positions)
     {
         quitProgramOnError((void*){galaxy}, 1, (GLuint[]) { primaryVBO, SSBO }, 2, (GLuint[]) { VAO1 }, 1, (GLuint[]) { primaryShaderProgram }, 1, "Failed to allocate memory for positions (Main.c, main())");
-        return 1;
+        return 1; //TODO make buffer that has all pointers that should be freed on quit
+        //TODO make the whole quitProgramOnError functionality be implement work and improve the code quality
     }
 
     float* velocities = calloc( (size_t)(amountStars * 4), sizeof(float) );
@@ -181,7 +193,7 @@ int main(int argc, char **argv)
         colors[i + 2] = (float)(galaxy[galaxyIndex].color.Blue)  / 255.0f;
         colors[i + 3] = (float)(galaxy[galaxyIndex].color.Alpha) / 255.0f;
     }
-    safer_free(&galaxy);
+    safer_free((void**)&galaxy);
 
     //// Cap positions at range [1;-1]
     //float positionsMaxValueAbsolute = 0.0f;
@@ -251,10 +263,10 @@ int main(int argc, char **argv)
     }
     glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * amountStars, colors, GL_STATIC_DRAW); // Copy the newly generated galaxy into VRAM
     glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(vec3) * 2 * amountStars, bufferData, GL_DYNAMIC_DRAW);
-    safer_free(&positions);
-    safer_free(&velocities);
-    safer_free(&colors);
-    safer_free(&bufferData);
+    safer_free((void**)& positions);
+    safer_free((void**)& velocities);
+    safer_free((void**)& colors);
+    safer_free((void**)& bufferData);
 
     glEnable(GL_DEPTH_TEST);
     printKeybinds();
@@ -417,7 +429,7 @@ int main(int argc, char **argv)
 
 // Stuff to do at school
 //TODO make buffers that keep track of all used pointers, VBOs, VAOs and shaderProgram to make code safer and quitProgramOnError usage easier
-//TODO finish implementing quitProgramOnError in functions
+//TODO finish implementing quitProgramOnError in functions <-------- priority
 //TODO finish general code cleanup
 
 /*

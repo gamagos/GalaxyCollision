@@ -31,19 +31,20 @@ char* readFileAsCharArray(const char* path)
 {
 	size_t sizeResult = 1024;
 	const size_t sizeResultIncrement = 1024;
-	FILE* file = fopen(path, "r");
+	FILE* file = 0;
+	errno_t failure = fopen_s(&file, path, "r");
 	
-	if (!file)
+	if (failure)
 	{
 		perror( formatString("\nFailed to open file \"%s\"", path) );
-		return NULL;
+		return (char*)NULL;
 	}
 	
 	char* result = calloc(sizeResult, sizeof(char));
 	if (!result)
 	{
 		perror("Failed to allocate memory for result (FileUtils.c, readFileAsCharArray())");
-		return NULL;
+		return (char*)NULL;
 	}
 
 	char temporaryCharArray[chunkSize];
