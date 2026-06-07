@@ -25,6 +25,10 @@ target_sources(DebugUtils
 		${GLFW_INCLUDE_DIRECTORY}
 		${GALAXY_COLLISION_HEADER_FILE}
 )
+target_link_libraries(DebugUtils
+	PRIVATE
+		DataUtils
+)
 
 add_library(FileUtils)
 target_sources(FileUtils
@@ -34,6 +38,10 @@ target_sources(FileUtils
 	PUBLIC
 		FileUtils.h
 		${GALAXY_COLLISION_HEADER_FILE}
+)
+target_link_libraries(FileUtils
+	PRIVATE
+		DataUtils
 )
 
 add_library(GenerationUtils)
@@ -45,6 +53,12 @@ target_sources(GenerationUtils
 		GenerationUtils.h
 		${GALAXY_COLLISION_HEADER_FILE}
 )
+target_link_libraries(GenerationUtils
+	PRIVATE
+		DataUtils
+		PhysicsUtils
+		MathUtils
+)
 
 add_library(MathUtils)
 target_sources(MathUtils
@@ -54,6 +68,10 @@ target_sources(MathUtils
 	PUBLIC
 		MathUtils.h
 		${GALAXY_COLLISION_HEADER_FILE}
+)
+target_link_libraries(MathUtils
+	PRIVATE
+		DataUtils
 )
 
 add_library(OpenGLUtils)
@@ -70,6 +88,13 @@ target_sources(OpenGLUtils
 		${GLAD_INCLUDE_DIRECTORY}
 		${GLFW_INCLUDE_DIRECTORY}
 		${GALAXY_COLLISION_HEADER_FILE}
+)
+target_link_libraries(OpenGLUtils
+	PRIVATE
+		glad
+		glfw
+		DataUtils
+		FileUtils
 )
 
 add_library(PhysicsUtils)
