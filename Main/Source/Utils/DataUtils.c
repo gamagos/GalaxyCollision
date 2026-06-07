@@ -1,4 +1,4 @@
-// (C) Sebastian Fiault 2026
+    // (C) Sebastian Fiault 2026
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -15,7 +15,7 @@ char* formatString(const char* toFormat, ...)
 {
     va_list args;
     va_start(args, toFormat);
-    int amountCharacters = _vscprintf(toFormat, args);
+    size_t amountCharacters = _vscprintf(toFormat, args);
     char* result = calloc(amountCharacters, sizeof(char));
     if (!result)
     {

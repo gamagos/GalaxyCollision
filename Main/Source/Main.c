@@ -430,6 +430,7 @@ int main(int argc, char **argv)
 //TODO make buffers that keep track of all used pointers, VBOs, VAOs and shaderProgram to make code safer and quitProgramOnError usage easier
 //TODO finish implementing quitProgramOnError in functions <-------- priority
 //TODO finish general code cleanup
+//TODO in cmake make sure target_sources also get ALL non std header files
 
 /*
 GOALS
