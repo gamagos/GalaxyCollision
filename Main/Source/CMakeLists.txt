@@ -17,28 +17,26 @@ target_sources(GalaxyCollision
 		Main.c
 
 	PUBLIC
-		FILE_SET HEADERS
-		TYPE HEADERS
-		BASE_DIRS .
-		FILES
-			Constants.h
-			Types.h
-
-	PUBLIC
+		Constants.h
+		GalaxyCollision.h
+		Types.h
 		${CGLM_INCLUDE_DIRECTORY}
 		${GLAD_INCLUDE_DIRECTORY}
 		${GLFW_INCLUDE_DIRECTORY}
 		${STBI_IMAGE_INCLUDE_DIRECTORY}
+		${GALAXY_COLLISION_HEADER_FILE}
 )
 
 target_link_libraries(GalaxyCollision
 	PRIVATE
 		DataUtils
+		DebugUtils
 		FileUtils
 		GenerationUtils
 		MathUtils
 		OpenGLUtils
 		PhysicsUtils
+		UserInteractionUtils
 		
 		cglm
 		glad

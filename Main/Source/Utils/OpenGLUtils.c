@@ -5,6 +5,7 @@
 #include <stdbool.h>
 
 #include "../Constants.h"
+#include "../GalaxyCollision.h"
 #include "DataUtils.h"
 #include "FileUtils.h"
 
@@ -23,10 +24,11 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 #endif
 GLuint createShaderFromPath(const char* path, bool pathIsRelativePath, GLenum shaderType) //! Relative path must be relative to the build dir, not source dir!
 {
+	printf_s("Compiling shader from file %s\n", path);
 	// Check for invalid input
 	if (!path) 
 	{
-		perror("Function createShaderFromPath()'s \"path\" can not be NULL");
+		perror("Function createShaderFromPath()'s \"path\" can not be NULL\n");
 		return NULL;
 	}
 
@@ -52,11 +54,12 @@ GLuint createShaderFromPath(const char* path, bool pathIsRelativePath, GLenum sh
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 	if (!success)
 	{	
-		perror( formatString("\n%s Shader compilation not successful of shader with source:\n%s", WARNING_TAG, shaderSource) );
+		perror( formatString("\n%s Compilation was not successful of shader with source:\n%s\n", WARNING_TAG, shaderSource) );
 		glGetShaderInfoLog(shader, infoLogSizeShader, NULL, infoLog);
-		perror( formatString("\nShader compilation log:\n%s", infoLog) );
+		perror( formatString("\nShader compilation log:\n%s\n", infoLog) );
 		return NULL;
 	}
+	printf("Compilation of shader was successful\n");
 
 	safer_free(&shaderSourcePath);
 	safer_free(&shaderSource);
@@ -68,6 +71,7 @@ GLuint createShaderFromPath(const char* path, bool pathIsRelativePath, GLenum sh
 #endif
 GLuint createShaderProgram(GLuint shaders[], unsigned int amountShaders)
 {
+	printf("Linking shaders\n");
 	GLuint shaderProgram = 0;
 	int success = 0;
 	char infoLog[infoLogSizeShaderProgram] = {0};
@@ -88,6 +92,7 @@ GLuint createShaderProgram(GLuint shaders[], unsigned int amountShaders)
 		perror( formatString("\nShader linking log:\n%s", infoLog));
 		return NULL;
 	}
+	printf("Linking shaders was successful\n");
 
 	for (unsigned int i = 0; i < amountShaders; i++) {
 		glDeleteShader(shaders[i]);

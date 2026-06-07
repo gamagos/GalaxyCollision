@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../GalaxyCollision.h"
 #include "DataUtils.h"
 
 char* getAbsolutePath(const char* relativePath)

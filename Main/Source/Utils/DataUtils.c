@@ -7,7 +7,9 @@
 #include <time.h>
 
 #include "../Constants.h"
+#include "../GalaxyCollision.h"
 #include "../Types.h"
+#include "DataUtils.h"
 
 char* formatString(const char* toFormat, ...)
 {
@@ -30,6 +32,37 @@ void safer_free(void** pointer)
 {
     free(*pointer);
     *pointer = 0;
+}
+
+void* _safer_malloc_0_args(size_t size, const char* extraInfo, void (*onErrorFunction)(void))
+{
+    void* result = malloc(size);
+    if (!result)
+    {
+        perror(formatString("Failed to allocate %llu bytes of memory; %s", size, extraInfo));
+        onErrorFunction();
+        exit(EXIT_FAILURE);
+        return NULL;
+    }
+
+    return result;
+}
+
+void* _safer_malloc_n_args(size_t size, const char* extraInfo, void (*onErrorFunction)(va_list), ...)
+{
+    void* result = malloc(size);
+    if (!result)
+    {
+        perror( formatString("Failed to allocate %llu bytes of memory; %s", size, extraInfo) );
+        va_list args;
+        va_start(args, onErrorFunction);
+        onErrorFunction(args);
+        va_end(args);
+        exit(EXIT_FAILURE);
+        return NULL;
+    }
+
+    return result;
 }
 
 unsigned long long buildWideIntFromNarrowInts(void* narrowInts, size_t intSize, unsigned long long intCount)

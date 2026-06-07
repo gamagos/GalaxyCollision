@@ -10,7 +10,9 @@
 #include <time.h>
 
 #include "../Constants.h"
+#include "../GalaxyCollision.h"
 #include "../Types.h"
+#include "DataUtils.h"
 
 /*
 SYNOPSIS:
@@ -38,7 +40,7 @@ ARGS:
         A POINTER to the pointer that we want to free the memory of and set to zero.
         Note that this must be a pointer to the pointer in question so that it can be modified (the pointer being set to 0)
 REMARKS:
-    Remember to pass this method a pointer to a pointer with the adress-of operator "&"
+    Remember to pass this method a pointer to a pointer with the address-of operator "&"
 */
 void safer_free(void** pointer);
 

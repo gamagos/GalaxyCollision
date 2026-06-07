@@ -31,11 +31,14 @@ PROJECT DEPENDECIES:
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#include "GalaxyCollision.h"
 #include "Types.h"
+#include "Utils/DebugUtils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/GenerationUtils.h"
 #include "Utils/OpenGLUtils.h"
 #include "Utils/PhysicsUtils.h"
+#include "Utils/UserInterActionUtils.h"
 
 // THIS PROGRAM ONLY WORKS FOR WINDOWS
 
@@ -43,7 +46,7 @@ typedef struct timespec timespec;
 
 int windowWidth = 1'000;
 int windowHeight = 1'000;
-long unsigned int amountStars = 25'000;
+long unsigned int amountStars = 12'900;
 
 float timeSinceStart_PetaSeconds_Float = 0.0f;
 double timeSinceStart_PetaSeconds_Double = 0.0;
@@ -66,8 +69,7 @@ int main(int argc, char **argv)
     GLFWwindow* primaryWindow = glfwCreateWindow(windowWidth, windowHeight, "Galaxy Collision", NULL, NULL);
     if (!primaryWindow)
     {
-        perror("Failed to create GLFW window.\nExiting...\n");
-        glfwTerminate();
+        quitProgramOnError((void**)NULL, (size_t)NULL, (GLuint*)NULL, (size_t)NULL, (GLuint*)NULL, (size_t)NULL, (GLuint*)NULL, (size_t)NULL, "Failed to create glfw window");
         return 1;
     }
     glfwMakeContextCurrent(primaryWindow);
@@ -76,7 +78,7 @@ int main(int argc, char **argv)
     int successGlad = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     if (!successGlad)
     {
-        perror("Failed to load glad\nExiting...\n");
+        perror("Failed to load glad\n");
         glfwTerminate();
         return 1;
     }
@@ -134,9 +136,7 @@ int main(int argc, char **argv)
     float* positions = calloc( (size_t)(amountStars * 4), sizeof(float) );
     if (!positions)
     {
-        perror("Failed to allocate memory for positions (Main.c, main())");
-        glDeleteProgram(primaryShaderProgram);
-        glfwTerminate();
+        quitProgramOnError((void*){galaxy}, 1, (GLuint[]) { primaryVBO, SSBO }, 2, (GLuint[]) { VAO1 }, 1, (GLuint[]) { primaryShaderProgram }, 1, "Failed to allocate memory for positions (Main.c, main())");
         return 1;
     }
 
@@ -158,7 +158,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    // Copying data from galaxy to custom buffers and doing some normalization on the dat
+    // Copying data from galaxy to custom buffers and doing some normalization on the data
     for ( unsigned int i = 0; i < (amountStars * 3); i += 3 )
     {
         size_t galaxyIndex = i / 3;
@@ -181,19 +181,21 @@ int main(int argc, char **argv)
         colors[i + 2] = (float)(galaxy[galaxyIndex].color.Blue)  / 255.0f;
         colors[i + 3] = (float)(galaxy[galaxyIndex].color.Alpha) / 255.0f;
     }
+    safer_free(&galaxy);
 
-    float positionsMaxValueAbsolute = 0.0f;
-    for (unsigned int i = 0; i < (amountStars * 3); i ++)
-    {
-        if ( fabsf(positions[i]) > positionsMaxValueAbsolute )
-        {
-            positionsMaxValueAbsolute = fabsf(positions[i]);
-        }
-    }
-    for (unsigned int i = 0; i < (amountStars * 3); i ++)
-    {
-        positions[i] /= positionsMaxValueAbsolute;
-    }
+    //// Cap positions at range [1;-1]
+    //float positionsMaxValueAbsolute = 0.0f;
+    //for (unsigned int i = 0; i < (amountStars * 3); i ++)
+    //{
+    //    if ( fabsf(positions[i]) > positionsMaxValueAbsolute )
+    //    {
+    //        positionsMaxValueAbsolute = fabsf(positions[i]);
+    //    }
+    //}
+    //for (unsigned int i = 0; i < (amountStars * 3); i ++)
+    //{
+    //    positions[i] /= positionsMaxValueAbsolute;
+    //}
 
     // Set the average velocity to 0 so that particles do not go to far from the center
     vec3 averageVelocity = { 0.0f };
@@ -224,13 +226,12 @@ int main(int argc, char **argv)
     dataForBuffer* bufferData = calloc( (size_t)amountStars, sizeof(dataForBuffer) );
     if (!bufferData)
     {
-        perror("Failed to allocate memory for bufferData (Main.c, main())");
+        perror("Failed to allocate memory for bufferData (Main.c, main())\n");
         glDeleteProgram(primaryShaderProgram);
         glfwTerminate();
         return 1;
     }
 
-    size_t i3 = 0;
     size_t i4 = 0;
     for (size_t i = 0; i < amountStars; i++)
     {
@@ -246,41 +247,20 @@ int main(int argc, char **argv)
             &velocities[i4],
             sizeof(float) * 4
         );
-        //memcpy_s( // Colors
-        //    &bufferData[i].color,
-        //    sizeof(float) * 4,
-        //    &colors[i4],
-        //    sizeof(float) * 4
-        //);
         i4 += 4;
     }
     glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * amountStars, colors, GL_STATIC_DRAW); // Copy the newly generated galaxy into VRAM
     glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(vec3) * 2 * amountStars, bufferData, GL_DYNAMIC_DRAW);
+    safer_free(&positions);
+    safer_free(&velocities);
+    safer_free(&colors);
+    safer_free(&bufferData);
 
     glEnable(GL_DEPTH_TEST);
-    printf_s("Starting render-loop\n\n");
-    printf_s("###############################################################\n");
-    printf_s("#####################     Keybindings     #####################\n");
-    printf_s("###############################################################\n");
-    printf_s("##  Decrease radius:                  W                      ##\n");
-    printf_s("##  Increase radius:                  S                      ##\n");
-    printf_s("##  Increase camera height:           Space                  ##\n");
-    printf_s("##  Decrease camera height:           Right Ctrl; Left Ctrl  ##\n");
-    printf_s("##  Increase camera speed:            Q                      ##\n");
-    printf_s("##  Decrease camera speed:            E                      ##\n");
-    printf_s("##  Increase camera orbiting speed:   D                      ##\n");
-    printf_s("##  Decrease camera orbiting speed:   A                      ##\n");
-    printf_s("##  Invert camera orbiting direction: R                      ##\n");//
-    printf_s("##  Increase particle mass:           X                      ##\n");
-    printf_s("##  Decrease particle mass:           C                      ##\n");
-    printf_s("##  Increase drag:                    F                      ##\n");
-    printf_s("##  Decrease drag:                    G                      ##\n");
-    printf_s("##  Increase velocity cap:            1                      ##\n");
-    printf_s("##  Decrease velocity cap:            2                      ##\n");
-    printf_s("###############################################################\n\n");
+    printKeybinds();
     // TODO This:
-    printf_s("%s Changing camera orbiting speed currently cause glitching before speed change\n", WARNING_TAG);
-    printf_s("%s Changing camera orbiting direction currently must be done with a very quick tap of the key or else it will glitch out\n\n", WARNING_TAG);
+    printf_s("%sChanging camera orbiting speed currently cause glitching before speed change\n", WARNING_TAG);
+    printf_s("%sChanging camera orbiting direction currently must be done with a very quick tap of the key or else it will glitch out\n", WARNING_TAG);
 
     // ### Variable definitions for loop ###
     // Gravity Physics, so far only movement
@@ -289,8 +269,8 @@ int main(int argc, char **argv)
     size_t bufferDataIndex = 0;
     float distance = 0.0f;
     float force = 0.0f;
-    float mass = 320'000.0f; // All bodies weight the same for now
-    float speedCap = 901.0f;
+    float mass = 620'000.0f; // All bodies weight the same for now
+    float speedCap = 991.0f;
     float drag = 1.002;
     vec3 normalizedDirectionVector = { 0.0f }; //! This vector must remain normalized [1.0f; -1.0f]!
     // Variables for camera
@@ -300,6 +280,10 @@ int main(int argc, char **argv)
     float radius = 4.0f;
     float cameraUserInputSpeed = 0.5f;
     float camOrbitingSpeedReductionDivisor = 6.5f; // bigger means slower
+    // Other variables
+    unsigned short int framesToWaitForInfoOutputUpdate = 60;
+    unsigned short int framesWaitedForInfoOutputUpdate = 0;
+    unsigned short int framesWaitedForRecenter = 0;
 
     // ### Setup Uniforms ###
     // Uniforms for graphics
@@ -311,12 +295,12 @@ int main(int argc, char **argv)
         viewMatrix
     );
     GLuint viewMatrixUniformLocation = glGetUniformLocation(primaryShaderProgram, "viewMatrix");
-    glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, viewMatrix);
+    glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, (GLfloat*)viewMatrix);
 
     mat4 perspectiveProjectionMatrix = {0};
-    glm_perspective( glm_rad(70.0f), (float)windowWidth / (float)windowHeight, 0.1f, 5'000'000.0f, perspectiveProjectionMatrix );
+    glm_perspective( glm_rad(70.0f), (float)windowWidth / (float)windowHeight, 0.1f, 6'000'000.0f, perspectiveProjectionMatrix );
     GLuint perspectiveProjectionMatrixUniformLocation = glGetUniformLocation(primaryShaderProgram, "projectionMatrix");
-    glUniformMatrix4fv(perspectiveProjectionMatrixUniformLocation, 1, GL_FALSE, perspectiveProjectionMatrix);
+    glUniformMatrix4fv(perspectiveProjectionMatrixUniformLocation, 1, GL_FALSE, (GLfloat*)perspectiveProjectionMatrix);
 
     // Uniforms for physics
     GLuint massUniformLocation = glGetUniformLocation(primaryShaderProgram, "mass");
@@ -337,6 +321,8 @@ int main(int argc, char **argv)
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBO);
     glUseProgram(primaryShaderProgram);
     
+    printf_s("Starting render-loop\n\n");
+
     // ### Render loop ###
     while (!glfwWindowShouldClose(primaryWindow))
     {
@@ -363,12 +349,12 @@ int main(int argc, char **argv)
         if (glfwGetKey(primaryWindow, GLFW_KEY_R)) camOrbitingSpeedReductionDivisor *= -1.0f;
 
         // Particle mass
-        if (glfwGetKey(primaryWindow, GLFW_KEY_X)) mass = min(FLT_MAX, mass * 1.009f);
-        if (glfwGetKey(primaryWindow, GLFW_KEY_C)) mass = max(FLT_MIN, mass / 1.009f);
+        if (glfwGetKey(primaryWindow, GLFW_KEY_X)) mass = min(FLT_MAX, mass * 1.003f);
+        if (glfwGetKey(primaryWindow, GLFW_KEY_C)) mass = max(FLT_MIN, mass / 1.003f);
 
         // Drag
-        if (glfwGetKey(primaryWindow, GLFW_KEY_F)) drag = min(FLT_MAX, drag * 1.000'01f);
-        if (glfwGetKey(primaryWindow, GLFW_KEY_G)) drag = max(1.0f, drag / 1.000'01f);
+        if (glfwGetKey(primaryWindow, GLFW_KEY_F)) drag = min(FLT_MAX, drag * 1.000'002f);
+        if (glfwGetKey(primaryWindow, GLFW_KEY_G)) drag = max(1.0f, drag / 1.000'002f);
 
         // Velocity cap
         if (glfwGetKey(primaryWindow, GLFW_KEY_1)) speedCap = min(FLT_MAX, speedCap * 1.002f);
@@ -385,7 +371,7 @@ int main(int argc, char **argv)
             viewMatrix
         );
         // Send updated uniforms to GPU
-        glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, viewMatrix);
+        glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, (GLfloat*)viewMatrix);
         glUniform1f(massUniformLocation, mass);
         glUniform1f(speedCapUniformLocation, speedCap);
         glUniform1f(dragUniformLocation, drag);
@@ -396,21 +382,43 @@ int main(int argc, char **argv)
         glfwPollEvents();
 
         // Output
-        frameRate = 1 / (glfwGetTime() - timeLastFrame);
-        printf_s("\rFPS: %.1lf   Particle mass: %.1g   Drag: %f   Speed cap: %.2f", frameRate, mass, drag, speedCap);
+        if (framesWaitedForInfoOutputUpdate >= framesToWaitForInfoOutputUpdate) // Limit the amount of times output get's printed
+        {
+            frameRate = 1 / (glfwGetTime() - timeLastFrame);
+            printf_s("\rFPS: %.0lf   Particle mass: %.1g   Drag: %f   Speed cap: %.2f", frameRate, mass, drag, speedCap);
+            framesWaitedForInfoOutputUpdate = 0;
+        }
+        else
+        {
+            framesWaitedForInfoOutputUpdate++;
+        }
         timeLastFrame = glfwGetTime();
     }
 
+    // Exit program
+    GLuint buffersToDelete[] = {
+        primaryVBO,
+        SSBO
+    };
+    glDeleteBuffers(2, buffersToDelete);
+    glDeleteVertexArrays(1, &VAO1);
     glDeleteProgram(primaryShaderProgram);
     glfwTerminate();
-    printf_s("\nProgram finished\n=============================================================="); // This looks clean af
+    printf_s("\nProgram finished\n================================================================"); // This looks clean af
     return 0;
 }
 
-//TODO add GPLv3 License
-//TODO make functions actually use units!
-//TODO use SSBOs to make physics calculations on the GPU
-//TODO make methods for calloc and malloc to make that auto check for allocation success to make code more condensed
+//TODO make functions actually use units
+//TODO implement deltatime and timewarp
+//TODO make generation be able to generate different shapes
+//TODO make methods for calloc and malloc to make that auto check for allocation success to make code more condensed!
+//TODO make config for initial values of simulation be read in via json for better usability
+//TODO add more camera controls maybe with mouse? But keep orbiting mode!
+
+// Stuff to do at school
+//TODO make buffers that keep track of all used pointers, VBOs, VAOs and shaderProgram to make code safer and quitProgramOnError usage easier
+//TODO finish implementing quitProgramOnError in functions
+//TODO finish general code cleanup
 
 /*
 GOALS

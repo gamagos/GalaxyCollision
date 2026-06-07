@@ -139,3 +139,4 @@ Use only SI Units or we loose computation on conversions!
 ### Other notes
 
 - **Always divide with drag NOT subtract!!**
+- **Include GalaxyCollision.h in all our project files!!**

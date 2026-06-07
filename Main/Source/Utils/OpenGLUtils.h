@@ -1,6 +1,16 @@
+// (C) Sebastian Fiault
+#ifndef OPENGL_UTILS_H
+#define OPENGL_UTILS_H
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stdio.h>
+#include <stdbool.h>
+
+#include "../Constants.h"
+#include "../GalaxyCollision.h"
+#include "DataUtils.h"
+#include "FileUtils.h"
 
 /*
 SYNOPSIS:
@@ -73,3 +83,5 @@ REMARKS:
 #define infoLogSizeShaderProgram 8192U
 #endif
 GLuint createShaderProgram(GLuint shaders[], unsigned int amountShaders);
+
+#endif

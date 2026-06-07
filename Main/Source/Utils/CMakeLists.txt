@@ -5,11 +5,25 @@ target_sources(DataUtils
 		DataUtils.c
 
 	PUBLIC
-		FILE_SET HEADERS
-		TYPE HEADERS
-		BASE_DIRS .
-		FILES
-			DataUtils.h
+		DataUtils.h
+		${GALAXY_COLLISION_HEADER_FILE}
+)
+
+add_library(DebugUtils)
+target_include_directories(DebugUtils
+	PUBLIC
+		${GLAD_INCLUDE_DIRECTORY}
+		${GLFW_INCLUDE_DIRECTORY}
+)
+target_sources(DebugUtils
+	PRIVATE 
+		DebugUtils.c
+
+	PUBLIC
+		DebugUtils.h
+		${GLAD_INCLUDE_DIRECTORY}
+		${GLFW_INCLUDE_DIRECTORY}
+		${GALAXY_COLLISION_HEADER_FILE}
 )
 
 add_library(FileUtils)
@@ -19,6 +33,7 @@ target_sources(FileUtils
 	
 	PUBLIC
 		FileUtils.h
+		${GALAXY_COLLISION_HEADER_FILE}
 )
 
 add_library(GenerationUtils)
@@ -27,11 +42,8 @@ target_sources(GenerationUtils
 		GenerationUtils.c
 
 	PUBLIC
-		FILE_SET HEADERS
-		TYPE HEADERS
-		BASE_DIRS .
-		FILES
-			GenerationUtils.h
+		GenerationUtils.h
+		${GALAXY_COLLISION_HEADER_FILE}
 )
 
 add_library(MathUtils)
@@ -40,11 +52,8 @@ target_sources(MathUtils
 		MathUtils.c
 
 	PUBLIC
-		FILE_SET HEADERS
-		TYPE HEADERS
-		BASE_DIRS .
-		FILES
-			MathUtils.h
+		MathUtils.h
+		${GALAXY_COLLISION_HEADER_FILE}
 )
 
 add_library(OpenGLUtils)
@@ -55,11 +64,12 @@ target_include_directories(OpenGLUtils
 )
 target_sources(OpenGLUtils
 	PRIVATE
-		"${CMAKE_SOURCE_DIR}/Main/Source/Utils/OpenGLUtils.c"
+		OpenGLUtils.c
 	PUBLIC
-		"${CMAKE_SOURCE_DIR}/Main/Source/Utils/OpenGLUtils.h"
+		OpenGLUtils.h
 		${GLAD_INCLUDE_DIRECTORY}
 		${GLFW_INCLUDE_DIRECTORY}
+		${GALAXY_COLLISION_HEADER_FILE}
 )
 
 add_library(PhysicsUtils)
@@ -68,9 +78,16 @@ target_sources(PhysicsUtils
 		PhysicsUtils.c
 
 	PUBLIC
-		FILE_SET HEADERS
-		TYPE HEADERS
-		BASE_DIRS .
-		FILES
-			PhysicsUtils.h
+		PhysicsUtils.h
+		${GALAXY_COLLISION_HEADER_FILE}
+)
+
+add_library(UserInteractionUtils)
+target_sources(UserInteractionUtils
+	PRIVATE 
+		UserInteractionUtils.c
+
+	PUBLIC
+		UserInteractionUtils.h
+		${GALAXY_COLLISION_HEADER_FILE}
 )

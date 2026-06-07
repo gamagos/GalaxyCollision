@@ -8,6 +8,7 @@
 #include <Windows.h>
 
 #include "../Constants.h"
+#include "../GalaxyCollision.h"
 #include "../Types.h"
 #include "DataUtils.h"
 #include "PhysicsUtils.h"
@@ -248,7 +249,6 @@ Star_32* generateStars32Galaxy(uint32_t amount, BlackHole_32 parentBlackHole)
         stars[i].velocity_KilometersPerSecond.x *= (rand() % 2) == 1 ? 1 : -1;
         stars[i].velocity_KilometersPerSecond.y *= (rand() % 2) == 1 ? 1 : -1;
         stars[i].velocity_KilometersPerSecond.z *= (rand() % 2) == 1 ? 1 : -1;
-        stars[i].velocity_KilometersPerSecond.y *= 0.05f; //! Delete this
 
         // ### Mass generation ###
         //stars[i].mass_10_BillionQuettagrams = MINIMAL_STAR_MASS_SOLAR_MASSES_FLOAT;

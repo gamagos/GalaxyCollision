@@ -11,8 +11,10 @@
 #include <Windows.h>
 
 #include "../Constants.h"
+#include "../GalaxyCollision.h"
 #include "../Types.h"
 #include "DataUtils.h"
+#include "PhysicsUtils.h"
 #include "MathUtils.h"
 
 /*

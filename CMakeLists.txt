@@ -14,6 +14,7 @@ set(CGLM_INCLUDE_DIRECTORY "${CMAKE_SOURCE_DIR}/Main/Libraries/cglm-0.9.6/includ
 set(GLAD_INCLUDE_DIRECTORY "${CMAKE_SOURCE_DIR}/Main/Libraries/glad/include/")
 set(GLFW_INCLUDE_DIRECTORY "${CMAKE_SOURCE_DIR}/Main/Libraries/glfw-3.4/include/")
 set(STBI_IMAGE_INCLUDE_DIRECTORY "${CMAKE_SOURCE_DIR}/Main/Include/stb_image/")
+set(GALAXY_COLLISION_HEADER_FILE "${CMAKE_SOURCE_DIR}/Main/Source/GalaxyCollision.h")
 
 add_subdirectory("Main")
 #add_subdirectory("Tests")

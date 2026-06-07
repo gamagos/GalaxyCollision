@@ -2,7 +2,9 @@
 
 #version 460 core
 
+#ifndef	GRAVITATIONAL_CONSTANT_FLOAT
 #define GRAVITATIONAL_CONSTANT_FLOAT 6.67430e-11f
+#endif
 
 struct Data 
 {
@@ -28,6 +30,7 @@ uniform mat4 projectionMatrix;
 uniform float mass;
 uniform float speedCap;
 uniform float drag;
+uniform int recenter;
 
 // Uniforms for both
 uniform uint amountStars;
@@ -54,9 +57,10 @@ float getAcceleration(float force, float massBody)
 }
 
 // Variables for main
-vec3 normalizedDirectionVector = {0.0f, 0.0f, 0.0f};
+vec3 normalizedDirectionVector = vec3(0.0f, 0.0f, 0.0f);
 float distanceBodies = 0.0f;
 float force = 0.0f;
+vec3 averageVelocity = vec3(0.0f, 0.0f, 0.0f);
 
 void main()
 {
@@ -101,3 +105,5 @@ void main()
 	);
 	_color = color;
 }
+//TODO try out if doing operations on every single coordinate is really necessary or if you can just do vec * vec
+//TODO find out why there is always an immobile point at the center; there indeed appears one point at the center that is immobile no matter what, do not not why yet

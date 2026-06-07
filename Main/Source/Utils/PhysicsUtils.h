@@ -3,6 +3,9 @@
 
 #include <math.h>
 
+#include "../Constants.h"
+#include "../GalaxyCollision.h"
+
 /*
 SYNOPSIS:
 	Literally just a wrapper function for the standard physics equation a = F / m

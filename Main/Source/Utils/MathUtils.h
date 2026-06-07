@@ -10,7 +10,10 @@
 #include <time.h>
 
 #include "../Constants.h"
+#include "../GalaxyCollision.h"
 #include "../Types.h"
+#include "DataUtils.h"
+#include "MathUtils.h"
 
 #ifndef ORIGIN_POINT_VECTOR3_INT32
 #define ORIGIN_POINT_VECTOR3_INT32 (Vector3_Int32){0,0,0}

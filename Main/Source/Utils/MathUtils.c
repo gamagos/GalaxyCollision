@@ -7,6 +7,7 @@
 #include <time.h>
 
 #include "../Constants.h"
+#include "../GalaxyCollision.h"
 #include "../Types.h"
 #include "DataUtils.h"
 #include "MathUtils.h"
