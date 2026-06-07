@@ -20,9 +20,10 @@ char* formatString(const char* toFormat, ...)
     if (!result)
     {
         perror("Failed to allocate memory in formatString() in DataUtils.c");
-        return NULL;
+        va_end(args);
+        return (char*)NULL;
     }
-    vsprintf(result, toFormat, args);
+    vsprintf_s(result, amountCharacters * sizeof(char), toFormat, args);
     va_end(args);
 
     return result;
@@ -69,11 +70,9 @@ unsigned long long buildWideIntFromNarrowInts(void* narrowInts, size_t intSize, 
 {
     if (intCount * intSize > 8)
     {
-        fprintf(stderr,
-            "%s %s maximum allowed size for narrowInts is 8 bytes \t buildWideIntFromNarrowInts int GeneratorUtils.c",
-            FATAL_TAG,
-            ERROR_TAG);
+        perror( formatString("%s %s maximum allowed size for narrowInts is 8 bytes \t buildWideIntFromNarrowInts int GeneratorUtils.c", FATAL_TAG, ERROR_TAG) );
         exit(EXIT_FAILURE);
+        return (unsigned long long)NULL;
     }
 
     unsigned long long result = 0;

@@ -29,7 +29,7 @@ GLuint createShaderFromPath(char* path, bool pathIsRelativePath, GLenum shaderTy
 	if (!path) 
 	{
 		perror("Function createShaderFromPath()'s \"path\" can not be NULL\n");
-		return (GLuint)NULL;
+		return (GLuint)(uintptr_t)NULL;
 	}
 
 	char* shaderSourcePath = 0;
@@ -57,7 +57,7 @@ GLuint createShaderFromPath(char* path, bool pathIsRelativePath, GLenum shaderTy
 		perror( formatString("\n%s Compilation was not successful of shader with source:\n%s\n", WARNING_TAG, shaderSource) );
 		glGetShaderInfoLog(shader, infoLogSizeShader, NULL, infoLog);
 		perror( formatString("\nShader compilation log:\n%s\n", infoLog) );
-		return (GLuint)NULL;
+		return (GLuint)(uintptr_t)NULL;
 	}
 	printf("Compilation of shader was successful\n");
 
@@ -90,7 +90,7 @@ GLuint createShaderProgram(GLuint shaders[], unsigned int amountShaders)
 		perror( formatString("\n%s Linking shaders was not successful", WARNING_TAG) );
 		glGetProgramInfoLog(shaderProgram, infoLogSizeShaderProgram, NULL, infoLog);
 		perror( formatString("\nShader linking log:\n%s", infoLog));
-		return (GLuint)NULL;
+		return (GLuint)(uintptr_t)NULL;
 	}
 	printf("Linking shaders was successful\n");
 
