@@ -293,9 +293,8 @@ int main(int argc, char **argv)
     float cameraUserInputSpeed = 0.5f;
     float camOrbitingSpeedReductionDivisor = 6.5f; // bigger means slower
     // Other variables
-    unsigned short int framesToWaitForInfoOutputUpdate = 60;
-    unsigned short int framesWaitedForInfoOutputUpdate = 0;
-    unsigned short int framesWaitedForRecenter = 0;
+    double secondsToWaitForInfoOutputUpdate = 0.5;
+    double secondWaitedForInfoOutPutUpdate = 0.0;
 
     // ### Setup Uniforms ###
     // Uniforms for graphics
@@ -394,15 +393,15 @@ int main(int argc, char **argv)
         glfwPollEvents();
 
         // Output
-        if (framesWaitedForInfoOutputUpdate >= framesToWaitForInfoOutputUpdate) // Limit the amount of times output get's printed
+        if (secondsToWaitForInfoOutputUpdate <= secondWaitedForInfoOutPutUpdate) // Limit the amount of times output get's printed
         {
             frameRate = 1 / (glfwGetTime() - timeLastFrame);
-            printf_s("\rFPS: %.0lf   Particle mass: %.1g   Drag: %f   Speed cap: %.2f", frameRate, mass, drag, speedCap);
-            framesWaitedForInfoOutputUpdate = 0;
+            printf_s("\rFPS: %-4.0lf  Particle mass: %-7.2g  Drag: %-10f  Speed cap: %-12.1f  Camera speed: %-8.1f", frameRate, mass, drag, speedCap, cameraUserInputSpeed);
+            secondWaitedForInfoOutPutUpdate = 0;
         }
         else
         {
-            framesWaitedForInfoOutputUpdate++;
+            secondWaitedForInfoOutPutUpdate += glfwGetTime() - timeLastFrame;
         }
         timeLastFrame = glfwGetTime();
     }
