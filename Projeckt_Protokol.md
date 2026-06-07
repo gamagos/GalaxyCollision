@@ -37,7 +37,7 @@ Ich habe mein bestehendes Verständis von den Low Level Abläufen von Computern 
 
 ### Mathematik für 3D engines
 
-Work in progress
+- Grundlagen von linearer Algebra und Grundelgen Matrizenoperation
 
 ### *Verständis Kommunikation zwischen PCs*
 
@@ -45,11 +45,20 @@ Ich kenne die unterschiede zwischen verschiedenen Internetprotokollen und weiß 
 
 ### Resourcen die zum lernen verwendet wurden:
 
+- [Bro Codes YouTube Video über C](https://youtu.be/xND0t1pr3KY?si=QtCUc7YCZGaxubJR)
+- [Mehrere C Videos von Portfolio Courses](https://www.youtube.com/@PortfolioCourses)
 - [Geeks For Geeks Artikel über C, als auch für manche Gleichungen](https://www.geeksforgeeks.org)
 - [W3Schools Artikel über C, vor allem Datei Interaktionen](https://www.w3schools.com)
 - [Offizielles CMake Tutorial](https://cmake.org/cmake/help/latest/guide/tutorial/index.html)
+- [The Chernos YouTube Videos über OpenGL](https://www.youtube.com/watch?v=W3gAzLwfIP0&list=PLlrATfBNZ98foTJPJ_Ev03o2oq3-GGOS2)
 - [learnopengl.com](https://learnopengl.com)
 - Das Buch "Modern C" von Jens Guestedt
+
+## Schwierigkeiten die ich hatte
+
+- Da C nicht 100% objektorientiert war eine saubere Abstraktion von Logik an machen Stellen etwas umständlicher zu implementier wobei es durchaus dennoch möglich war, nur etwas auf umständlichere Weise
+- Das OpenGL API zu lernen und die nötigen Mathe Grundlagen zu lernen war schwierig einfach nur aufgrund der Komplexität der Themen
+- Debugging von Shadern (Grafikkarten Code) ist relativ schwer, da man von der GPU aus keine print statements hat und man so um zu verstehen was die Grafikkarte macht umständlich den VRAM auslesen oder einfach nur sehr hart nachdenken
 
 ## Fortschritt soweit
 
@@ -125,5 +134,27 @@ Shader und im allgemeinen die notwendigen Funktion für die Verwendung von OpenG
 
 Weiter OpenGL gelernt. Über GLSL gelernt, Texture Mapping und uniforms.
 
-### 31.5 - 
+### 31.5 - 3.07
 
+Immer noch weiter OpenGL gelernt und angefangen gelerntes in Projekt zu integrieren.
+Hauptsächlich über lineare algebra und notwendige Matrizen und Vektoren Mathematik für 3D gelernt.
+Projektionsmatrizen, Sichtmatrizen etc.
+
+### 4.07
+
+Durchbruch:
+Punkte mit Geschwindigkeiten welche sich im 3D Raum bewegen erfolgreich gerendert.
+
+### 5.07
+
+Punkten erfolgreich Schwerkraft gegeben.
+
+### 6.07
+
+Über SSBOs(Shader Storage Buffer Objects) gelernt
+und mit diesen Mathematik für Physik auf Grafikkarte verlagert.
+Mehr über GLSL gelernt um genannte Physik auf GPU in shader code implementieren zu können.
+
+### 7.07
+
+Chaotische codebas aufgeräumt
