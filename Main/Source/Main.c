@@ -44,9 +44,17 @@ PROJECT DEPENDECIES:
 
 typedef struct timespec timespec;
 
+// For quitProgramOnError
+void* pointersCurrentlyInUse[1024]; //! Not for special pointers, only meant for pointers to memory on heap for malloc, calloc or realloc
+size_t currentIndexPointersCurrentlyInUse = 0;
+GLuint bufferObjectsCurrentlyInUse[1024];
+size_t currentIndexbufferObjectsCurrentlyInUse = 0;
+GLuint vertexArraysCurrentlyInUse[1024];
+size_t currentIndexvertexArraysCurrentlyInUse = 0;
+
 int windowWidth = 1'000;
 int windowHeight = 1'000;
-long unsigned int amountStars = 12'900;
+long unsigned int amountStars = 15'000;
 
 float timeSinceStart_PetaSeconds_Float = 0.0f;
 double timeSinceStart_PetaSeconds_Double = 0.0;
@@ -102,17 +110,20 @@ int main(int argc, char **argv)
     GLuint VAO1;
     glGenVertexArrays(1, &VAO1);
     glBindVertexArray(VAO1);
+    vertexArraysCurrentlyInUse[currentIndexvertexArraysCurrentlyInUse++] = VAO1;
     
     GLuint primaryVBO; //! Only holds color, because physics are on SSBO!
     glGenBuffers(1, &primaryVBO);
     glBindBuffer(GL_ARRAY_BUFFER, primaryVBO);
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)0);
     glEnableVertexAttribArray(0);
+    bufferObjectsCurrentlyInUse[currentIndexbufferObjectsCurrentlyInUse++] = primaryVBO;
 
     GLuint SSBO;
     glGenBuffers(1, &SSBO);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBO);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, SSBO);
+    bufferObjectsCurrentlyInUse[currentIndexbufferObjectsCurrentlyInUse++] = SSBO;
 
     GLuint vertexShader = createShaderFromPath("Main/Resources/shaders/Vertex.glsl", true, GL_VERTEX_SHADER);
     GLuint fragmentShader = createShaderFromPath("Main/Resources/shaders/Fragment.glsl", true, GL_FRAGMENT_SHADER);
@@ -142,31 +153,43 @@ int main(int argc, char **argv)
     parentBlackHole.standardGravitationalParameter_TerametersCubedPerPetaecondSquared = GRAVITATIONAL_CONSTANT_FLOAT * parentBlackHole.mass_10_BillionQuettagrams;
 
     Star_32* galaxy = generateStars32Galaxy(amountStars, parentBlackHole);
+    pointersCurrentlyInUse[currentIndexPointersCurrentlyInUse++] = galaxy;
 
     // Memory allocations
     float* positions = calloc( (size_t)(amountStars * 4), sizeof(float) );
+    pointersCurrentlyInUse[currentIndexPointersCurrentlyInUse++] = positions;
     if (!positions)
     {
-        quitProgramOnError((void*){galaxy}, 1, (GLuint[]) { primaryVBO, SSBO }, 2, (GLuint[]) { VAO1 }, 1, (GLuint[]) { primaryShaderProgram }, 1, "Failed to allocate memory for positions (Main.c, main())");
+        quitProgramOnError(pointersCurrentlyInUse, currentIndexPointersCurrentlyInUse + 1,
+                           bufferObjectsCurrentlyInUse, currentIndexbufferObjectsCurrentlyInUse + 1,
+                           vertexArraysCurrentlyInUse, currentIndexvertexArraysCurrentlyInUse,
+                           (GLuint[]) {primaryShaderProgram}, 1,
+                           "Failed to allocate memory for positions (Main.c, main())");
         return 1; //TODO make buffer that has all pointers that should be freed on quit
         //TODO make the whole quitProgramOnError functionality be implement work and improve the code quality
     }
 
     float* velocities = calloc( (size_t)(amountStars * 4), sizeof(float) );
+    pointersCurrentlyInUse[currentIndexPointersCurrentlyInUse++] = velocities;
     if (!velocities)
     {
-        perror("Failed to allocate memory for velocities (Main.c, main())");
-        glDeleteProgram(primaryShaderProgram);
-        glfwTerminate();
+        quitProgramOnError(pointersCurrentlyInUse, currentIndexPointersCurrentlyInUse + 1,
+                           bufferObjectsCurrentlyInUse, currentIndexbufferObjectsCurrentlyInUse + 1,
+                           vertexArraysCurrentlyInUse, currentIndexvertexArraysCurrentlyInUse,
+                           (GLuint[]) {primaryShaderProgram}, 1,           
+                           "Failed to allocate memory for velocities (Main.c, main())");
         return 1;
     }
 
     float* colors = calloc( (size_t)(amountStars * 4), sizeof(float) );
+    pointersCurrentlyInUse[currentIndexPointersCurrentlyInUse++] = colors;
     if (!colors)
     {
-        perror("Failed to allocate memory for colors (Main.c, main())");
-        glDeleteProgram(primaryShaderProgram);
-        glfwTerminate();
+        quitProgramOnError(pointersCurrentlyInUse, currentIndexPointersCurrentlyInUse + 1,
+                           bufferObjectsCurrentlyInUse, currentIndexbufferObjectsCurrentlyInUse + 1,
+                           vertexArraysCurrentlyInUse, currentIndexvertexArraysCurrentlyInUse,
+                           (GLuint[]) {primaryShaderProgram}, 1,
+                           "Failed to allocate memory for colors (Main.c, main())");
         return 1;
     }
 
@@ -195,20 +218,6 @@ int main(int argc, char **argv)
     }
     safer_free((void**)&galaxy);
 
-    //// Cap positions at range [1;-1]
-    //float positionsMaxValueAbsolute = 0.0f;
-    //for (unsigned int i = 0; i < (amountStars * 3); i ++)
-    //{
-    //    if ( fabsf(positions[i]) > positionsMaxValueAbsolute )
-    //    {
-    //        positionsMaxValueAbsolute = fabsf(positions[i]);
-    //    }
-    //}
-    //for (unsigned int i = 0; i < (amountStars * 3); i ++)
-    //{
-    //    positions[i] /= positionsMaxValueAbsolute;
-    //}
-
     // Set the average velocity to 0 so that particles do not go to far from the center
     vec3 averageVelocity = { 0.0f };
     for (size_t i = 0; i < (size_t)(amountStars * 3); i += 3) // Get sum of velocities on axis
@@ -236,11 +245,14 @@ int main(int argc, char **argv)
     } dataForBuffer;
 
     dataForBuffer* bufferData = calloc( (size_t)amountStars, sizeof(dataForBuffer) );
+    pointersCurrentlyInUse[currentIndexPointersCurrentlyInUse++] = bufferData;
     if (!bufferData)
     {
-        perror("Failed to allocate memory for bufferData (Main.c, main())\n");
-        glDeleteProgram(primaryShaderProgram);
-        glfwTerminate();
+        quitProgramOnError(pointersCurrentlyInUse, currentIndexPointersCurrentlyInUse + 1,
+                           bufferObjectsCurrentlyInUse, currentIndexbufferObjectsCurrentlyInUse + 1,
+                           vertexArraysCurrentlyInUse, currentIndexvertexArraysCurrentlyInUse,
+                           (GLuint[]) {primaryShaderProgram}, 1,
+                           "Failed to allocate memory for bufferData (Main.c, main())");
         return 1;
     }
 
@@ -427,9 +439,6 @@ int main(int argc, char **argv)
 //TODO add more camera controls maybe with mouse? But keep orbiting mode!
 
 // Stuff to do at school
-//TODO make buffers that keep track of all used pointers, VBOs, VAOs and shaderProgram to make code safer and quitProgramOnError usage easier
-//TODO finish implementing quitProgramOnError in functions <-------- priority
-//TODO finish general code cleanup
 //TODO in cmake make sure target_sources also get ALL non std header files
 
 /*

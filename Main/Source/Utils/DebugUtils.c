@@ -21,7 +21,7 @@ int quitProgramOnError(
     const char* extraInfo
 )
 {
-    const char* stringToPrint = "Something went wrong";
+    const char* stringToPrint = "Something went wrong\n";
 
     if (extraInfo) 
     {
@@ -34,7 +34,10 @@ int quitProgramOnError(
 
     if (pointersToFree && amountPointers)
     {
-        for (size_t i = 0; i < amountPointers; i++) safer_free(&pointersToFree[i]);
+        for (size_t i = 0; i < amountPointers; i++)
+        {
+            if (pointersToFree[i]) safer_free(&pointersToFree[i]);
+        }
     }
     else if (pointersToFree)
     {

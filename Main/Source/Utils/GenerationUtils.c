@@ -185,9 +185,9 @@ Vector3_Double64 generateVelocity64(BlackHole_64 parentBlackHole, Star_64 star)
 
 Star_32* generateStars32Galaxy(uint32_t amount, BlackHole_32 parentBlackHole)
 {
-    const int32_t maxX = 800;//LONG_MAX / 8;
-    const int32_t maxY = 800;//LONG_MAX / 8;
-    const int32_t maxZ = 800;//(LONG_MAX / 8 ) / 10;
+    const int32_t maxX = 10;//LONG_MAX / 8;
+    const int32_t maxY = 10;//LONG_MAX / 8;
+    const int32_t maxZ = 10;//(LONG_MAX / 8 ) / 10;
     const int32_t minX = 1;
     const int32_t minY = 1;
     const int32_t minZ = 1;

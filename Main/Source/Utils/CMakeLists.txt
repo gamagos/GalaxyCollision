@@ -5,6 +5,9 @@ target_sources(DataUtils
 		DataUtils.c
 
 	PUBLIC
+		../Constants.h
+		../GalaxyCollision.h
+		../Types.h
 		DataUtils.h
 		${GALAXY_COLLISION_HEADER_FILE}
 )
@@ -20,6 +23,8 @@ target_sources(DebugUtils
 		DebugUtils.c
 
 	PUBLIC
+	    ../Constants.h
+		../GalaxyCollision.h
 		DebugUtils.h
 		${GLAD_INCLUDE_DIRECTORY}
 		${GLFW_INCLUDE_DIRECTORY}
@@ -36,6 +41,7 @@ target_sources(FileUtils
 		FileUtils.c
 	
 	PUBLIC
+		../GalaxyCollision.h
 		FileUtils.h
 		${GALAXY_COLLISION_HEADER_FILE}
 )

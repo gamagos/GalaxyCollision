@@ -57,10 +57,12 @@ float getAcceleration(float force, float massBody)
 }
 
 // Variables for main
+vec3 accelerationToOrigin = vec3(0.0f, 0.0f, 0.0f);
+vec3 averageVelocity = vec3(0.0f, 0.0f, 0.0f);
 vec3 normalizedDirectionVector = vec3(0.0f, 0.0f, 0.0f);
 float distanceBodies = 0.0f;
 float force = 0.0f;
-vec3 averageVelocity = vec3(0.0f, 0.0f, 0.0f);
+float forceMinimum = 0.000001f;
 
 void main()
 {
@@ -69,14 +71,15 @@ void main()
 	data[gl_VertexID].position.y += data[gl_VertexID].velocity.y;
 	data[gl_VertexID].position.z += data[gl_VertexID].velocity.z;
 
-	// Do physics
+	// ### Do physics ###
 	for (uint i = 0; i < amountStars; i ++)
 	{
 		if (i == gl_VertexID) continue; // Skip if current point is self
 		distanceBodies = distance(data[gl_VertexID].position, data[i].position);
+		force = getGravitationalForce(mass, mass, distanceBodies);
+		if (force > forceMinimum) continue; // Skip if force is of irrelevant amount to conserve resources;
 		normalizedDirectionVector = data[i].position - data[gl_VertexID].position;
 		normalizedDirectionVector = normalize(normalizedDirectionVector);
-		force = getGravitationalForce(mass, mass, distanceBodies);
 		data[gl_VertexID].velocity.x += getAcceleration(force * normalizedDirectionVector.x, mass);
 		data[gl_VertexID].velocity.y += getAcceleration(force * normalizedDirectionVector.y, mass);
 		data[gl_VertexID].velocity.z += getAcceleration(force * normalizedDirectionVector.z, mass);
@@ -95,6 +98,13 @@ void main()
 	data[gl_VertexID].velocity.x /= drag;
 	data[gl_VertexID].velocity.y /= drag;
 	data[gl_VertexID].velocity.z /= drag;
+	// Apply gravity to origing(0, 0, 0) to keep particles centered
+	// And to keep particles returning if they are to far away and the force applied to them is bellow the force minimum
+	normalizedDirectionVector = origin - data[gl_VertexID].position;
+	normalizedDirectionVector = normalize(normalizedDirectionVector);
+	data[gl_VertexID].velocity.x += getAcceleration(forceMinimum * normalizedDirectionVector.x, mass);
+	data[gl_VertexID].velocity.y += getAcceleration(forceMinimum * normalizedDirectionVector.y, mass);
+	data[gl_VertexID].velocity.z += getAcceleration(forceMinimum * normalizedDirectionVector.z, mass);
 
 	// Set variables that get passed down pipeline
 	gl_Position = projectionMatrix * viewMatrix * vec4(

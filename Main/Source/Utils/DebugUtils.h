@@ -7,6 +7,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "../Constants.h"
 #include "../GalaxyCollision.h"
 #include "DataUtils.h"
 
@@ -34,7 +35,8 @@ RETURNS:
     1
 REMARKS:
     All pointers that get freed also get assigned 0 to prevent dangling pointer issues.
-    Generally you can always use NULL if you have no objects to pass to one of this methods parameters
+    Generally you can always use NULL if you have no objects to pass to one of this methods parameters.
+    This function automatically adds newlines behind the string extrainfo!
 */
 int quitProgramOnError(
     void* pointersToFree[],
