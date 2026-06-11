@@ -19,7 +19,6 @@ target_sources(GalaxyCollision
 	PUBLIC
 		Constants.h
 		GalaxyCollision.h
-		Types.h
 		${CGLM_INCLUDE_DIRECTORY}
 		${GLAD_INCLUDE_DIRECTORY}
 		${GLFW_INCLUDE_DIRECTORY}
@@ -35,7 +34,7 @@ target_link_libraries(GalaxyCollision
 		GenerationUtils
 		MathUtils
 		OpenGLUtils
-		PhysicsUtils
+		PhysicsUtil
 		UserInteractionUtils
 		
 		cglm

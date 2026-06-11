@@ -41,17 +41,20 @@ Ich habe mein bestehendes Verständis von den Low Level Abläufen von Computern 
 
 ### *Verständis Kommunikation zwischen PCs*
 
-Ich kenne die unterschiede zwischen verschiedenen Internetprotokollen und weiß wie Daten über das Internet fließen
+Ich kenne die unterschiede zwischen verschiedenen Internetprotokollen und weiß wie Daten über das Internet fließen.  
+(Möglicherweise werde ich das rauslasen da der Datentransfer über LAN zu langsam ist für realtime simulationen)
 
-### Resourcen die zum lernen verwendet wurden:
+### Resourcen die zum lernen verwendet wurden
 
 - [Bro Codes YouTube Video über C](https://youtu.be/xND0t1pr3KY?si=QtCUc7YCZGaxubJR)
-- [Mehrere C Videos von Portfolio Courses](https://www.youtube.com/@PortfolioCourses)
 - [Geeks For Geeks Artikel über C, als auch für manche Gleichungen](https://www.geeksforgeeks.org)
-- [W3Schools Artikel über C, vor allem Datei Interaktionen](https://www.w3schools.com)
+- [Inoffizielle C Dokumentation](https://en.cppreference.com/c)
+- [Learnopengl.com](https://learnopengl.com)
+- [Mehrere C Videos von Portfolio Courses](https://www.youtube.com/@PortfolioCourses)
+- [Microsofts C Dokumentation für Visual Studio](https://learn.microsoft.com/en-us/cpp/c-language/)
 - [Offizielles CMake Tutorial](https://cmake.org/cmake/help/latest/guide/tutorial/index.html)
 - [The Chernos YouTube Videos über OpenGL](https://www.youtube.com/watch?v=W3gAzLwfIP0&list=PLlrATfBNZ98foTJPJ_Ev03o2oq3-GGOS2)
-- [learnopengl.com](https://learnopengl.com)
+- [W3Schools Artikel über C, vor allem Datei Interaktionen](https://www.w3schools.com)
 - Das Buch "Modern C" von Jens Guestedt
 
 ## Schwierigkeiten die ich hatte
@@ -89,7 +92,7 @@ Habe gelernt wie man mit der Standardbibliothek stdlib Daten in den Heap ablegen
 Habe über Heap und Stack gelernt, dass der Stack keine dynamische Allokation zulässt und das Stack Frames aufgelöst werden wenn die Methode auf dem Call Stack einen Frame runter geht.  
 Habe gelernt das der Stack schneller ist als der Heap aber nicht für große und dynamisch große Datenmengen ist.
 
-### Undprotokolierte Lücke 3.14 - 4.01
+### Unprotokolierte Lücke 3.14 - 4.01
 
 Habe hauptsächlich die Logik ausgetüftelt um elliptische Galaxien zu generieren.  
 Das hat Heap Allokation und Wisen über Wahrscheinlichkeitsverteilung, Exponentailfunktion, Astrophyisk und Vector/3D Mathematik erfordert.  
@@ -157,4 +160,14 @@ Mehr über GLSL gelernt um genannte Physik auf GPU in shader code implementieren
 
 ### 7.07
 
-Chaotische codebas aufgeräumt
+Chaotische codebase etwas aufgeräumt
+
+### 8.06
+
+Program noch etwas mehr optimiert für höher mögliche Anzahl an Partikeln
+
+### 10.06
+
+Kamerasteurung geändert, sodass die Kamera sich nicht mehr die ganze Zeit dreht sondern nur wenn man einen Knopf drückt.
+Fullscreen hinzugefügt.
+Fehler behoben der gemacht hat, dass wenn die Fesntergröße geändert wird der Inhalt gezogen erscheint.

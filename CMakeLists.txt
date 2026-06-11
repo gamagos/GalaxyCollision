@@ -17,7 +17,6 @@ set(STBI_IMAGE_INCLUDE_DIRECTORY "${CMAKE_SOURCE_DIR}/Main/Include/stb_image/")
 set(GALAXY_COLLISION_HEADER_FILE "${CMAKE_SOURCE_DIR}/Main/Source/GalaxyCollision.h")
 
 add_subdirectory("Main")
-#add_subdirectory("Tests")
 
 # Make sure shader files are copied into build dir on every build
 set(RESOURCE_DIR "${CMAKE_SOURCE_DIR}/Main/Resources")

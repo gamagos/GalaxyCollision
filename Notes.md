@@ -8,7 +8,19 @@
 
 #### Acceleration
 
+**Basic formula:**
 $$ F = m \cdot a $$
+
+**Get the distance two bodies of a mass m need to have to generate an acceleration a on each other:**  
+$$ a = \frac{F}{m} $$  
+$$ F = G \cdot \frac{m1 \cdot m2}{d^2} $$  
+$$ a = G \cdot \frac{ \frac{m^{2}}{d^{2}} }{m} $$  
+$$ = a = G \cdot \frac{m}{d^{2}} $$  
+**Solve for d:**  
+$$ a = G \cdot \frac{m}{d^{2}} \text{ } \big| \cdot d^{2} $$  
+$$ \leftrightarrow a \cdot d^{2} = G \cdot m \text{ } \big| \div a $$  
+$$ \leftrightarrow d^{2} = \frac{G \cdot m}{a} \text{ } \big| \sqrt{} $$  
+$$ \leftrightarrow d = \sqrt{\frac{G \cdot m}{a}} $$  
 
 #### Gravity
 

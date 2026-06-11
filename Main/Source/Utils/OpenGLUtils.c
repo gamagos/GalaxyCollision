@@ -1,4 +1,5 @@
 // (C) Sebastian Fiault
+#include <cglm/cglm.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stdio.h>
@@ -14,9 +15,10 @@ void glfw_error_callback(int code, const char* description)
 	perror( formatString("\nGLFW error %d: %s", code, description) );
 }
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void framebuffer_size_callback(GLFWwindow* window, int width, int height, mat4* viewMatrix)
 {
-	glViewport(0, 0, width, height);
+	glViewport(0, 0, width, height); // TODO make it also adjust the projection matrix to not be stretched res
+	//TODO glm_perspective(, *viewMatrix);
 }
 
 #ifndef infoLogSizeShader
@@ -54,7 +56,7 @@ GLuint createShaderFromPath(char* path, bool pathIsRelativePath, GLenum shaderTy
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 	if (!success)
 	{	
-		perror( formatString("\n%s Compilation was not successful of shader with source:\n%s\n", WARNING_TAG, shaderSource) );
+		perror( formatString("\n%s Compilation was not successful of shader with source:\n%s\nfrom %s\n", WARNING_TAG, shaderSource, shaderSourcePath));
 		glGetShaderInfoLog(shader, infoLogSizeShader, NULL, infoLog);
 		perror( formatString("\nShader compilation log:\n%s\n", infoLog) );
 		return (GLuint)(uintptr_t)NULL;

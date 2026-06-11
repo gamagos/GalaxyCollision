@@ -9,9 +9,9 @@
 struct Data 
 {
 	vec3 position;
-	float padding;
+	float _padding; // Padding bytes are unused
 	vec3 velocity;
-	float padding2;
+	float _padding2;
 };
 
 layout(std430, binding = 0) buffer bufferData
@@ -27,10 +27,11 @@ uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 
 // Uniforms for physics
+uniform float distanceMaximum;
+uniform float drag;
+uniform float forceMinimum;
 uniform float mass;
 uniform float speedCap;
-uniform float drag;
-uniform int recenter;
 
 // Uniforms for both
 uniform uint amountStars;
@@ -38,7 +39,7 @@ uniform uint amountStars;
 // Variables to pass to fragment shader
 out vec4 _color;
 
-float getGravitationalForce(float massBody1, float massBody2, float distanceBodies)
+float getGravitationalForce(float massBody1, float massBody2, float distanceBodies) // F = G * (m1 * m2) / (d^2)
 {
 	float force = 0.0f;
 	force = GRAVITATIONAL_CONSTANT_FLOAT * (
@@ -48,7 +49,7 @@ float getGravitationalForce(float massBody1, float massBody2, float distanceBodi
 	return force;
 }
 
-float getAcceleration(float force, float massBody)
+float getAcceleration(float force, float massBody) // a = F / m
 {
 	float acceleration = 0.0f;
 	acceleration = force / massBody;
@@ -60,9 +61,9 @@ float getAcceleration(float force, float massBody)
 vec3 accelerationToOrigin = vec3(0.0f, 0.0f, 0.0f);
 vec3 averageVelocity = vec3(0.0f, 0.0f, 0.0f);
 vec3 normalizedDirectionVector = vec3(0.0f, 0.0f, 0.0f);
+vec3 origin = vec3(0.0f, 0.0f, 0.0f);
 float distanceBodies = 0.0f;
 float force = 0.0f;
-float forceMinimum = 0.000001f;
 
 void main()
 {
@@ -76,8 +77,8 @@ void main()
 	{
 		if (i == gl_VertexID) continue; // Skip if current point is self
 		distanceBodies = distance(data[gl_VertexID].position, data[i].position);
+		if (distanceBodies > distanceMaximum) continue;
 		force = getGravitationalForce(mass, mass, distanceBodies);
-		if (force > forceMinimum) continue; // Skip if force is of irrelevant amount to conserve resources;
 		normalizedDirectionVector = data[i].position - data[gl_VertexID].position;
 		normalizedDirectionVector = normalize(normalizedDirectionVector);
 		data[gl_VertexID].velocity.x += getAcceleration(force * normalizedDirectionVector.x, mass);
@@ -98,8 +99,7 @@ void main()
 	data[gl_VertexID].velocity.x /= drag;
 	data[gl_VertexID].velocity.y /= drag;
 	data[gl_VertexID].velocity.z /= drag;
-	// Apply gravity to origing(0, 0, 0) to keep particles centered
-	// And to keep particles returning if they are to far away and the force applied to them is bellow the force minimum
+	// Apply gravity to origin(0, 0, 0) to keep particles centered and to keep particles returning if they are to far away and the force applied to them is bellow the force minimum
 	normalizedDirectionVector = origin - data[gl_VertexID].position;
 	normalizedDirectionVector = normalize(normalizedDirectionVector);
 	data[gl_VertexID].velocity.x += getAcceleration(forceMinimum * normalizedDirectionVector.x, mass);

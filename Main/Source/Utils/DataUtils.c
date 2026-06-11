@@ -15,7 +15,7 @@ char* formatString(const char* toFormat, ...)
 {
     va_list args;
     va_start(args, toFormat);
-    size_t amountCharacters = _vscprintf(toFormat, args);
+    size_t amountCharacters = _vscprintf(toFormat, args) + 1U; //! There needs to be +1 because _vscprintf just doesn't count null-terminators for some reason
     char* result = calloc(amountCharacters, sizeof(char));
     if (!result)
     {

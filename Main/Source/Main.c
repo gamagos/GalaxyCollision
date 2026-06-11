@@ -54,13 +54,14 @@ size_t currentIndexvertexArraysCurrentlyInUse = 0;
 
 int windowWidth = 1'000;
 int windowHeight = 1'000;
-long unsigned int amountStars = 15'000;
+long unsigned int amountStars = 45'000;
 
 float timeSinceStart_PetaSeconds_Float = 0.0f;
 double timeSinceStart_PetaSeconds_Double = 0.0;
 
 int main(int argc, char **argv) 
 {
+    formatString(""); // deleteme
     printf_s("Starting program...\n");
     printf_s("Compiled with C Version: %ld\n", __STDC_VERSION__);
     #if defined(__clang__)
@@ -70,7 +71,7 @@ int main(int argc, char **argv)
     #elif defined(__GNUC__)
         printf_s("Compiled with: GCC Version: %d.%d.%d\n", __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
     #elif defined(_MSC_VER)
-        printf_s("Compiler: MSVC Version %d\n", _MSC_VER);
+        printf_s("Compiled with: MSVC Version %d\n", _MSC_VER);
     #else
         printf_s("Compiled with: Unknown compiler\n");
     #endif
@@ -137,6 +138,8 @@ int main(int argc, char **argv)
 
     printf_s("Using OpenGL version %s\n", glGetString(GL_VERSION));
     // ##############################################################################
+
+    printf_s("Particle count for current simulation: %lu\n", amountStars);
 
     // Galaxy Generation
     printf_s("Starting galaxy generation\n");
@@ -287,15 +290,16 @@ int main(int argc, char **argv)
     printf_s("%sChanging camera orbiting direction currently must be done with a very quick tap of the key or else it will glitch out\n", WARNING_TAG);
 
     // ### Variable definitions for loop ###
-    // Gravity Physics, so far only movement
-    double timeLastFrame = glfwGetTime();
+    // Variables for physics
     double frameRate = 0.0;
-    size_t bufferDataIndex = 0;
-    float distance = 0.0f;
+    float accelerationMinimum = 0.000'000'2f;
+    float distanceMaximum = 0.0f;
+    float drag = 1.002;
     float force = 0.0f;
+    float forceMinimum = 0.0f;
     float mass = 620'000.0f; // All bodies weight the same for now
     float speedCap = 991.0f;
-    float drag = 1.002;
+    size_t bufferDataIndex = 0;
     vec3 normalizedDirectionVector = { 0.0f }; //! This vector must remain normalized [1.0f; -1.0f]!
     // Variables for camera
     float camX = 0.0f;
@@ -307,6 +311,7 @@ int main(int argc, char **argv)
     // Other variables
     double secondsToWaitForInfoOutputUpdate = 0.5;
     double secondWaitedForInfoOutPutUpdate = 0.0;
+    double timeLastFrame = glfwGetTime();
 
     // ### Setup Uniforms ###
     // Uniforms for graphics
@@ -326,15 +331,23 @@ int main(int argc, char **argv)
     glUniformMatrix4fv(perspectiveProjectionMatrixUniformLocation, 1, GL_FALSE, (GLfloat*)perspectiveProjectionMatrix);
 
     // Uniforms for physics
+    GLuint distanceMaximumUniformLocation = glGetUniformLocation(primaryShaderProgram, "distanceMaximum"); // TODO abstract physics into a method
+    distanceMaximum = sqrtf( (GRAVITATIONAL_CONSTANT_FLOAT * mass) / accelerationMinimum ); // a = F / m;  F = G * (m1 * m2) / (d^2);  a = (G * m^2 / d^2) / m  <=>  a = G * m / d^2;  Solve for d:  <=>  a * d^2 = G * m  <=>  d^2 = (G * m) / a 
+    glUniform1f(distanceMaximumUniformLocation, distanceMaximum);                           // <=>  d = sqrt( (G * m) / a )    
+                                                                                            //Note: m1 = m2 here since all objects have the same mass, therefore m1 * m2 = m1^2 or m^2 for short
+    GLuint dragUniformLocation = glGetUniformLocation(primaryShaderProgram, "drag");
+    glUniform1f(dragUniformLocation, drag);
+
+    GLuint forceMinumUniformLocation = glGetUniformLocation(primaryShaderProgram, "forceMinimum");
+    forceMinimum = getGravitationalForce_32(mass, mass, distanceMaximum);
+    glUniform1f(forceMinumUniformLocation, forceMinimum);
+
     GLuint massUniformLocation = glGetUniformLocation(primaryShaderProgram, "mass");
     glUniform1f(massUniformLocation, mass);
     
     GLuint speedCapUniformLocation = glGetUniformLocation(primaryShaderProgram, "speedCap");
     glUniform1f(speedCapUniformLocation, speedCap);
     
-    GLuint dragUniformLocation = glGetUniformLocation(primaryShaderProgram, "drag");
-    glUniform1f(dragUniformLocation, drag);
-
     // Uniforms for both
     GLuint amountStarsUniformLocation = glGetUniformLocation(primaryShaderProgram, "amountStars");
     glUniform1ui(amountStarsUniformLocation, amountStars);
@@ -372,8 +385,22 @@ int main(int argc, char **argv)
         if (glfwGetKey(primaryWindow, GLFW_KEY_R)) camOrbitingSpeedReductionDivisor *= -1.0f;
 
         // Particle mass
-        if (glfwGetKey(primaryWindow, GLFW_KEY_X)) mass = min(FLT_MAX, mass * 1.003f);
-        if (glfwGetKey(primaryWindow, GLFW_KEY_C)) mass = max(FLT_MIN, mass / 1.003f);
+        if (glfwGetKey(primaryWindow, GLFW_KEY_X))
+        {
+            mass = min(FLT_MAX, mass * 1.01f);
+            distanceMaximum = sqrtf((GRAVITATIONAL_CONSTANT_FLOAT * mass) / accelerationMinimum); // a = F / m;  F = G * (m1 * m2) / (d^2);  a = (G * m^2 / d^2) / m  <=>  a = G * m / d^2;  Solve for d:  <=>  a * d^2 = G * m  <=>  d^2 = (G * m) / a 
+            glUniform1f(distanceMaximumUniformLocation, distanceMaximum);                         // <=>  d = sqrt( (G * m) / a )      Note: m1 = m2 here since all objects have the same mass, therefore m1 * m2 = m1^2 or m^2 for short 
+            forceMinimum = getGravitationalForce_32(mass, mass, distanceMaximum);
+            glUniform1f(forceMinumUniformLocation, forceMinimum);
+        }
+        if (glfwGetKey(primaryWindow, GLFW_KEY_C))
+        {
+            mass = max(FLT_MIN, mass / 1.01f);
+            distanceMaximum = sqrtf((GRAVITATIONAL_CONSTANT_FLOAT * mass) / accelerationMinimum); // a = F / m;  F = G * (m1 * m2) / (d^2);  a = (G * m^2 / d^2) / m  <=>  a = G * m / d^2;  Solve for d:  <=>  a * d^2 = G * m  <=>  d^2 = (G * m) / a 
+            glUniform1f(distanceMaximumUniformLocation, distanceMaximum);                         // <=>  d = sqrt( (G * m) / a )      Note: m1 = m2 here since all objects have the same mass, therefore m1 * m2 = m1^2 or m^2 for short
+            forceMinimum = getGravitationalForce_32(mass, mass, distanceMaximum);
+            glUniform1f(forceMinumUniformLocation, forceMinimum);
+        }
 
         // Drag
         if (glfwGetKey(primaryWindow, GLFW_KEY_F)) drag = min(FLT_MAX, drag * 1.000'002f);

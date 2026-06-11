@@ -2,6 +2,7 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#include <cglm/cglm.h>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -208,5 +209,19 @@ typedef struct BlackHole_64
     Vector3_Double64 rotationAxis;
     bool rotatesClockwise;
 } BlackHole_64;
+
+/*
+SYNOPSIS:
+    
+//TODO finish documentation!
+*/
+typedef struct parametersFor_cglm_perspective
+{
+    float fovy;
+    float apsect;
+    float nearZ;
+    float farZ;
+    mat4 dest;
+} parametersFor_cglm_perspective;
 
 #endif

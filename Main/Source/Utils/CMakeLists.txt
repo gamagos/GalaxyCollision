@@ -7,10 +7,11 @@ target_sources(DataUtils
 	PUBLIC
 		../Constants.h
 		../GalaxyCollision.h
-		../Types.h
 		DataUtils.h
 		${GALAXY_COLLISION_HEADER_FILE}
 )
+	#? Left off making projection matrix aspect ratio get adjusted correctly on resize, for that I was making a struct in Types.h to easily pass in all the parameters
+	#? Also I was intending to implement the same struct simplification for quitProgramOnError and I also was changing the camera rotation from being constant to being only when the corresponding keys are pressed
 
 add_library(DebugUtils)
 target_include_directories(DebugUtils
@@ -97,6 +98,7 @@ target_sources(OpenGLUtils
 )
 target_link_libraries(OpenGLUtils
 	PRIVATE
+		cglm
 		glad
 		glfw
 		DataUtils
