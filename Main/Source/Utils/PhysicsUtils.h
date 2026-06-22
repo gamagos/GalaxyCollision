@@ -56,7 +56,7 @@ EXAMPLE:
 	float massBlackHole = 10'000.0f;
 	float orbitVelocity = getRequiredOrbitVelocity(orbitRadius, massBlackHole, starMass);
 */
-float getRequiredOrbitVelocity32(float orbitRadius, float massCenterObject);
+float getRequiredOrbitVelocity32(float orbitRadius, float massCenterObject, float massOrbitingObject);
 
 /*
 SYNOPSIS:
@@ -80,6 +80,6 @@ EXAMPLE:
 	double orbitRadius = 1'000.0;
 	double orbitVelocity = getRequiredOrbitVelocity(orbitRadius, blackHoleMass, starMass);
 */
-double getRequiredOrbitVelocity64(double orbitRadius, double massCenterObject);
+double getRequiredOrbitVelocity64(double orbitRadius, double massCenterObject, double massOrbitingObject);
 
 #endif

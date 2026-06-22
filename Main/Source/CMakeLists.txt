@@ -34,7 +34,7 @@ target_link_libraries(GalaxyCollision
 		GenerationUtils
 		MathUtils
 		OpenGLUtils
-		PhysicsUtil
+		PhysicsUtils
 		UserInteractionUtils
 		
 		cglm

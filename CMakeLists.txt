@@ -6,7 +6,9 @@ project (GalaxyCollision VERSION 0.0 LANGUAGES C)
 
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-set(CMAKE_EXE_LINKER_FLAGS "-static")
+if (CMAKE_C_COMPILER_ID MATCHES "GCC|Clang")
+	set(CMAKE_EXE_LINKER_FLAGS "-static")
+endif()
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")  # MSVC's multi threaded flag weirdly enough also makes things link statically, which we need
 
 # Custom CMake variables for building this project

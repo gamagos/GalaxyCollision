@@ -1,5 +1,5 @@
 # (C) Sebastian Fiault 2026
-add_library(DataUtils)
+add_library(DataUtils STATIC)
 target_sources(DataUtils
 	PRIVATE 
 		DataUtils.c
@@ -13,7 +13,7 @@ target_sources(DataUtils
 	#? Left off making projection matrix aspect ratio get adjusted correctly on resize, for that I was making a struct in Types.h to easily pass in all the parameters
 	#? Also I was intending to implement the same struct simplification for quitProgramOnError and I also was changing the camera rotation from being constant to being only when the corresponding keys are pressed
 
-add_library(DebugUtils)
+add_library(DebugUtils STATIC)
 target_include_directories(DebugUtils
 	PUBLIC
 		${GLAD_INCLUDE_DIRECTORY}
@@ -36,7 +36,7 @@ target_link_libraries(DebugUtils
 		DataUtils
 )
 
-add_library(FileUtils)
+add_library(FileUtils STATIC)
 target_sources(FileUtils
 	PRIVATE
 		FileUtils.c
@@ -51,7 +51,7 @@ target_link_libraries(FileUtils
 		DataUtils
 )
 
-add_library(GenerationUtils)
+add_library(GenerationUtils STATIC)
 target_sources(GenerationUtils
 	PRIVATE 
 		GenerationUtils.c
@@ -67,7 +67,7 @@ target_link_libraries(GenerationUtils
 		MathUtils
 )
 
-add_library(MathUtils)
+add_library(MathUtils STATIC)
 target_sources(MathUtils
 	PRIVATE 
 		MathUtils.c
@@ -81,7 +81,7 @@ target_link_libraries(MathUtils
 		DataUtils
 )
 
-add_library(OpenGLUtils)
+add_library(OpenGLUtils STATIC)
 target_include_directories(OpenGLUtils
 	PUBLIC
 		${GLAD_INCLUDE_DIRECTORY} # OpenGLUtils depends on glad and glfw
@@ -105,7 +105,7 @@ target_link_libraries(OpenGLUtils
 		FileUtils
 )
 
-add_library(PhysicsUtils)
+add_library(PhysicsUtils STATIC)
 target_sources(PhysicsUtils
 	PRIVATE 
 		PhysicsUtils.c
@@ -115,7 +115,7 @@ target_sources(PhysicsUtils
 		${GALAXY_COLLISION_HEADER_FILE}
 )
 
-add_library(UserInteractionUtils)
+add_library(UserInteractionUtils STATIC)
 target_sources(UserInteractionUtils
 	PRIVATE 
 		UserInteractionUtils.c

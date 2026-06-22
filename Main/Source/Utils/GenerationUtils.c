@@ -95,7 +95,7 @@ Vector3_Float32 generateVelocity32(BlackHole_32 parentBlackHole, Star_32 star)
     Vector3_Float32 result = {0};
 
     distanceFromBlackHole = getPointsDistanceInt32(parentBlackHole.position_Terameters, star.position_Terameters);
-    velocity = getRequiredOrbitVelocity32((float)distanceFromBlackHole, parentBlackHole.mass_10_BillionQuettagrams);
+    //velocity = getRequiredOrbitVelocity32((float)distanceFromBlackHole, parentBlackHole.mass_10_BillionQuettagrams);
     // Generation of velocity randomness
     quit = false; // NOSONAR
     do
@@ -145,7 +145,7 @@ Vector3_Double64 generateVelocity64(BlackHole_64 parentBlackHole, Star_64 star)
     Vector3_Double64 result = { 0 };
 
     distanceFromBlackHole = getPointsDistanceInt64(parentBlackHole.position_Kilometers, star.position_Kilometers);
-    velocity = getRequiredOrbitVelocity64((double)distanceFromBlackHole, parentBlackHole.mass_10_BillionQuettagrams);
+    //velocity = getRequiredOrbitVelocity64((double)distanceFromBlackHole, parentBlackHole.mass_10_BillionQuettagrams);
     // Generation of velocity randomness
     quit = false; // NOSONAR
     do

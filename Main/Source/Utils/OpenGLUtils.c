@@ -7,6 +7,7 @@
 
 #include "../Constants.h"
 #include "../GalaxyCollision.h"
+#include "../Types.h"
 #include "DataUtils.h"
 #include "FileUtils.h"
 
@@ -15,10 +16,17 @@ void glfw_error_callback(int code, const char* description)
 	perror( formatString("\nGLFW error %d: %s", code, description) );
 }
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height, mat4* viewMatrix)
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height); // TODO make it also adjust the projection matrix to not be stretched res
-	//TODO glm_perspective(, *viewMatrix);
+	parametersFor_cglm_perspective parametersCglmPerspective = *( (parametersFor_cglm_perspective*)glfwGetWindowUserPointer(window) );
+	glm_perspective(
+		parametersCglmPerspective.fovy,
+		(float)width / (float)height,
+		parametersCglmPerspective.nearZ,
+		parametersCglmPerspective.farZ,
+		parametersCglmPerspective.dest
+	);
 }
 
 #ifndef infoLogSizeShader

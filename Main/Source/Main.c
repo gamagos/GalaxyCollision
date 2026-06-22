@@ -54,7 +54,7 @@ size_t currentIndexvertexArraysCurrentlyInUse = 0;
 
 int windowWidth = 1'000;
 int windowHeight = 1'000;
-long unsigned int amountStars = 45'000;
+long unsigned int amountStars = 30'000;
 
 float timeSinceStart_PetaSeconds_Float = 0.0f;
 double timeSinceStart_PetaSeconds_Double = 0.0;
@@ -305,6 +305,7 @@ int main(int argc, char **argv)
     float camX = 0.0f;
     float camY = 0.0f;
     float camZ = 0.0f;
+    float fovY = 70.0f;
     float radius = 4.0f;
     float cameraUserInputSpeed = 0.5f;
     float camOrbitingSpeedReductionDivisor = 6.5f; // bigger means slower
@@ -326,9 +327,20 @@ int main(int argc, char **argv)
     glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, (GLfloat*)viewMatrix);
 
     mat4 perspectiveProjectionMatrix = {0};
-    glm_perspective( glm_rad(70.0f), (float)windowWidth / (float)windowHeight, 0.1f, 6'000'000.0f, perspectiveProjectionMatrix );
+    float aspectRatio = (float)windowWidth / (float)windowHeight;
+    float nearZ = 0.1f;
+    float farZ = 6'000'000.0f;
+    glm_perspective( glm_rad(fovY), aspectRatio, nearZ, farZ, perspectiveProjectionMatrix );
     GLuint perspectiveProjectionMatrixUniformLocation = glGetUniformLocation(primaryShaderProgram, "projectionMatrix");
-    glUniformMatrix4fv(perspectiveProjectionMatrixUniformLocation, 1, GL_FALSE, (GLfloat*)perspectiveProjectionMatrix);
+    glUniformMatrix4fv(perspectiveProjectionMatrixUniformLocation, 1, GL_FALSE, (float*)perspectiveProjectionMatrix);
+    // Pass the initial matrix as the initial value to the resize callback function
+    parametersFor_cglm_perspective parametersForCglmPerspective = {
+        .fovy = fovY,
+        .nearZ = nearZ,
+        .farZ = farZ,
+        .dest = &perspectiveProjectionMatrix
+    };
+    glfwSetWindowUserPointer(primaryWindow, &parametersForCglmPerspective);
 
     // Uniforms for physics
     GLuint distanceMaximumUniformLocation = glGetUniformLocation(primaryShaderProgram, "distanceMaximum"); // TODO abstract physics into a method
@@ -426,7 +438,8 @@ int main(int argc, char **argv)
         glUniform1f(speedCapUniformLocation, speedCap);
         glUniform1f(dragUniformLocation, drag);
 
-        glDrawArrays(GL_POINTS, 0, amountStars); // Draw call
+        // Main draw call
+        glDrawArrays(GL_POINTS, 0, amountStars); //TODO find way to make this not need a VBO and make it just draw amountStars GL_POINTS in a way that doesn't waste RAM with an unused VBO, since all the is in the SSBO anyways!
 
         glfwSwapBuffers(primaryWindow);
         glfwPollEvents();
@@ -464,6 +477,7 @@ int main(int argc, char **argv)
 //TODO make methods for calloc and malloc to make that auto check for allocation success to make code more condensed!
 //TODO make config for initial values of simulation be read in via json for better usability
 //TODO add more camera controls maybe with mouse? But keep orbiting mode!
+//TODO add adaptive physics calculation capping. Specifically make accelerationMinimum adapitve
 
 // Stuff to do at school
 //TODO in cmake make sure target_sources also get ALL non std header files

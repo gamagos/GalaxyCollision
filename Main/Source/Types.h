@@ -2,9 +2,10 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-#include <cglm/cglm.h>
 #include <stdbool.h>
 #include <stdint.h>
+
+#include "../Libraries/cglm-0.9.6/include/cglm/cglm.h"
 
 // This file consists of custom types(structs) useful for galactic simulation
 
@@ -212,16 +213,15 @@ typedef struct BlackHole_64
 
 /*
 SYNOPSIS:
-    
-//TODO finish documentation!
+    This structs sole purpose is to make it less visually bloated and also generally clearer when passing in the arguments to the callback function specified in glfwSetFramebufferSizeCallback on window resize
 */
 typedef struct parametersFor_cglm_perspective
 {
     float fovy;
-    float apsect;
+    // aspect not needed since the built in opengl callback already automatically gives us the new resolution
     float nearZ;
     float farZ;
-    mat4 dest;
+    mat4* dest;
 } parametersFor_cglm_perspective;
 
 #endif

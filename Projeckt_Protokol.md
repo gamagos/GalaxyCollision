@@ -170,4 +170,9 @@ Program noch etwas mehr optimiert für höher mögliche Anzahl an Partikeln
 
 Kamerasteurung geändert, sodass die Kamera sich nicht mehr die ganze Zeit dreht sondern nur wenn man einen Knopf drückt.
 Fullscreen hinzugefügt.
-Fehler behoben der gemacht hat, dass wenn die Fesntergröße geändert wird der Inhalt gezogen erscheint.
+Versucht: Fehler behoben der gemacht hat, dass wenn die Fesntergröße geändert wird der Inhalt gezogen erscheint.
+
+### 21.06
+
+Code leicht umorganisiert und Erkärung von Konzepten geschrieben.
+Versucht: Fehler behoben der gemacht hat, dass wenn die Fesntergröße geändert wird der Inhalt gezogen erscheint.
