@@ -222,6 +222,7 @@ typedef struct parametersFor_cglm_perspective
     float nearZ;
     float farZ;
     mat4* dest;
+	bool matrixGotChanged;
 } parametersFor_cglm_perspective;
-
+//TODO maybe also make such a struct for quitProgramOnError
 #endif

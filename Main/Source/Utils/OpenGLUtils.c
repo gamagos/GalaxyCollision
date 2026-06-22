@@ -19,14 +19,15 @@ void glfw_error_callback(int code, const char* description)
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height); // TODO make it also adjust the projection matrix to not be stretched res
-	parametersFor_cglm_perspective parametersCglmPerspective = *( (parametersFor_cglm_perspective*)glfwGetWindowUserPointer(window) );
+	parametersFor_cglm_perspective* parametersCglmPerspective = glfwGetWindowUserPointer(window);
 	glm_perspective(
-		parametersCglmPerspective.fovy,
+		parametersCglmPerspective->fovy,
 		(float)width / (float)height,
-		parametersCglmPerspective.nearZ,
-		parametersCglmPerspective.farZ,
-		parametersCglmPerspective.dest
+		parametersCglmPerspective->nearZ,
+		parametersCglmPerspective->farZ,
+		*(parametersCglmPerspective->dest)
 	);
+	parametersCglmPerspective->matrixGotChanged = true;
 }
 
 #ifndef infoLogSizeShader

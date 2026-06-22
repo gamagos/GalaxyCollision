@@ -334,13 +334,15 @@ int main(int argc, char **argv)
     GLuint perspectiveProjectionMatrixUniformLocation = glGetUniformLocation(primaryShaderProgram, "projectionMatrix");
     glUniformMatrix4fv(perspectiveProjectionMatrixUniformLocation, 1, GL_FALSE, (float*)perspectiveProjectionMatrix);
     // Pass the initial matrix as the initial value to the resize callback function
-    parametersFor_cglm_perspective parametersForCglmPerspective = {
+    parametersFor_cglm_perspective parametersForCglmPerspectiveTemporary = {
         .fovy = fovY,
         .nearZ = nearZ,
         .farZ = farZ,
-        .dest = &perspectiveProjectionMatrix
+        .dest = &perspectiveProjectionMatrix,
+		.matrixGotChanged = false
     };
-    glfwSetWindowUserPointer(primaryWindow, &parametersForCglmPerspective);
+    glfwSetWindowUserPointer(primaryWindow, &parametersForCglmPerspectiveTemporary);
+	parametersFor_cglm_perspective* parametersForCglmPerspective = 0; // Initialize the variable for later use
 
     // Uniforms for physics
     GLuint distanceMaximumUniformLocation = glGetUniformLocation(primaryShaderProgram, "distanceMaximum"); // TODO abstract physics into a method
@@ -438,6 +440,13 @@ int main(int argc, char **argv)
         glUniform1f(speedCapUniformLocation, speedCap);
         glUniform1f(dragUniformLocation, drag);
 
+		parametersForCglmPerspective = glfwGetWindowUserPointer(primaryWindow);
+		if (parametersForCglmPerspective->matrixGotChanged)
+		{
+			glUniformMatrix4fv(perspectiveProjectionMatrixUniformLocation, 1, GL_FALSE, (GLfloat*)perspectiveProjectionMatrix);
+			parametersForCglmPerspective->matrixGotChanged = false;
+		}
+
         // Main draw call
         glDrawArrays(GL_POINTS, 0, amountStars); //TODO find way to make this not need a VBO and make it just draw amountStars GL_POINTS in a way that doesn't waste RAM with an unused VBO, since all the is in the SSBO anyways!
 
@@ -477,22 +486,23 @@ int main(int argc, char **argv)
 //TODO make methods for calloc and malloc to make that auto check for allocation success to make code more condensed!
 //TODO make config for initial values of simulation be read in via json for better usability
 //TODO add more camera controls maybe with mouse? But keep orbiting mode!
-//TODO add adaptive physics calculation capping. Specifically make accelerationMinimum adapitve
+//TODO add adaptive physics calculation capping. Specifically make accelerationMinimum adaptive
+//TODO Make camera rotation controllable with a and d instead of just having constant rotation and maybe also add free cam
 
 // Stuff to do at school
 //TODO in cmake make sure target_sources also get ALL non std header files
 
 /*
 GOALS
-    - Make galaxy simulation
     - Make it multi-threaded
-    - Make it render on and compute on GPU
     - Make it use vulkan
     - Make it optimized
     - Make it really pretty
     - Make it cluster computing - Maybe not might be inefficient because of avg network bandwidth
+        - Make it have a render mode, that creates a video file - THE ONLY WAY CLUSTER COMPUTING WOULD MAKE SENSE IS WITH A RENDER MODE, BECAUSE THEN SLOW LAN TRANSMISSION SPEEDS WOULD NOT MATTER
+        - Make a "render mode" where it records the positions of each of the vertecies and everything so it is a bit like a recording but it will still allow you to move around in 3D
     - Make super clear docs so anyone can read code
     - Make YouTube video?
 */
-
+//TODO clean up entire codebase
 //* Space is so cool

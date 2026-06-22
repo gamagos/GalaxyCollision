@@ -85,6 +85,7 @@ void main()
 		data[gl_VertexID].velocity.y += getAcceleration(force * normalizedDirectionVector.y, mass);
 		data[gl_VertexID].velocity.z += getAcceleration(force * normalizedDirectionVector.z, mass);
 	}
+
 	// Cap velocity
 	data[gl_VertexID].velocity.x = data[gl_VertexID].velocity.x > 0 ?
 		min(data[gl_VertexID].velocity.x, speedCap) :
@@ -95,10 +96,12 @@ void main()
 	data[gl_VertexID].velocity.z = data[gl_VertexID].velocity.z > 0 ?
 		min(data[gl_VertexID].velocity.z, speedCap) :
 		max(data[gl_VertexID].velocity.z, -speedCap);
+
 	// Apply drag
 	data[gl_VertexID].velocity.x /= drag;
 	data[gl_VertexID].velocity.y /= drag;
 	data[gl_VertexID].velocity.z /= drag;
+
 	// Apply gravity to origin(0, 0, 0) to keep particles centered and to keep particles returning if they are to far away and the force applied to them is bellow the force minimum
 	normalizedDirectionVector = origin - data[gl_VertexID].position;
 	normalizedDirectionVector = normalize(normalizedDirectionVector);
@@ -116,4 +119,4 @@ void main()
 	_color = color;
 }
 //TODO try out if doing operations on every single coordinate is really necessary or if you can just do vec * vec
-//TODO find out why there is always an immobile point at the center; there indeed appears one point at the center that is immobile no matter what, do not not why yet
+//TODO find out why there is always an immobile point at the center; there indeed appears one point at the center that is immobile no matter what, do not why yet
