@@ -31,9 +31,11 @@ add_dependencies(GalaxyCollision shaders)
 
 # Add compiler flags
 if (CMAKE_C_COMPILER_ID MATCHES "GNU|Clang") #? Currently empty because they may make debugging harder
-	add_compile_options()
+	add_compile_options("/Zi /fsanitize=address")
+	add_link_options("/DEBUG")
 elseif (CMAKE_C_COMPILER_ID MATCHES "MSVC")
-	add_compile_options()
+	add_compile_options("-g -fsanitize=address -fno-omit-frame-pointer")
+	add_link_options(-fsanitize=address)
 endif()
 
 # Enable Hot Reload for MSVC compilers if supported.
