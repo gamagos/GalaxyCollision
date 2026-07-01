@@ -9,7 +9,6 @@ target_include_directories(GalaxyCollision
 		${CGLM_INCLUDE_DIRECTORY}
 		${GLAD_INCLUDE_DIRECTORY}
 		${GLFW_INCLUDE_DIRECTORY}
-		${STBI_IMAGE_INCLUDE_DIRECTORY}
 )
 
 target_sources(GalaxyCollision
@@ -22,7 +21,6 @@ target_sources(GalaxyCollision
 		${CGLM_INCLUDE_DIRECTORY}
 		${GLAD_INCLUDE_DIRECTORY}
 		${GLFW_INCLUDE_DIRECTORY}
-		${STBI_IMAGE_INCLUDE_DIRECTORY}
 		${GALAXY_COLLISION_HEADER_FILE}
 )
 
