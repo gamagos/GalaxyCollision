@@ -1,4 +1,4 @@
-# Progress Log
+# Progress Log - DEPRECATED!!
 
 ## Before 3.3
 
@@ -40,7 +40,7 @@ Made position generation logic halfway finished
 
 - Figured out orbital calculation math
 
-## 4.02 - ~4.9
+## 4.02 - ~4.09
 
 - Learned about math of 3d engines
 - Thought out 3d engine
@@ -58,4 +58,9 @@ Made position generation logic halfway finished
 ## 4.19
 
 - Verified CMake migration success
+
+## 4.20
+
 - Modified space object struct's positional storing to have more precision (main rough coordinate system + small granular coordinate system)
+
+## REST OF PROGRESS LOG IN PROJEKT_PROTOKOL.MD!

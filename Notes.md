@@ -4,20 +4,40 @@
 
 ## USEFUL FORMULAS
 
-### Gravity
+### Physics
 
-Gravitational force:  
-$$\; F_g = G \frac{m_1 m_2}{d^{2}} \; \big| \; µ = G m_1$$  
-$$\leftrightarrow F_g = \frac{µ m_2}{d^{2}}$$  
-Standard gravitational parameter:  
-$$µ = Gm$$
+#### Acceleration
 
-### Orbital Velocity
+**Basic formula:**
+$$ F = m \cdot a $$
 
-Orbital velocity when orbiting object mass is negligible:  
-$$V_{rel} = \sqrt{ \frac{GM}{R} }$$  
-When orbiting object mass is not negligible:  
-$$V_{rel} = \sqrt{ \frac{G(M + m}{R} }$$  
+**Get the distance two bodies of a mass m need to have to generate an acceleration a on each other:**  
+$$ a = \frac{F}{m} $$  
+$$ F = G \cdot \frac{m1 \cdot m2}{d^2} $$  
+$$ a = G \cdot \frac{ \frac{m^{2}}{d^{2}} }{m} $$  
+$$ = a = G \cdot \frac{m}{d^{2}} $$  
+**Solve for d:**  
+$$ a = G \cdot \frac{m}{d^{2}} \text{ } \big| \cdot d^{2} $$  
+$$ \leftrightarrow a \cdot d^{2} = G \cdot m \text{ } \big| \div a $$  
+$$ \leftrightarrow d^{2} = \frac{G \cdot m}{a} \text{ } \big| \sqrt{} $$  
+$$ \leftrightarrow d = \sqrt{\frac{G \cdot m}{a}} $$  
+
+#### Gravity
+
+**Gravitational force:**  
+$$ F_g = G \frac{m_1 \cdot m_2}{d^{2}} \text{ } \big| µ = G m_1 $$  
+$$ \leftrightarrow F_g = \frac{µ \cdot m_2}{d^{2}} $$  
+
+**Standard gravitational parameter:**  
+$$ µ = G \cdot m $$
+
+#### Orbital Velocity
+
+**Orbital velocity when orbiting object mass is negligible:**  
+$$ V_{rel} = \sqrt{ \frac{G \cdot M}{R} } $$  
+
+**When orbiting object mass is not negligible:**  
+$$ V_{rel} = \sqrt{ \frac{G \cdot (M + m)}{R} } $$  
 
 -----
 
@@ -127,3 +147,8 @@ Use only SI Units or we loose computation on conversions!
 - Time: Petaseconds (Ps)
 - Velocity: Kilometers per second (km/s)
 - Weight: $10^7$ Quettagrams (Qg)
+
+### Other notes
+
+- **Always divide with drag NOT subtract!!**
+- **Include GalaxyCollision.h in all our project files!!**

@@ -1,41 +1,58 @@
-﻿{
-    "version": 3,
-    "configurePresets": [
-        {
-            "name": "windows-base",
-            "hidden": true,
-            "generator": "Ninja",
-            "binaryDir": "${sourceDir}/out/build/${presetName}",
-            "installDir": "${sourceDir}/out/install/${presetName}",
-            "cacheVariables": {
-                "CMAKE_C_COMPILER": "cl.exe",
-                "CMAKE_CXX_COMPILER": "cl.exe"
-            },
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Windows"
-            }
-        },
-        {
-            "name": "x64-debug",
-            "displayName": "x64 Debug",
-            "inherits": "windows-base",
-            "architecture": {
-                "value": "x64",
-                "strategy": "external"
-            },
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
-            }
-        },
-        {
-            "name": "x64-release",
-            "displayName": "x64 Release",
-            "inherits": "x64-debug",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
-            }
-        }
-    ]
+{
+	"version": 10,
+	"cmakeMinimumRequired": {
+		"major": 4,
+		"minor": 3,
+		"patch": 2
+	},
+	"configurePresets": [
+		{
+			"name": "x64-Debug",
+			"displayName": "x64-Debug",
+			"description": "The standard config for building the x64 debug build",
+			"generator": "Visual Studio 18 2026",
+			"architecture": "x64",
+			"binaryDir": "${sourceDir}/out/build/x64-Debug/",
+			"trace": {
+				"mode": "off"
+			},
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Debug",
+				"CMAKE_C_STANDARD": "23"
+			}
+		},
+		{
+			"name": "x64-Release",
+			"displayName": "x64-Release",
+			"description": "The standard config for building the x64 release build",
+			"generator": "Visual Studio 18 2026",
+			"architecture": "x64",
+			"binaryDir": "${sourceDir}/out/build/x64-Release/",
+			"trace": {
+				"mode": "off"
+			},
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Release",
+				"CMAKE_C_STANDARD": "23"
+			}
+		}
+	],
+	"buildPresets": [
+		{
+			"name": "x64-Debug",
+			"displayName": "x64-Debug",
+			"configurePreset": "x64-Debug",
+			"verbose": true,
+			"$comment": "Since threads don't seem to be dynamically adjustable the value for jobs is set very high to ensure generally good usage of all threads on the CPU",
+			"jobs": 36
+		},
+		{
+			"name": "x64-Release_build",
+			"displayName": "x64-Release",
+			"configurePreset": "x64-Release",
+			"verbose":  true,
+			"$comment": "Since threads don't seem to be dynamically adjustable the value for jobs is set very high to ensure generally good usage of all threads on the CPU",
+			"jobs": 36
+		}
+	]
 }

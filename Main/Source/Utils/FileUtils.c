@@ -1,0 +1,79 @@
+// (C) Sebastian Fiault
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "../GalaxyCollision.h"
+#include "DataUtils.h"
+
+char* getAbsolutePath(const char* relativePath)
+{
+	char* result = calloc( _MAX_PATH, sizeof(char) );
+	if (!result)
+	{
+		perror("Failed to allocate memory for result (FileUtils.c, getAbsolutePath)");
+		return NULL;
+	}
+	result = _fullpath(result, relativePath, _MAX_PATH);
+	if (!result)
+	{
+		perror("Something went wrong with absolute path retrieval (FileUtils.c, getAbsolutePath)");
+		return NULL;
+	}
+
+	return result;
+}
+
+#ifndef chunkSize
+#define chunkSize 512U
+#endif
+char* readFileAsCharArray(const char* path)
+{
+	size_t sizeResult = 1024;
+	const size_t sizeResultIncrement = 1024;
+	FILE* file = 0;
+	errno_t failure = fopen_s(&file, path, "r");
+	
+	if (failure)
+	{
+		perror( formatString("\nFailed to open file \"%s\"", path) );
+		return (char*)NULL;
+	}
+	
+	char* result = calloc(sizeResult, sizeof(char));
+	if (!result)
+	{
+		perror("Failed to allocate memory for result (FileUtils.c, readFileAsCharArray())");
+		return (char*)NULL;
+	}
+
+	char temporaryCharArray[chunkSize];
+	size_t bytesRead = 0;
+
+	while (fgets(temporaryCharArray, chunkSize, file)) // TODO maybe split this up into more functions, getting too nested
+	{
+		if (sizeResult < bytesRead + chunkSize) // Allocate more memory to buffer if buffer is getting to small
+		{
+			sizeResult += sizeResultIncrement;
+			char* temporaryPointer = realloc(result, sizeResult * sizeof(char));
+			if (!temporaryPointer)
+			{
+				perror("Failed to allocate memory for result (FileUtils.c, readFileAsCharArray)");
+				return NULL;
+			}
+			result = temporaryPointer;
+
+			// Set newly allocated memory to 0 to clean garbage in left in memory before allocation
+			for (size_t i = sizeResult - sizeResultIncrement - 1; i < sizeResult - 1; i++)
+			{
+				result[i] = 0;
+			}
+		}
+		memcpy_s(result + bytesRead, sizeResult - bytesRead, temporaryCharArray, chunkSize);
+
+		bytesRead += strlen(temporaryCharArray);
+	}
+
+	fclose(file);
+	return result;
+}
