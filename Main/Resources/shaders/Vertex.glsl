@@ -29,6 +29,7 @@ uniform mat4 projectionMatrix;
 // Uniforms for physics
 uniform float distanceMaximum;
 uniform float drag;
+uniform float deltaTime;
 uniform float forceMinimum;
 uniform float mass;
 uniform float speedCap;
@@ -68,9 +69,9 @@ float force = 0.0f;
 void main()
 {
 	// Update positions based on velocities
-	data[gl_VertexID].position.x += data[gl_VertexID].velocity.x;
-	data[gl_VertexID].position.y += data[gl_VertexID].velocity.y;
-	data[gl_VertexID].position.z += data[gl_VertexID].velocity.z;
+	data[gl_VertexID].position.x += (data[gl_VertexID].velocity.x /** deltaTime*/); //TODO fix deltaTime / actually implement deltaTime
+	data[gl_VertexID].position.y += (data[gl_VertexID].velocity.y /** deltaTime*/);
+	data[gl_VertexID].position.z += (data[gl_VertexID].velocity.z /** deltaTime*/);
 
 	// ### Do physics ###
 	for (uint i = 0; i < amountStars; i ++)
@@ -81,9 +82,9 @@ void main()
 		force = getGravitationalForce(mass, mass, distanceBodies);
 		normalizedDirectionVector = data[i].position - data[gl_VertexID].position;
 		normalizedDirectionVector = normalize(normalizedDirectionVector);
-		data[gl_VertexID].velocity.x += getAcceleration(force * normalizedDirectionVector.x, mass);
-		data[gl_VertexID].velocity.y += getAcceleration(force * normalizedDirectionVector.y, mass);
-		data[gl_VertexID].velocity.z += getAcceleration(force * normalizedDirectionVector.z, mass);
+		data[gl_VertexID].velocity.x += ( getAcceleration(force * normalizedDirectionVector.x, mass) /** deltaTime*/ );
+		data[gl_VertexID].velocity.y += ( getAcceleration(force * normalizedDirectionVector.y, mass) /** deltaTime*/ );
+		data[gl_VertexID].velocity.z += ( getAcceleration(force * normalizedDirectionVector.z, mass) /** deltaTime*/ );
 	}
 
 	// Cap velocity
@@ -98,16 +99,16 @@ void main()
 		max(data[gl_VertexID].velocity.z, -speedCap);
 
 	// Apply drag
-	data[gl_VertexID].velocity.x /= drag;
-	data[gl_VertexID].velocity.y /= drag;
-	data[gl_VertexID].velocity.z /= drag;
+	data[gl_VertexID].velocity.x /= (drag /** deltaTime*/);
+	data[gl_VertexID].velocity.y /= (drag /** deltaTime*/);
+	data[gl_VertexID].velocity.z /= (drag /** deltaTime*/);
 
 	// Apply gravity to origin(0, 0, 0) to keep particles centered and to keep particles returning if they are to far away and the force applied to them is bellow the force minimum
 	normalizedDirectionVector = origin - data[gl_VertexID].position;
 	normalizedDirectionVector = normalize(normalizedDirectionVector);
-	data[gl_VertexID].velocity.x += getAcceleration(forceMinimum * normalizedDirectionVector.x, mass);
-	data[gl_VertexID].velocity.y += getAcceleration(forceMinimum * normalizedDirectionVector.y, mass);
-	data[gl_VertexID].velocity.z += getAcceleration(forceMinimum * normalizedDirectionVector.z, mass);
+	data[gl_VertexID].velocity.x += ( getAcceleration(forceMinimum * normalizedDirectionVector.x, mass) /** deltaTime*/ );
+	data[gl_VertexID].velocity.y += ( getAcceleration(forceMinimum * normalizedDirectionVector.y, mass) /** deltaTime*/ );
+	data[gl_VertexID].velocity.z += ( getAcceleration(forceMinimum * normalizedDirectionVector.z, mass) /** deltaTime*/ );
 
 	// Set variables that get passed down pipeline
 	gl_Position = projectionMatrix * viewMatrix * vec4(

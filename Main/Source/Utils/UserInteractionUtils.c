@@ -15,9 +15,10 @@ void printKeybinds()
 	printf_s("##  Decrease camera height:           Right Ctrl; Left Ctrl  ##\n");
 	printf_s("##  Increase camera speed:            Q                      ##\n");
 	printf_s("##  Decrease camera speed:            E                      ##\n");
-	printf_s("##  Increase camera orbiting speed:   D                      ##\n");
-	printf_s("##  Decrease camera orbiting speed:   A                      ##\n");
-	printf_s("##  Invert camera orbiting direction: R                      ##\n");
+	printf_s("##  Increase camera orbiting speed:   I                      ##\n");
+	printf_s("##  Decrease camera orbiting speed:   O                      ##\n");
+	printf_s("##  Rotate camera clockwise:          A                      ##\n");
+	printf_s("##  Rotate camera counter-clockwise:  D                      ##\n");
 	printf_s("##  Increase particle mass:           X                      ##\n");
 	printf_s("##  Decrease particle mass:           C                      ##\n");
 	printf_s("##  Increase drag:                    F                      ##\n");

@@ -54,17 +54,16 @@ size_t currentIndexvertexArraysCurrentlyInUse = 0;
 
 int windowWidth = 1'000;
 int windowHeight = 1'000;
-long unsigned int amountStars = 30'000;
+long unsigned int amountStars = 4'000;
 
 float timeSinceStart_PetaSeconds_Float = 0.0f;
 double timeSinceStart_PetaSeconds_Double = 0.0;
 
 int main(int argc, char **argv) 
 {
-    formatString(""); // deleteme
-    printf_s("Starting program...\n");
+    printf_s("Starting Program\n");
     printf_s("Compiled with C Version: %ld\n", __STDC_VERSION__);
-    #if defined(__clang__)
+    #if defined(__clang__) //TODO move this macro to a separate method
         printf_s("Compiled with: Clang %s\n", __clang_version__);
     #elif defined(__ICC) || defined(__INTEL_COMPILER)
         printf_s("Compiled with: The Intel C/C++ Compiler Version %d\n", __INTEL_COMPILER);
@@ -75,7 +74,11 @@ int main(int argc, char **argv)
     #else
         printf_s("Compiled with: Unknown compiler\n");
     #endif
-    printf_s("System default integer size is %lu bytes (%lu bits)\n", sizeof(int), sizeof(int) * 8);
+    const char* projectTargetPlatform = getBuildPlatform();
+    printf_s("Compiled for Platform: %s\n", projectTargetPlatform);
+    printf_s("This Project Was Built for Microsoft Windows\n"); //TODO make this adapt for different OSs
+    printf_s("System default integer size is %llu bytes (%llu bits)\n", sizeof(int), sizeof(int) * 8);
+    printf_s("System default pointer size is %llu bits\n", sizeof(size_t) * 8);
     
     // ##############################################################################
     // Initialize OpenGL, glad and glfw
@@ -102,6 +105,7 @@ int main(int argc, char **argv)
         glfwTerminate();
         return 1;
     }
+    printf_s("Using OpenGL version %s\n", glGetString(GL_VERSION));
     glViewport(0, 0, windowWidth, windowHeight);
     glfwSetFramebufferSizeCallback(primaryWindow, framebuffer_size_callback);
 
@@ -135,8 +139,6 @@ int main(int argc, char **argv)
     };
     GLuint primaryShaderProgram = createShaderProgram(shaders, 2);
     glUseProgram(primaryShaderProgram);
-
-    printf_s("Using OpenGL version %s\n", glGetString(GL_VERSION));
     // ##############################################################################
 
     printf_s("Particle count for current simulation: %lu\n", amountStars);
@@ -159,7 +161,7 @@ int main(int argc, char **argv)
     pointersCurrentlyInUse[currentIndexPointersCurrentlyInUse++] = galaxy;
 
     // Memory allocations
-    float* positions = calloc( (size_t)(amountStars * 4), sizeof(float) );
+    float* positions = calloc( (size_t)(amountStars * 4), sizeof(float) ); 
     pointersCurrentlyInUse[currentIndexPointersCurrentlyInUse++] = positions;
     if (!positions)
     {
@@ -173,7 +175,7 @@ int main(int argc, char **argv)
     }
 
     float* velocities = calloc( (size_t)(amountStars * 4), sizeof(float) );
-    pointersCurrentlyInUse[currentIndexPointersCurrentlyInUse++] = velocities;
+	pointersCurrentlyInUse[currentIndexPointersCurrentlyInUse++] = velocities;
     if (!velocities)
     {
         quitProgramOnError(pointersCurrentlyInUse, currentIndexPointersCurrentlyInUse + 1,
@@ -197,21 +199,45 @@ int main(int argc, char **argv)
     }
 
     // Copying data from galaxy to custom buffers and doing some normalization on the data
-    for ( unsigned int i = 0; i < (amountStars * 3); i += 3 )
+    size_t incrementForForLoop = 4;
+    for (size_t i = 0; i < (amountStars * 4); i += incrementForForLoop )
     {
-        size_t galaxyIndex = i / 3;
-        positions[i]     = galaxy[galaxyIndex].position_Terameters.x;
+        size_t galaxyIndex = i / incrementForForLoop;
+		positions[i]     = galaxy[galaxyIndex].position_Terameters.x; //DELETME: This does not work for some random reason
         positions[i + 1] = galaxy[galaxyIndex].position_Terameters.y;
         positions[i + 2] = galaxy[galaxyIndex].position_Terameters.z;
+        positions[i + 3] = 0; // for padding bytes
     }
-    for (unsigned int i = 0; i < (amountStars * 3); i += 3)
+
+    //! Temporary
+    //TODO make a method for this
+    // Separate the positions into two separate blocks so that those can collide and look cool
+    float offsetXposition = 4.0f;
+    float offsetYposition = 2.0f;
+    float offsetZposition = 0.0f;
+    for (size_t i = 0; i < ( (amountStars * 4) / 2 ); i += incrementForForLoop) // first half
     {
-        size_t galaxyIndex = i / 3;
+        positions[i] += offsetXposition;
+        positions[i + 1] += offsetYposition;
+        positions[i + 2] += offsetZposition;
+    }
+    for (size_t i = ((amountStars * 4) / 2); i < (amountStars * 4); i += incrementForForLoop) // second half
+    {
+        positions[i] -= offsetXposition;
+        positions[i + 1] -= offsetYposition;
+        positions[i + 2] -= offsetZposition;
+    }
+
+    for (size_t i = 0; i < (amountStars * 4); i += incrementForForLoop)
+    {
+        size_t galaxyIndex = i / incrementForForLoop;
         velocities[i]     = galaxy[galaxyIndex].velocity_KilometersPerSecond.x;
         velocities[i + 1] = galaxy[galaxyIndex].velocity_KilometersPerSecond.y;
         velocities[i + 2] = galaxy[galaxyIndex].velocity_KilometersPerSecond.z;
+        velocities[i + 3] = 0; // for padding bytes
     }
-    for (unsigned int i = 0; i < (amountStars * 4); i += 4)
+    
+    for (size_t i = 0; i < (amountStars * 4); i += 4)
     {
         size_t galaxyIndex = i / 4;
         colors[i]     = (float)(galaxy[galaxyIndex].color.Red)   / 255.0f;
@@ -238,13 +264,30 @@ int main(int argc, char **argv)
         velocities[i + 1] -= averageVelocity[1];
         velocities[i + 2] -= averageVelocity[2];
     }
+    //! Temporary
+    //TODO make a method for this
+    // Give the 2 clusters velocities that make them collide
+    float offsetXvelocity = -0.29f;
+    float offsetYvelocity = 0.0f;
+    float offsetZvelocity = 0.0f;
+    for (size_t i = 0; i < ((amountStars * 4) / 2); i += incrementForForLoop) // first half
+    {
+        velocities[i] += offsetXvelocity;
+        velocities[i + 1] += offsetYvelocity;
+        velocities[i + 2] += offsetZvelocity;
+    }
+    for (size_t i = ((amountStars * 4) / 2); i < (amountStars * 4); i += incrementForForLoop) // second half
+    {
+        velocities[i] -= offsetXvelocity;
+        velocities[i + 1] -= offsetYvelocity;
+        velocities[i + 2] -= offsetZvelocity;
+    }
 
     typedef struct dataForBuffer { //! This also is more or less a temporary workaround
         float position[3];
         float padding;
         float velocity[3];
         float padding2;
-        //float color[4];
     } dataForBuffer;
 
     dataForBuffer* bufferData = calloc( (size_t)amountStars, sizeof(dataForBuffer) );
@@ -285,30 +328,31 @@ int main(int argc, char **argv)
 
     glEnable(GL_DEPTH_TEST);
     printKeybinds();
-    // TODO This:
-    printf_s("%sChanging camera orbiting speed currently cause glitching before speed change\n", WARNING_TAG);
-    printf_s("%sChanging camera orbiting direction currently must be done with a very quick tap of the key or else it will glitch out\n", WARNING_TAG);
 
     // ### Variable definitions for loop ###
     // Variables for physics
     double frameRate = 0.0;
-    float accelerationMinimum = 0.000'000'2f;
+    float accelerationMinimum = 0.000'002f;
     float distanceMaximum = 0.0f;
     float drag = 1.002;
+	float deltaTime = 0.0f;
     float force = 0.0f;
     float forceMinimum = 0.0f;
-    float mass = 620'000.0f; // All bodies weight the same for now
-    float speedCap = 991.0f;
+    float mass = 1'920'000.0f; // All bodies weight the same for now
+    float speedCap = 9'091.0f; //TODO make this be a cap on acceleration instead and make calculate what acceleration to use with distance, preferably the radius of the largest star
+	float timeWarp = 1.0f;
+    float timeWarpedDeltaTime = 0.0f; // For later use, do not set outside of render loop
     size_t bufferDataIndex = 0;
     vec3 normalizedDirectionVector = { 0.0f }; //! This vector must remain normalized [1.0f; -1.0f]!
     // Variables for camera
     float camX = 0.0f;
     float camY = 0.0f;
     float camZ = 0.0f;
+    float camCurrentOrbitAngle = 0.0f;
     float fovY = 70.0f;
     float radius = 4.0f;
     float cameraUserInputSpeed = 0.5f;
-    float camOrbitingSpeedReductionDivisor = 6.5f; // bigger means slower
+    float camOrbitingSpeed = 0.01f; // bigger means slower
     // Other variables
     double secondsToWaitForInfoOutputUpdate = 0.5;
     double secondWaitedForInfoOutPutUpdate = 0.0;
@@ -317,8 +361,10 @@ int main(int argc, char **argv)
     // ### Setup Uniforms ###
     // Uniforms for graphics
     mat4 viewMatrix = {0};
+    camX = sin(camCurrentOrbitAngle) * radius;
+    camZ = cos(camCurrentOrbitAngle) * radius;
     glm_lookat(
-        (vec3){ 0.1f, 0.0f, 9.0f },
+        (vec3){ camX, camY, camZ },
         (vec3){ 0.0f, 0.0f, 0.0f },
         (vec3){ 0.0f, 1.0f, 0.0f },
         viewMatrix
@@ -351,6 +397,9 @@ int main(int argc, char **argv)
                                                                                             //Note: m1 = m2 here since all objects have the same mass, therefore m1 * m2 = m1^2 or m^2 for short
     GLuint dragUniformLocation = glGetUniformLocation(primaryShaderProgram, "drag");
     glUniform1f(dragUniformLocation, drag);
+	
+	GLuint deltaTimeUniformLocation = glGetUniformLocation(primaryShaderProgram, "deltaTime");
+	glUniform1f(deltaTimeUniformLocation, deltaTime);
 
     GLuint forceMinumUniformLocation = glGetUniformLocation(primaryShaderProgram, "forceMinimum");
     forceMinimum = getGravitationalForce_32(mass, mass, distanceMaximum);
@@ -394,9 +443,12 @@ int main(int argc, char **argv)
         if (glfwGetKey(primaryWindow, GLFW_KEY_E)) cameraUserInputSpeed = max( FLT_MIN, cameraUserInputSpeed / 1.05f );
 
         // Camera orbiting speed and direction
-        if (glfwGetKey(primaryWindow, GLFW_KEY_A)) camOrbitingSpeedReductionDivisor = min(FLT_MAX, camOrbitingSpeedReductionDivisor * 1.1f);
-        if (glfwGetKey(primaryWindow, GLFW_KEY_D)) camOrbitingSpeedReductionDivisor = max(FLT_MIN, camOrbitingSpeedReductionDivisor / 1.1f);
-        if (glfwGetKey(primaryWindow, GLFW_KEY_R)) camOrbitingSpeedReductionDivisor *= -1.0f;
+        if (glfwGetKey(primaryWindow, GLFW_KEY_I)) camOrbitingSpeed *= 1.001f;
+        if (glfwGetKey(primaryWindow, GLFW_KEY_O)) camOrbitingSpeed /= 1.001f;
+
+        // Orbit camera
+        if (glfwGetKey(primaryWindow, GLFW_KEY_A)) camCurrentOrbitAngle -= camOrbitingSpeed;
+        if (glfwGetKey(primaryWindow, GLFW_KEY_D)) camCurrentOrbitAngle += camOrbitingSpeed;
 
         // Particle mass
         if (glfwGetKey(primaryWindow, GLFW_KEY_X))
@@ -425,9 +477,9 @@ int main(int argc, char **argv)
         if (glfwGetKey(primaryWindow, GLFW_KEY_2)) speedCap = max(FLT_MIN, speedCap / 1.002f);
 
         // Move camera
-        camX = sin(glfwGetTime() / camOrbitingSpeedReductionDivisor) * radius;
-        camZ = cos(glfwGetTime() / camOrbitingSpeedReductionDivisor) * radius;
         mat4 viewMatrix = { 0 };
+        camX = sin(camCurrentOrbitAngle) * radius;
+        camZ = cos(camCurrentOrbitAngle) * radius;
         glm_lookat(
             (vec3) { camX, camY, camZ },
             (vec3) { 0.0f, 0.0f, 0.0f },
@@ -436,9 +488,11 @@ int main(int argc, char **argv)
         );
         // Send updated uniforms to GPU
         glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, (GLfloat*)viewMatrix);
-        glUniform1f(massUniformLocation, mass);
-        glUniform1f(speedCapUniformLocation, speedCap);
         glUniform1f(dragUniformLocation, drag);
+        timeWarpedDeltaTime = timeWarp * deltaTime; //? Left off debugging delta time issue and weird center point, also left of finding out how to use breakpoints with my new cmake build, because vs is not playing along anymore
+        glUniform1f(deltaTimeUniformLocation, timeWarpedDeltaTime);
+		glUniform1f(massUniformLocation, mass);
+		glUniform1f(speedCapUniformLocation, speedCap);
 
 		parametersForCglmPerspective = glfwGetWindowUserPointer(primaryWindow);
 		if (parametersForCglmPerspective->matrixGotChanged)
@@ -457,13 +511,14 @@ int main(int argc, char **argv)
         if (secondsToWaitForInfoOutputUpdate <= secondWaitedForInfoOutPutUpdate) // Limit the amount of times output get's printed
         {
             frameRate = 1 / (glfwGetTime() - timeLastFrame);
-            printf_s("\rFPS: %-4.0lf  Particle mass: %-7.2g  Drag: %-10f  Speed cap: %-12.1f  Camera speed: %-8.1f", frameRate, mass, drag, speedCap, cameraUserInputSpeed);
+            printf_s("\rFPS: %-4.0lf Delta time: %-4.5f Time warp: %-6.1f Particle mass: %-7.2g  Drag: %-10f  Speed cap: %-12.1f  Camera speed: %-8.1f", frameRate, deltaTime, timeWarp, mass, drag, speedCap, cameraUserInputSpeed);
             secondWaitedForInfoOutPutUpdate = 0;
         }
         else
         {
             secondWaitedForInfoOutPutUpdate += glfwGetTime() - timeLastFrame;
         }
+		deltaTime = glfwGetTime() - timeLastFrame;
         timeLastFrame = glfwGetTime();
     }
 
@@ -487,7 +542,6 @@ int main(int argc, char **argv)
 //TODO make config for initial values of simulation be read in via json for better usability
 //TODO add more camera controls maybe with mouse? But keep orbiting mode!
 //TODO add adaptive physics calculation capping. Specifically make accelerationMinimum adaptive
-//TODO Make camera rotation controllable with a and d instead of just having constant rotation and maybe also add free cam
 
 // Stuff to do at school
 //TODO in cmake make sure target_sources also get ALL non std header files
@@ -500,9 +554,10 @@ GOALS
     - Make it really pretty
     - Make it cluster computing - Maybe not might be inefficient because of avg network bandwidth
         - Make it have a render mode, that creates a video file - THE ONLY WAY CLUSTER COMPUTING WOULD MAKE SENSE IS WITH A RENDER MODE, BECAUSE THEN SLOW LAN TRANSMISSION SPEEDS WOULD NOT MATTER
-        - Make a "render mode" where it records the positions of each of the vertecies and everything so it is a bit like a recording but it will still allow you to move around in 3D
+        - Make a "render mode" where it records the positions of each of the vertices and everything so it is a bit like a recording but it will still allow you to move around in 3D
     - Make super clear docs so anyone can read code
     - Make YouTube video?
 */
 //TODO clean up entire codebase
+//TODO Make this project compile for MSVC, clang and GCC. Currently it does not work with MSVC
 //* Space is so cool
