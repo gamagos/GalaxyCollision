@@ -49,4 +49,20 @@ int quitProgramOnError(
     size_t amountShaderPrograms,
     const char* extraInfo
 );
+
+// Source - https://stackoverflow.com/a/66249936
+// Posted by FreakAnon, modified by community. See post 'Timeline' for change history
+// Retrieved 2026-06-23, License - CC BY-SA 4.0
+// Slightly modified by gamagos a.k.a. Sebastian Fiault
+/*
+    SYNOPSIS:
+        Get a string with architecture that the project was built for
+    DESCRIPTION:
+        Uses macros to determine the architecture that this project was built for to select different return statements,
+        which contain strings with the different architecture names
+    RETURNS:
+        A char array with the name of the architecture the project was built for
+*/
+const char* getBuildPlatform(); // Get current architecture, detects nearly every architecture. Coded by Freak
+
 #endif
