@@ -185,27 +185,26 @@ Vector3_Double64 generateVelocity64(BlackHole_64 parentBlackHole, Star_64 star)
 
 Star_32* generateStars32Galaxy(uint32_t amount, BlackHole_32 parentBlackHole)
 {
-    const int32_t maxX = 10;//LONG_MAX / 8;
-    const int32_t maxY = 10;//LONG_MAX / 8;
-    const int32_t maxZ = 10;//(LONG_MAX / 8 ) / 10;
-    const int32_t minX = 1;
-    const int32_t minY = 1;
-    const int32_t minZ = 1;
+    const int32_t maxX = 1;//
+    const int32_t maxY = 1;//
+    const int32_t maxZ = 1;// To make the galaxy get a more flat cool shape
+    const int32_t minX = 0;
+    const int32_t minY = 0;
+    const int32_t minZ = 0;
 
-    float donePercent = 0.0f;
+    if (maxX == minX) perror("maxX and minX cannot be the same value! (GenerationUtils.c (generateStars32Galaxy))"); return NULL;
+    if (maxY == minY) perror("maxY and minY cannot be the same value! (GenerationUtils.c (generateStars32Galaxy))"); return NULL;
+    if (maxZ == minZ) perror("maxZ and minZ cannot be the same value! (GenerationUtils.c (generateStars32Galaxy))"); return NULL;
+
     Star_32* otherStarsTemporary = NULL;
-    unsigned long progressIncrement = amount > 10'000 ? 100 : amount / 10'000;
 
     srand((unsigned int)time(NULL));
 
     Star_32* stars = calloc(amount, sizeof(Star_32));
     if (stars == NULL) // check for allocation failure
     {
-        fprintf(stderr, 
-                "%s %s Memory for Star32 array could not be allocated",
-                FATAL_TAG,
-                ERROR_TAG);
-        exit(EXIT_FAILURE);
+        perror( formatString("%s %s Memory for Star32 array could not be allocated", FATAL_TAG, ERROR_TAG) );
+        return NULL;
     }
 
     for (unsigned long i = 0; i < amount; i++)
@@ -232,9 +231,9 @@ Star_32* generateStars32Galaxy(uint32_t amount, BlackHole_32 parentBlackHole)
         //    free(otherStarsTemporary);
         //} //! This is the original code!
         //! This is a temporary bypass!!!!!!!!!!!!!!!
-        stars[i].position_Terameters.x = (rand() % (maxX - minX)) + minX;
-        stars[i].position_Terameters.y = (rand() % (maxY - minY)) + minY;
-        stars[i].position_Terameters.z = (rand() % (maxZ - minZ)) + minZ;
+        stars[i].position_Terameters.x = ( (rand() + 1) % (maxX - minX)) + minX; // + 1 to prevent zero devision
+        stars[i].position_Terameters.y = ( (rand() + 1) % (maxY - minY)) + minY;
+        stars[i].position_Terameters.z = ( (rand() + 1) % (maxZ - minZ)) + minZ;
         stars[i].position_Terameters.x *= (rand() % 2) == 1 ? 1 : -1;// Randomize sign
         stars[i].position_Terameters.y *= (rand() % 2) == 1 ? 1 : -1;
         stars[i].position_Terameters.z *= (rand() % 2) == 1 ? 1 : -1;
@@ -242,9 +241,9 @@ Star_32* generateStars32Galaxy(uint32_t amount, BlackHole_32 parentBlackHole)
         // ### Velocity generation ###
         //! Temporarily skip velocity generation because math is broken, also srand inside it breaks rand here as well //stars[i].velocity_KilometersPerSecond = generateVelocity32(parentBlackHole, stars[i]);
         //! Temporary bypass:
-        float tmpMaxGeneratedSpeedDivisor = 1; // bigger ,means slower
+        float tmpMaxGeneratedSpeedDivisor = 2; // bigger ,means slower
         stars[i].velocity_KilometersPerSecond.x = ( ((float)rand() + 1) / (float)RAND_MAX) / tmpMaxGeneratedSpeedDivisor; // + 1 to prevent zero division
-        stars[i].velocity_KilometersPerSecond.y = ( ((float)rand() + 1) / (float)RAND_MAX) / (tmpMaxGeneratedSpeedDivisor);
+        stars[i].velocity_KilometersPerSecond.y = ( ((float)rand() + 1) / (float)RAND_MAX) / tmpMaxGeneratedSpeedDivisor;
         stars[i].velocity_KilometersPerSecond.z = ( ((float)rand() + 1) / (float)RAND_MAX) / tmpMaxGeneratedSpeedDivisor;
         stars[i].velocity_KilometersPerSecond.x *= (rand() % 2) == 1 ? 1 : -1;
         stars[i].velocity_KilometersPerSecond.y *= (rand() % 2) == 1 ? 1 : -1;
@@ -294,6 +293,10 @@ Star_64* generateStars64Galaxy(uint64_t amount, BlackHole_64 parentBlackHole)
     const int64_t minX = 9'000;
     const int64_t minY = 9'000;
     const int64_t minZ = 9'000;
+	
+	if (maxX == minX) perror("maxX and minX cannot be the same value! (GenerationUtils.c (generateStars32Galaxy))"); return NULL;
+    if (maxY == minY) perror("maxY and minY cannot be the same value! (GenerationUtils.c (generateStars32Galaxy))"); return NULL;
+    if (maxZ == minZ) perror("maxZ and minZ cannot be the same value! (GenerationUtils.c (generateStars32Galaxy))"); return NULL;
 
     double donePercent = 0.0;
     Star_64* otherStarsTemporary = NULL;
