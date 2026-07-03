@@ -372,7 +372,7 @@ int main(int argc, char **argv)
 
     mat4 perspectiveProjectionMatrix = {0};
     float aspectRatio = (float)windowWidth / (float)windowHeight;
-    float nearZ = 0.1f;
+    float nearZ = 0.04f;
     float farZ = 6'000'000.0f;
     glm_perspective( glm_rad(fovY), aspectRatio, nearZ, farZ, perspectiveProjectionMatrix );
     GLuint perspectiveProjectionMatrixUniformLocation = glGetUniformLocation(primaryShaderProgram, "projectionMatrix");
@@ -408,6 +408,9 @@ int main(int argc, char **argv)
     
     GLuint speedCapUniformLocation = glGetUniformLocation(primaryShaderProgram, "speedCap");
     glUniform1f(speedCapUniformLocation, speedCap);
+	
+	GLuint timeWarpUniformLocation = glGetUniformLocation(primaryShaderProgram, "timeWarp");
+	glUniform1f(timeWarpUniformLocation, timeWarp);
     
     // Uniforms for both
     GLuint amountStarsUniformLocation = glGetUniformLocation(primaryShaderProgram, "amountStars");

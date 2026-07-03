@@ -33,6 +33,7 @@ uniform float deltaTime;
 uniform float forceMinimum;
 uniform float mass;
 uniform float speedCap;
+//uniform float timeWarp;
 
 // Uniforms for both
 uniform uint amountStars;
