@@ -139,7 +139,14 @@ Und es gibt eine `long double` der entweder 80, 96 oder 128 Bit in verschiedenen
 
 ##### Spezielle Integers von stdint.h
 
-todo
+Es gibt in der Bibliothek stdint.h spezielle `int` Datentypen.  
+Diese sehen meist so aus `intN_t`, `int_fastN_t` und `int_leastN_t`.  
+Und ihre korrespondierend `unsigned` Version z.B. `uintN_t`.  
+N kann hier entweder 8, 16, 32 oder 64 sein und gibt an,  
+wie viel Bits der `int` groß sein soll.  
+`intN_t` ist einfach nur ein `signed int` mit genau N Bits.  
+`int_leastN_t` ist der kleinstmögliche `signed int` der mindestens N Bit groß ist.  
+Doch dieser Datentyp wird nur sehr selten und eher auf komischen Architekturen bzw. eingebetten System verwendet.  
 
 ###### `size_t` von stdlib.h (in mehren Standardbibliotheken definiert)
 
