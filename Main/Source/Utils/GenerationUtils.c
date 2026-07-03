@@ -192,9 +192,21 @@ Star_32* generateStars32Galaxy(uint32_t amount, BlackHole_32 parentBlackHole)
     const int32_t minY = 0;
     const int32_t minZ = 0;
 
-    if (maxX == minX) perror("maxX and minX cannot be the same value! (GenerationUtils.c (generateStars32Galaxy))"); return NULL;
-    if (maxY == minY) perror("maxY and minY cannot be the same value! (GenerationUtils.c (generateStars32Galaxy))"); return NULL;
-    if (maxZ == minZ) perror("maxZ and minZ cannot be the same value! (GenerationUtils.c (generateStars32Galaxy))"); return NULL;
+    if (maxX == minX)
+    {
+        perror("maxX and minX cannot be the same value! (GenerationUtils.c (generateStars32Galaxy))");
+        return NULL;
+    }
+    if (maxY == minY)
+    {
+        perror("maxY and minY cannot be the same value! (GenerationUtils.c (generateStars32Galaxy))");
+        return NULL;
+    }
+    if (maxZ == minZ)
+    {
+       perror("maxZ and minZ cannot be the same value! (GenerationUtils.c (generateStars32Galaxy))");
+       return NULL;
+    }
 
     Star_32* otherStarsTemporary = NULL;
 
