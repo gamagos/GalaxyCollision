@@ -1,14 +1,19 @@
 # Galaxy Collision Simulation in C
 
+## Requirements/Strong Recommendations
+
+- A powerful GPU
+
 ## Build
 
 ### Microsoft Visual Studio 2026
 
-Install Microsoft Visual Studio 2026  
+#### Requirements
 
-Install the desktop development for C++ Microsoft Visual Studio 2026 workflow
+- You have to be running Windows preferably Windows 11, other Windows Distributions may not work
 
-Install the [Vulkan SDK](https://vulkan.org/tools#download-these-essential-development-tools)
-and make sure it' environment variable are set.
+1. Install Microsoft Visual Studio 2026  
+2. Install the "Desktop Development with C++ Microsoft Visual Studio 2026" workflow  
+3. Install the "Desktop Development f   //TODO
 
-THIS PROJECT CAN'T BE BUILT FROM THE VISUAL STUDIO GUI AND NEEDS TO BE BUILT USING build.ps1
+### Other ways to build coming sometime...

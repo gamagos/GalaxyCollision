@@ -40,8 +40,6 @@ PROJECT DEPENDECIES:
 
 // THIS PROGRAM ONLY WORKS FOR WINDOWS
 
-typedef struct timespec timespec;
-
 // For quitProgramOnError
 void* pointersCurrentlyInUse[1024]; //! Not for special pointers, only meant for pointers to memory on heap for malloc, calloc or realloc
 size_t currentIndexPointersCurrentlyInUse = 0;
@@ -52,16 +50,17 @@ size_t currentIndexvertexArraysCurrentlyInUse = 0;
 
 int windowWidth = 1'000;
 int windowHeight = 1'000;
-long unsigned int amountStars = 4'000;
+long unsigned int amountStars = 8'000;
 
 float timeSinceStart_PetaSeconds_Float = 0.0f;
 double timeSinceStart_PetaSeconds_Double = 0.0;
 
 int main(int argc, char **argv) 
 {
+
     printf_s("Starting Program\n");
     printf_s("Compiled with C Version: %ld\n", __STDC_VERSION__);
-    #if defined(__clang__) //TODO move this macro to a separate method
+    #if defined(__clang__) //TODO move these macros to a separate method
         printf_s("Compiled with: Clang %s\n", __clang_version__);
     #elif defined(__ICC) || defined(__INTEL_COMPILER)
         printf_s("Compiled with: The Intel C/C++ Compiler Version %d\n", __INTEL_COMPILER);

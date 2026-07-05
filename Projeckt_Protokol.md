@@ -137,28 +137,28 @@ Shader und im allgemeinen die notwendigen Funktion für die Verwendung von OpenG
 
 Weiter OpenGL gelernt. Über GLSL gelernt, Texture Mapping und uniforms.
 
-### 31.5 - 3.07
+### 31.5 - 3.06
 
 Immer noch weiter OpenGL gelernt und angefangen gelerntes in Projekt zu integrieren.
 Hauptsächlich über lineare algebra und notwendige Matrizen und Vektoren Mathematik für 3D gelernt.
 Projektionsmatrizen, Sichtmatrizen etc.
 
-### 4.07
+### 4.06
 
 Durchbruch:
 Punkte mit Geschwindigkeiten welche sich im 3D Raum bewegen erfolgreich gerendert.
 
-### 5.07
+### 5.06
 
 Punkten erfolgreich Schwerkraft gegeben.
 
-### 6.07
+### 6.06
 
 Über SSBOs(Shader Storage Buffer Objects) gelernt
 und mit diesen Mathematik für Physik auf Grafikkarte verlagert.
 Mehr über GLSL gelernt um genannte Physik auf GPU in shader code implementieren zu können.
 
-### 7.07
+### 7.06
 
 Chaotische codebase etwas aufgeräumt
 
@@ -176,3 +176,26 @@ Versucht: Fehler behoben der gemacht hat, dass wenn die Fesntergröße geändert
 
 Code leicht umorganisiert und Erkärung von Konzepten geschrieben.
 Versucht: Fehler behoben der gemacht hat, dass wenn die Fesntergröße geändert wird der Inhalt gezogen erscheint.
+
+###  22.06 - 26.06
+
+Geschafft: Fehler behoben der gemacht hat, dass wenn die Fenstergröße geändert wird der Inhalt gezogen erscheint.
+Über mehrere Tage versucht das Projekt dazu zu bringen für x86_64 statt x86_32 zu kompilieren,  
+damit dass Projekt kompatible mit moderner VRAM Auslesesoftware bzw. Shaderdebuggingsoftware kompatibel ist.  
+Und es endlich geschafft.  
+Nativen IDE support damit zerschossen.  
+
+### 26.06 - 28.06
+
+Rausgefunden, dass VRAM Auslesesoftware trotzdem nicht geht und versucht Fehler zu finden.
+
+### 29.06
+
+Fehler in Shader statt mit Software manuell gedebugt und temporäre Lösung implementiert.  
+Projekt ummigriert um CMakePresets.json zu verwenden.  
+Funktionalität nativen IDE Supports nicht wieder hergestellt.  
+
+### 30.06 - ENDE
+
+Dokumentation geschrieben und
+Konzepte genauer gelernt.
