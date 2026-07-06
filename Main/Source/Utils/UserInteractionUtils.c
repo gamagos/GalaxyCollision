@@ -25,5 +25,7 @@ void printKeybinds()
 	printf_s("##  Decrease drag:                    G                      ##\n");
 	printf_s("##  Increase velocity cap:            1                      ##\n");
 	printf_s("##  Decrease velocity cap:            2                      ##\n");
+	printf_s("##  Increase timewarp:                9                      ##\n");
+	printf_s("##  Decrease timewarp:                0                      ##\n");
 	printf_s("###############################################################\n\n");
 }

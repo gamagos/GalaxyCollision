@@ -209,8 +209,8 @@ int main(int argc, char **argv)
     //! Temporary
     //TODO make a method for this
     // Separate the positions into two separate blocks so that those can collide and look cool
-    float offsetXposition = 4.0f;
-    float offsetYposition = 2.0f;
+    float offsetXposition = 100.0f;
+    float offsetYposition = 13.0f;
     float offsetZposition = 0.0f;
     for (size_t i = 0; i < ( (amountStars * 4) / 2 ); i += incrementForForLoop) // first half
     {
@@ -264,7 +264,7 @@ int main(int argc, char **argv)
     //! Temporary
     //TODO make a method for this
     // Give the 2 clusters velocities that make them collide
-    float offsetXvelocity = -0.29f;
+    float offsetXvelocity = -7.0f;
     float offsetYvelocity = 0.0f;
     float offsetZvelocity = 0.0f;
     for (size_t i = 0; i < ((amountStars * 4) / 2); i += incrementForForLoop) // first half
@@ -329,16 +329,15 @@ int main(int argc, char **argv)
     // ### Variable definitions for loop ###
     // Variables for physics
     double frameRate = 0.0;
-    float accelerationMinimum = 0.000'002f;
+    float accelerationMinimum = 0.000'000'01f;
     float distanceMaximum = 0.0f;
-    float drag = 1.002;
-	float deltaTime = 0.0f;
+    float drag = 1.000'001;
+	float deltaTime = 0.1f; // Deltatime being zero causes issues
     float force = 0.0f;
     float forceMinimum = 0.0f;
-    float mass = 1'920'000.0f; // All bodies weight the same for now
+    float mass = 5'900'000'000.0f; // All bodies weight the same for now
     float speedCap = 9'091.0f; //TODO make this be a cap on acceleration instead and make calculate what acceleration to use with distance, preferably the radius of the largest star
 	float timeWarp = 1.0f;
-    float timeWarpedDeltaTime = 0.0f; // For later use, do not set outside of render loop
     size_t bufferDataIndex = 0;
     vec3 normalizedDirectionVector = { 0.0f }; //! This vector must remain normalized [1.0f; -1.0f]!
     // Variables for camera
@@ -476,6 +475,10 @@ int main(int argc, char **argv)
         if (glfwGetKey(primaryWindow, GLFW_KEY_1)) speedCap = min(FLT_MAX, speedCap * 1.002f);
         if (glfwGetKey(primaryWindow, GLFW_KEY_2)) speedCap = max(FLT_MIN, speedCap / 1.002f);
 
+        // Timewarp
+        if (glfwGetKey(primaryWindow, GLFW_KEY_9)) timeWarp = min(FLT_MAX, timeWarp * 1.002f);
+        if (glfwGetKey(primaryWindow, GLFW_KEY_0)) timeWarp = max(FLT_MIN, timeWarp / 1.002f);
+
         // Move camera
         mat4 viewMatrix = { 0 };
         camX = sin(camCurrentOrbitAngle) * radius;
@@ -489,8 +492,7 @@ int main(int argc, char **argv)
         // Send updated uniforms to GPU
         glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, (GLfloat*)viewMatrix);
         glUniform1f(dragUniformLocation, drag);
-        timeWarpedDeltaTime = timeWarp * deltaTime; //? Left off debugging delta time issue and weird center point, also left of finding out how to use breakpoints with my new cmake build, because vs is not playing along anymore
-        glUniform1f(deltaTimeUniformLocation, timeWarpedDeltaTime);
+        glUniform1f(deltaTimeUniformLocation, timeWarp * deltaTime);
 		glUniform1f(massUniformLocation, mass);
 		glUniform1f(speedCapUniformLocation, speedCap);
 
@@ -511,7 +513,7 @@ int main(int argc, char **argv)
         if (secondsToWaitForInfoOutputUpdate <= secondWaitedForInfoOutPutUpdate) // Limit the amount of times output get's printed
         {
             frameRate = 1 / (glfwGetTime() - timeLastFrame);
-            printf_s("\rFPS: %-4.0lf Delta time: %-4.5f Time warp: %-6.1f Particle mass: %-7.2g  Drag: %-10f  Speed cap: %-12.1f  Camera speed: %-8.1f", frameRate, deltaTime, timeWarp, mass, drag, speedCap, cameraUserInputSpeed);
+            printf_s("\rFPS: %-4.0lf Delta time: %-4.5f Time warp: %-6.4f Particle mass: %-7.2g  Drag: %-10f  Speed cap: %-12.1f  Camera speed: %-8.1f", frameRate, deltaTime, timeWarp, mass, drag, speedCap, cameraUserInputSpeed);
             secondWaitedForInfoOutPutUpdate = 0;
         }
         else
