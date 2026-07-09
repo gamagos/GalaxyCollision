@@ -8,36 +8,36 @@
 
 #### Acceleration
 
-**Basic formula:**
-$$ F = m \cdot a $$
+**Basic formula:**  
+$ F = m \cdot a $
 
 **Get the distance two bodies of a mass m need to have to generate an acceleration a on each other:**  
-$$ a = \frac{F}{m} $$  
-$$ F = G \cdot \frac{m1 \cdot m2}{d^2} $$  
-$$ a = G \cdot \frac{ \frac{m^{2}}{d^{2}} }{m} $$  
-$$ = a = G \cdot \frac{m}{d^{2}} $$  
+$ a = \frac{F}{m} $  
+$ F = G \cdot \frac{m1 \cdot m2}{d^2} $  
+$ a = G \cdot \frac{ \frac{m^{2}}{d^{2}} }{m} $  
+$ = a = G \cdot \frac{m}{d^{2}} $  
 **Solve for d:**  
-$$ a = G \cdot \frac{m}{d^{2}} \text{ } \big| \cdot d^{2} $$  
-$$ \leftrightarrow a \cdot d^{2} = G \cdot m \text{ } \big| \div a $$  
-$$ \leftrightarrow d^{2} = \frac{G \cdot m}{a} \text{ } \big| \sqrt{} $$  
-$$ \leftrightarrow d = \sqrt{\frac{G \cdot m}{a}} $$  
+$ a = G \cdot \frac{m}{d^{2}} \text{ } \big| \cdot d^{2} $  
+$ \leftrightarrow a \cdot d^{2} = G \cdot m \text{ } \big| \div a $  
+$ \leftrightarrow d^{2} = \frac{G \cdot m}{a} \text{ } \big| \sqrt{} $  
+$ \leftrightarrow d = \sqrt{\frac{G \cdot m}{a}} $  
 
 #### Gravity
 
 **Gravitational force:**  
-$$ F_g = G \frac{m_1 \cdot m_2}{d^{2}} \text{ } \big| µ = G m_1 $$  
-$$ \leftrightarrow F_g = \frac{µ \cdot m_2}{d^{2}} $$  
+$ F_g = G \frac{m_1 \cdot m_2}{d^{2}} \text{ } \big| µ = G m_1 $  
+$ \leftrightarrow F_g = \frac{µ \cdot m_2}{d^{2}} $  
 
 **Standard gravitational parameter:**  
-$$ µ = G \cdot m $$
+$ µ = G \cdot m $
 
 #### Orbital Velocity
 
 **Orbital velocity when orbiting object mass is negligible:**  
-$$ V_{rel} = \sqrt{ \frac{G \cdot M}{R} } $$  
+$ V_{rel} = \sqrt{ \frac{G \cdot M}{R} } $   
 
 **When orbiting object mass is not negligible:**  
-$$ V_{rel} = \sqrt{ \frac{G \cdot (M + m)}{R} } $$  
+$ V_{rel} = \sqrt{ \frac{G \cdot (M + m)}{R} } $  
 
 -----
 

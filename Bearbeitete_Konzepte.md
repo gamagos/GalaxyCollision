@@ -642,18 +642,43 @@ abspeichern und aufrufbar machen.
 Sind die wichtigsten Buffer Objects.  
 Sie beinhalten die Vertexe welche zu rendern sind und ihre Eigenschaften.  
 Ein Vertex ist ein Punkt im 3D Raum.  
-Aus mehreren Vertex lassen sich Formen zusammenbauen.  
-Eine VBO kann man so definieren:
+Aus mehreren Vertex lassen sich Formen z.B. auch Formen zusammenbauen,  
+wenn man Flächen zwischen ihnen malt.  
+Eine VBO kann man so definieren:  
 
 ```C
 // ...
-GLuint VBO;
-glGenBuffers(1, VBO);
-glBindBuffer(GL_ARRAY_BUFFER, VBO);
-glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)0);
-glEnableVertexAttribArray(0);
+GLuint VBO; // Um einen Zahlenwert zu haben um, der den VBO identifiziert
+glGenBuffers(1, VBO); // Macht das Setup des Buffers(generiert ihn)
+glBindBuffer(GL_ARRAY_BUFFER, VBO); // Bindet den Buffer zu GL_ARRAY_BUFFER(der Buffer, der mit glDrawArrays gemalt wird)
+glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)0); // Gibt der GPU das Layout der Daten an
+glEnableVertexAttribArray(0); // Macht die Punkte sichtbar/schaltet die Attribute für den VBO an
+// ...
+```  
+
+Die `glVertexAttribPointer` Methode lohnt sich nochmals genauer anzuschauen.  
+Sie hat die folgenden Parameter(in Reihenfolge gelistet):  
+
+- `GLuint index`: Spezifiziert den Index der Daten für die Shader, mehr dazu später  
+- `GLint size`: Gibt die Menge an Elementen an, die an diesem Index zu finden sind (zwischen 1-4)  
+- `GLEnum type`: Datentyp der hier vorhandenen Daten als GLEnume (Enums funktionieren in C wie in JAVA so ziemlich)  
+- `GLBoolean normalize`: Ob die Daten, die hier eingefügt werden, normalisiert werden sollen (Im Intervak\[-1;1\])  
+- `GLsizei stride`: Wie viele Bytes man vor muss, bis man beim nächsten Vertex ist  
+- `const void* offset`: Das Offset vom Start des Vertexes, ab dem man anfangen muss zu lesen um die richtigen Daten zu bekommen(Wenn der Vertexes mehr als nur ein Datenelement hat)  
+
+**Beim Beispiel von oben könnte man dann so im Vertex Shader auf die Daten zugreifen:**  
+
+```GLSL
+// ...
+// Um auf die Variablen zuzugreifen (mit dem in und layout keywords)
+layout(location = 0) in <datentyp> <name>;
 // ...
 ```
+
+So kann man dann mit `<name>` auf die zugewiesenen Daten im aktuellen Vertex zugreifen.  
+Die `location` ist der vorher spezifizierte Index,  
+der eigentlich Nutzen dieses ist wirklich nur der,  
+die Daten eben in der Grafik Pipeline aufrufbar zu machen.    
 
 ### Contexte
 
@@ -704,7 +729,26 @@ Sehr nützlich um Variablen von einem Shader zum nächsten in der Pipeline zu sc
 Das `out` Keyword deklariert, dass eine Variable zum nächsten Shader in der Pipiline geschickt werden soll.  
 Ebenfalls sehr nützlich um Variablen von einem Shader zum nächsten in der Pipeline zu schicken.  
 
+#### layout
+
+Das `layout` keyword wird dazu verwendet um den Ort im Shader zu spezifizieren,  
+auf dem die CPU davor für die Grafikkarte abgespeichert hat.
+todo
+
 ##### uniform
 
 `uniform` Deklariert eine Uniform Variable.  
 Uniforms sind Variablen, die von der CPU aus gesetzt werden können und dann in der GPU als read-only verwendbar sind.
+
+### Pipeline
+
+Die Grafik Pipeline kann man sich ein bisschen wie ein Fließband,  
+oder eben eine Pipeline vorstellen,  
+wo eins nach dem anderen unterschiedlicher Operationen auf den Daten in Reihenfolge gemacht werden.  
+
+Ein solche Pipeline kann viele wie auch wenige Schritte habe,  
+jenachdem wie kompliziert die zu rendernde Szene ist.  
+
+Ich werde nur auf die Stufen eingehen die es in meinem Projekt hat.  
+
+#### Vertex Shader
