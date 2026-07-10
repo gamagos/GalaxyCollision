@@ -594,6 +594,12 @@ Das ist vor allem nützlich wenn man callbacks schreiben möchte.
 | `*<Pointer>`(Dereference)         | Folgt dem Pointer und gibt die Daten zurück die dort vorzufinden sind                                      |
 | `<Pointer>[<index>]`(Dereference) | Folgt dem Pointer und gibt die Daten zurück, die index * Größe des Datentyps Bytes weiter im Speicher sind |
 
+### Sonstiges zu C
+
+- Es gibt zwar keine Klassen aber theoretisch könnte man ein mit einem Struct, welches Funktionspointer hat ähnliches verhalten immitieren.
+- Da es in C keine Klassen gibt ist jede Methode die man importiert direkt verfügbar, also statt `class.method()` einfach nur `function()`
+- In C gibt es kein `try`, `catch` bzw. `except` wie in Java und Python. In C arbeitet man roh und das heißt wenn es einen Fehler gibt, gibt es entweder eine SEGMENTATION FAULT, ACCESS VIOLATION oder einfach nur falsche Zahlen. Um Fehler im Code zu finden muss man entweder ein schlaues IDE haben oder eine guten Compiler der einem Fehler und Warnungen anzeigt
+
 ----
 
 ## OpenGL
@@ -752,3 +758,21 @@ jenachdem wie kompliziert die zu rendernde Szene ist.
 Ich werde nur auf die Stufen eingehen die es in meinem Projekt hat.  
 
 #### Vertex Shader
+
+Der Vertex Shader ist der erste welcher nach dem Aufruf eines draw calls ausgeführt wird(wie in meinem Program z.B `glDrawArrays()`).  
+Er bekommt seine Daten direkt von der CPU über die Buffer Objects.  
+Der Vertex Shader läuft einmal für jeden Vertex der zu malen ist, also sehr, da die meisten Szenen hunderte, tausende oder noch mehr Vertecies haben.  
+Da er so oft ausgeführt wird und extrem parallelisierbar ist,  
+wird er und alle anderen Shader auf der GPU ausgeführt.  
+Die Hauptaufgabe des Vertex Shaders ist es jedem Vertex eine Position im sogenannten OpenGL Viewport zu geben.  
+Dieser Viewport ist einfach nur ein Bereich im Fenster(meist das ganze Fenster) für ein \[1;-1\] normalisiertes Koordinatensystem auf welchem die gerenderten Pixel dann angezeigt werden.  
+Dieser Bereich wird oft auch als NDC(Normalised Device Coordinates) bezeichnet,  
+und alle Pixel welche außerhalb dieses Bereiches fallen werden nicht gemalt.  
+Daher findet im Vertex Shader auch die perspektivische Projektion der Szene, als auch die Transformation der Objekte in der Szene statt.  
+Um die Position eines Vertexes anzugeben muss die spezielle Variable `glPosition` für diesen Vertex als `vec4` zugewiesen werden.  
+Der Shader gibt nachdem er gelaufen ist 
+
+*Transformationen sind hier wirklich nur die Transformationen, welche man aus der Matrixrechnung kennt um Koordinaten durch den Raum zu schieben und zusammenhängende Strukturen zu drehen oder skalierent.  
+In meinem Projekt gibt es nur Transformatien der Position von Objekten doch aufgrund deren Simplizität findet dies nicht in Matrixen statt sonderen direkt beim Assignement von `glPosition`*
+
+#####
