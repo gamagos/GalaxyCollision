@@ -233,6 +233,13 @@ Welcher `int` hierbei am Ende rauskommt ist abhängig von Compiler und dem Ziel 
 `int_leastN_t` ist der kleinstmögliche `signed int` der mindestens N Bit groß ist.  
 Doch dieser Datentyp wird nur sehr selten und eher auf komischen Architekturen bzw. eingebetten System verwendet.  
 
+###### `errno_t` von stdlib.h (in mehren Standardbibliotheken definiert)
+
+`errno_t` ist ein spezieller signierter Integer Datentyp,  
+der dafür gedacht ist Fehlercodes zu speichern.  
+Er signalisiert Entwicklern, dass es sich hier um einen Fehlercode handelt.  
+Seine tatsächliche Größe ist platform- und compilerabhängig.  
+
 ###### `size_t` von stdlib.h (in mehren Standardbibliotheken definiert)
 
 `size_t` ist ein spezieller unsignierter Integer Datentyp,  
@@ -723,23 +730,94 @@ da 3D Grafik Berechnungen sehr viele Vektoren und Matrixen beiinhalten.
 
 Mann kann auf die verschiedenen Komponenten mit vec.x/y/z/w zugreifen, je nachdem wie groß der Vektor ist.  
 
-#### Keywords für Variablen
+##### Besonderheiten
+
+###### Extra Operator Schreibweisen für Vektoren und Matrizen
+
+In GLSL können Matrix Datentypen als auch Vektordatentypen direkt nativ miteinander mit den standard operationen miteinander verechnet werden.  
+Das heißt man kann z.B. dass hier einfach ohne Probleme machen:
+
+```GLSL
+mat4 matrix1;
+mat4 matrix2;
+vec4 vector1;
+mat3 incompatible;
+// ...
+Matrixen werden zugewiesen
+// ...
+
+// Man kann so Matrixen und Vektoren zusammenrechnen:
+mat4 newMatrix1 = matrix1 * matrix2;
+vec4 newVector1 = matrix1 * vector1;
+// etc.
+
+// Mathematisch nicht definierte Dinge kann man aber trotzdem nicht machen
+mat4 doesNotWork = matrix1 * incompatible; // Geht nicht aufgrund von Matrixrechenregeln
+// ...
+```
+
+In C währenddessen müsste man nachdem man sich ein `struct` welches einen Vektor darsetellt und diese mit `typedef` als  
+Datentyp definiert müsste man stattdessen immer noch manuell so rechnen.  
+
+```C
+typedef struct vec4 
+{
+    float x;
+    float y;
+    float z;
+    float w;
+} vec4;
+
+typedef struct mat4
+{
+    vec4 a;
+    vec4 b;
+    vec4 c;
+    vec4 d;
+}
+
+mat4 bsp1;
+mat4 bsp2;
+vec4 bspv1;
+// ...
+Vektoren und Matrixen werden zugewiesen
+// ...
+
+// Matrix Vektor Multiplikation (bsp1 * bspv1):
+vec4 newVec = {
+    .x = bsp1.a.x * bspv1.x + bsp1.b.x * bspv1.y + bsp1.c.x * bspv1.z + bsp1.d.x * bspv1.w,
+    .y = bsp1.a.x * bspv1.x + bsp1.b.x * bspv1.y + bsp1.c.x * bspv1.z + bsp1.d.x * bspv1.w,
+    .x = bsp1.a.x * bspv1.x + bsp1.b.x * bspv1.y + bsp1.c.x * bspv1.z + bsp1.d.x * bspv1.w,
+    .x = bsp1.a.x * bspv1.x + bsp1.b.x * bspv1.y + bsp1.c.x * bspv1.z + bsp1.d.x * bspv1.w,
+}
+```
+
+#### Extensions
+
+GLSL hat sogenannte Extensions.  
+Diese kann man sich wie Bibliotheken oder Importe für GLSL vorstellen.  
+Den sie erweitern die bereits vorhandene Funktionalität von GLSL Shadern wie  
+Bibliotheken es für Programmiersprachen tun.  
+Diese wurden allerding nicht in meinem Projekt verwendet.  
+
+#### Qualifier für Variablen
 
 ##### in
 
-Das `in` Keyword deklariert, dass eine Variable vom vorherigen Shader definiert wird.  
-Sehr nützlich um Variablen von einem Shader zum nächsten in der Pipeline zu schicken.  
+Der `in` Qualifier deklariert, dass eine Variable vom vorherigen Shader definiert wird.  
+Wird verwendet um Variablen um eine Variable vom vorherigen Shader zu "empfangen".  
 
 ##### out
 
-Das `out` Keyword deklariert, dass eine Variable zum nächsten Shader in der Pipiline geschickt werden soll.  
-Ebenfalls sehr nützlich um Variablen von einem Shader zum nächsten in der Pipeline zu schicken.  
+Der `out` Qualifier deklariert, dass eine Variable zum nächsten Shader in der Pipiline geschickt werden soll.  
+Wird verwendet um Variablen von einem Shader zum nächsten zu schicken.  
 
 #### layout
 
 Das `layout` keyword wird dazu verwendet um den Ort im Shader zu spezifizieren,  
-auf dem die CPU davor für die Grafikkarte abgespeichert hat.
-todo
+auf dem die CPU davor die Daten für die Grafikkarte abgespeichert hat.  
+So werden zum Beispiel Daten, die vom VBO kommen mit `layout(location=<index>)` "gefunden" und  
+Daten aus einem SSBO mit `layout(std430, binding=<index>)` "gefunden".
 
 ##### uniform
 
@@ -773,6 +851,9 @@ Um die Position eines Vertexes anzugeben muss die spezielle Variable `glPosition
 Der Shader gibt nachdem er gelaufen ist 
 
 *Transformationen sind hier wirklich nur die Transformationen, welche man aus der Matrixrechnung kennt um Koordinaten durch den Raum zu schieben und zusammenhängende Strukturen zu drehen oder skalierent.  
-In meinem Projekt gibt es nur Transformatien der Position von Objekten doch aufgrund deren Simplizität findet dies nicht in Matrixen statt sonderen direkt beim Assignement von `glPosition`*
+In meinem Projekt gibt es nur Transformatien der Position von Objekten doch aufgrund deren Simplizität  
+findet dies nicht in Matrixen statt sonderen direkt beim Assignement von `gl_Position`*
 
-#####
+##### Perspektivische Projektion und wie man eine Matrix baut die diese anwendet
+
+

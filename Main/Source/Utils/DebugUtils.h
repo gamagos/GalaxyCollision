@@ -50,6 +50,14 @@ int quitProgramOnError(
     const char* extraInfo
 );
 
+/*
+SYNOPSIS:
+    Get the name and version of the compiler used to build this program.
+RETURNS:
+    Returns a char array with the name and version of the compiler used to build this program.
+*/
+const char* getCompiler();
+
 // Source - https://stackoverflow.com/a/66249936
 // Posted by FreakAnon, modified by community. See post 'Timeline' for change history
 // Retrieved 2026-06-23, License - CC BY-SA 4.0

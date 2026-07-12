@@ -9,8 +9,8 @@
 #include "DataUtils.h"
 
 // Quit the program as if an error happened
-int quitProgramOnError(
-    void* pointersToFree[],
+void quitProgramOnError( 
+    void* pointersToFree[], //TODO abstract these parameters into a struct
     size_t amountPointers,
     GLuint buffersToDelete[],
     size_t amountBuffers,
@@ -76,22 +76,32 @@ int quitProgramOnError(
 
     glfwTerminate();
     exit(EXIT_FAILURE);
-    return 1; // technically redundant
+}
+
+//TODO void quitProgram() {} // Like quitProgramOnError only for use when there are no errors
+
+const char* getCompiler()
+{
+    const char* result;
+    #if defined(__clang__)
+        result = formatString("Clang %s", __clang_version__);
+    #elif defined(__ICC) || defined(__INTEL_COMPILER)
+        result = formatString("Intel C/C++ compiler version %d", __INTEL_COMPILER);
+    #elif defined(__GNUC__)
+        result = formatString("GCC %d.%d.%d\n", __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
+    #elif defined(_MSC_VER)
+        result = formatString("MSVC version %d", _MSC_VER);
+    #else
+        result = formatString("Unknown compiler");
+    #endif
+
+    return result;
 }
 
 // Source - https://stackoverflow.com/a/66249936
 // Posted by FreakAnon, modified by community. See post 'Timeline' for change history
 // Retrieved 2026-06-23, License - CC BY-SA 4.0
 // Slightly modified by gamagos a.k.a. Sebastian Fiault
-/*
-    SYNOPSIS:
-        Get a string with architecture that the project was built for
-    DESCRIPTION:
-        Uses macros to determine the architecture that this project was built for to select different return statements, 
-        which contain strings with the different architecture names
-    RETURNS:
-        A char array with the name of the architecture the project was built for
-*/
 const char* getBuildPlatform() // Get current architecture, detects nearly every architecture. Coded by Freak
 { 
     #if defined(__x86_64__) || defined(_M_X64)

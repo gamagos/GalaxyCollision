@@ -50,6 +50,7 @@ Ich kenne die unterschiede zwischen verschiedenen Internetprotokollen und weiß 
 - [Geeks For Geeks Artikel über C, als auch für manche Gleichungen](https://www.geeksforgeeks.org)
 - [Inoffizielle C Dokumentation](https://en.cppreference.com/c)
 - [Learnopengl.com](https://learnopengl.com)
+- [ogldevs Website und sein Tutorial dort](https://ogldev.org)
 - [Mehrere C Videos von Portfolio Courses](https://www.youtube.com/@PortfolioCourses)
 - [Microsofts C Dokumentation für Visual Studio](https://learn.microsoft.com/en-us/cpp/c-language/)
 - [Offizielles CMake Tutorial](https://cmake.org/cmake/help/latest/guide/tutorial/index.html)

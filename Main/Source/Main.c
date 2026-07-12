@@ -1,21 +1,5 @@
 // (C) Sebastian Fiault 2026
 
-/*
-This is not a scientific program!
-This program is for visual purposes.
-This program uses metric units for the representation of data instead of
-astrological units.
-SI prefixes are applied to make data fit into 32 bit floating point variables.
-
-PROJECT DEPENDECIES:
-       C23 or newer
-       cglm
-       glad
-       gflw3
-       WINDOWS LIBS:
-           windows.h
-*/
-
 #include <process.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -40,6 +24,12 @@ PROJECT DEPENDECIES:
 
 // THIS PROGRAM ONLY WORKS FOR WINDOWS
 
+// -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// 
+// Variable declarations for variables used in main()
+// 
+// -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
 // For quitProgramOnError
 void* pointersCurrentlyInUse[1024]; //! Not for special pointers, only meant for pointers to memory on heap for malloc, calloc or realloc
 size_t currentIndexPointersCurrentlyInUse = 0;
@@ -50,42 +40,42 @@ size_t currentIndexvertexArraysCurrentlyInUse = 0;
 
 int windowWidth = 1'000;
 int windowHeight = 1'000;
-long unsigned int amountStars = 8'000;
+long unsigned int amountStars = 15'100;
 
 float timeSinceStart_PetaSeconds_Float = 0.0f;
 double timeSinceStart_PetaSeconds_Double = 0.0;
 
 int main(int argc, char **argv) 
 {
-
+    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // 
+    // Print general information
+    // 
+    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     printf_s("Starting Program\n");
-    printf_s("Compiled with C Version: %ld\n", __STDC_VERSION__);
-    #if defined(__clang__) //TODO move these macros to a separate method
-        printf_s("Compiled with: Clang %s\n", __clang_version__);
-    #elif defined(__ICC) || defined(__INTEL_COMPILER)
-        printf_s("Compiled with: The Intel C/C++ Compiler Version %d\n", __INTEL_COMPILER);
-    #elif defined(__GNUC__)
-        printf_s("Compiled with: GCC Version: %d.%d.%d\n", __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
-    #elif defined(_MSC_VER)
-        printf_s("Compiled with: MSVC Version %d\n", _MSC_VER);
-    #else
-        printf_s("Compiled with: Unknown compiler\n");
-    #endif
+    printf_s("Compiled for C Version: %ld\n", __STDC_VERSION__);
+    const char* usedCompiler = getCompiler();
+    printf_s("Compiled with: %s\n", usedCompiler);
     const char* projectTargetPlatform = getBuildPlatform();
     printf_s("Compiled for Platform: %s\n", projectTargetPlatform);
     printf_s("This Project Was Built for Microsoft Windows\n"); //TODO make this adapt for different OSs
     printf_s("System default integer size is %llu bytes (%llu bits)\n", sizeof(int), sizeof(int) * 8);
     printf_s("System default pointer size is %llu bits\n", sizeof(size_t) * 8);
     
-    // ##############################################################################
+    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // 
     // Initialize OpenGL, glad and glfw
+    // 
+    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwSetErrorCallback(glfw_error_callback);
 
+    // ==================================================================================
     // Create primary window
+    // ==================================================================================
     GLFWwindow* primaryWindow = glfwCreateWindow(windowWidth, windowHeight, "Galaxy Collision", NULL, NULL);
     if (!primaryWindow)
     {
@@ -94,7 +84,9 @@ int main(int argc, char **argv)
     }
     glfwMakeContextCurrent(primaryWindow);
 
+    // ==================================================================================
     // Load glad
+    // ==================================================================================
     int successGlad = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     if (!successGlad)
     {
@@ -106,7 +98,11 @@ int main(int argc, char **argv)
     glViewport(0, 0, windowWidth, windowHeight);
     glfwSetFramebufferSizeCallback(primaryWindow, framebuffer_size_callback);
 
-    // Setup/Config
+    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // 
+    // Setup and initial configuration
+    // 
+    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Set the background color
 
     GLuint VAO1;
@@ -136,14 +132,19 @@ int main(int argc, char **argv)
     };
     GLuint primaryShaderProgram = createShaderProgram(shaders, 2);
     glUseProgram(primaryShaderProgram);
-    // ##############################################################################
 
     printf_s("Particle count for current simulation: %lu\n", amountStars);
 
+    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // 
     // Galaxy Generation
+    // 
+    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     printf_s("Starting galaxy generation\n");
 
+    // ==================================================================================
     // Black hole(s)
+    // ==================================================================================
     BlackHole_32 parentBlackHole = {
         .position_Terameters = (Vector3_Int32){0, 0, 0},
         .velocity_KilometersPerSecond = (Vector3_Float32){0.0f, 0.0f, 0.0f},
@@ -157,7 +158,9 @@ int main(int argc, char **argv)
     Star_32* galaxy = generateStars32Galaxy(amountStars, parentBlackHole);
     pointersCurrentlyInUse[currentIndexPointersCurrentlyInUse++] = galaxy;
 
-    // Memory allocations
+    // ==================================================================================
+    // Memory allocations and initial copying
+    // ==================================================================================
     float* positions = calloc( (size_t)(amountStars * 4), sizeof(float) ); 
     pointersCurrentlyInUse[currentIndexPointersCurrentlyInUse++] = positions;
     if (!positions)
@@ -210,7 +213,7 @@ int main(int argc, char **argv)
     //TODO make a method for this
     // Separate the positions into two separate blocks so that those can collide and look cool
     float offsetXposition = 100.0f;
-    float offsetYposition = 13.0f;
+    float offsetYposition = 20.0f;
     float offsetZposition = 0.0f;
     for (size_t i = 0; i < ( (amountStars * 4) / 2 ); i += incrementForForLoop) // first half
     {
@@ -255,16 +258,18 @@ int main(int argc, char **argv)
     averageVelocity[0] /= amountStars;
     averageVelocity[1] /= amountStars;
     averageVelocity[2] /= amountStars;
-    for (size_t i = 0; i < (size_t)(amountStars * 3); i += 3) // Apply the opposite of the average velocity of all particles
+    for (size_t i = 0; i < (size_t)(amountStars * 4); i += incrementForForLoop) // Apply the opposite of the average velocity of all particles
     {                                                         // to all particles to set their average velocity to 0 so that they do not drift away from the center
         velocities[i]     -= averageVelocity[0];
         velocities[i + 1] -= averageVelocity[1];
         velocities[i + 2] -= averageVelocity[2];
+        velocities[i + 3] -= 0; // For padding bytes
     }
+
     //! Temporary
     //TODO make a method for this
     // Give the 2 clusters velocities that make them collide
-    float offsetXvelocity = -7.0f;
+    float offsetXvelocity = -5.0f;
     float offsetYvelocity = 0.0f;
     float offsetZvelocity = 0.0f;
     for (size_t i = 0; i < ((amountStars * 4) / 2); i += incrementForForLoop) // first half
@@ -302,20 +307,47 @@ int main(int argc, char **argv)
     size_t i4 = 0;
     for (size_t i = 0; i < amountStars; i++)
     {
-        memcpy_s( // Positions 
+        errno_t success = memcpy_s( // Positions 
             &bufferData[i].position, 
             sizeof(float) * 4,
             &positions[i4],
             sizeof(float) * 4
         );
-        memcpy_s( // Velocities
+        if (success != 0)
+        {
+            quitProgramOnError(pointersCurrentlyInUse, currentIndexPointersCurrentlyInUse + 1, //TODO make better abstraction for this
+                bufferObjectsCurrentlyInUse, currentIndexbufferObjectsCurrentlyInUse + 1,
+                vertexArraysCurrentlyInUse, currentIndexvertexArraysCurrentlyInUse,
+                (GLuint[]) {primaryShaderProgram},
+                1,
+                formatString("Memory Copy of positions into bufferData failed with Code %d (main() Main.c))\n", success)
+            );
+            return 1;
+        }
+
+        success = memcpy_s( // Velocities
             &bufferData[i].velocity,
             sizeof(float) * 4,
             &velocities[i4],
             sizeof(float) * 4
         );
+        if (success != 0)
+        {
+            quitProgramOnError(pointersCurrentlyInUse, currentIndexPointersCurrentlyInUse + 1,
+                bufferObjectsCurrentlyInUse, currentIndexbufferObjectsCurrentlyInUse + 1,
+                vertexArraysCurrentlyInUse, currentIndexvertexArraysCurrentlyInUse,
+                (GLuint[]) {
+                primaryShaderProgram
+            },
+                1,
+                formatString("Memory Copy of velocities into bufferData failed with Code %d (main() Main.c))\n", success)
+            );
+            return 1;
+        }
+
         i4 += 4;
     }
+
     glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * amountStars, colors, GL_STATIC_DRAW); // Copy the newly generated galaxy into VRAM
     glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(vec3) * 2 * amountStars, bufferData, GL_DYNAMIC_DRAW);
     safer_free((void**)& positions);
@@ -323,40 +355,82 @@ int main(int argc, char **argv)
     safer_free((void**)& colors);
     safer_free((void**)& bufferData);
 
-    glEnable(GL_DEPTH_TEST);
     printKeybinds();
 
-    // ### Variable definitions for loop ###
+    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // 
+    // Variable definitions for render loop
+    // 
+    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    
+    // ==================================================================================
     // Variables for physics
-    double frameRate = 0.0;
+    // ==================================================================================
+    double timeLastFrame = glfwGetTime();
     float accelerationMinimum = 0.000'000'01f;
+    float accelerationMinimum_Maximum = 0.000'1f; //? debugging why the one particle blob is smaller than the other and implementing my new clean way to comment (+-+-+-+-+ and ========)
     float distanceMaximum = 0.0f;
-    float drag = 1.000'001;
-	float deltaTime = 0.1f; // Deltatime being zero causes issues
+    float distanceMaximum_previous = distanceMaximum;
+	float deltaTime_Seconds = 0.1f; // Deltatime being zero on first frame causes issues
     float force = 0.0f;
     float forceMinimum = 0.0f;
-    float mass = 5'900'000'000.0f; // All bodies weight the same for now
-    float speedCap = 9'091.0f; //TODO make this be a cap on acceleration instead and make calculate what acceleration to use with distance, preferably the radius of the largest star
+    float mass = 5'999'999'999.0f; // All bodies weight the same for now
+    float mass_previous = mass;
+    float speedCap = 9'091.0f; //TODO make this be a cap on acceleration instead and make calculate what acceleration to use with distance, preferably the radius of the largest star!
+    float speedCap_previous = speedCap;
 	float timeWarp = 1.0f;
     size_t bufferDataIndex = 0;
     vec3 normalizedDirectionVector = { 0.0f }; //! This vector must remain normalized [1.0f; -1.0f]!
+
+    // ==================================================================================
     // Variables for camera
+    // ==================================================================================
     float camX = 0.0f;
     float camY = 0.0f;
     float camZ = 0.0f;
     float camCurrentOrbitAngle = 0.0f;
     float fovY = 70.0f;
-    float radius = 4.0f;
+    float radius = 155.0f;
     float cameraUserInputSpeed = 0.5f;
     float camOrbitingSpeed = 0.01f; // bigger means slower
-    // Other variables
+
+    // ==================================================================================
+    // Variables for Graphics Settings
+    // ==================================================================================
+    double FPSLossTolerance = 5.0;
+    double FPSminimum = 24.0; // A framerate minimum is needed, because at low framerates physics start to get bad
+    GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* videoModePrimaryMonitor = glfwGetVideoMode(primaryMonitor);
+    double targetFrameRate = (double)(videoModePrimaryMonitor->refreshRate);
+
+    // ==================================================================================
+    // Variables for Telemetry Output
+    // ==================================================================================
+    double frameRate = 0.0;
     double secondsToWaitForInfoOutputUpdate = 0.5;
     double secondWaitedForInfoOutPutUpdate = 0.0;
-    double timeLastFrame = glfwGetTime();
 
-    // ### Setup Uniforms ###
-    // Uniforms for graphics
+    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // 
+    // Set up uniforms for graphics
+    // 
+    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     mat4 viewMatrix = {0};
+    mat4 viewMatrix_previous = {0};
+    errno_t success = memcpy_s(viewMatrix_previous, sizeof(mat4), viewMatrix, sizeof(mat4));
+    if (success != 0)
+    {
+        quitProgramOnError(pointersCurrentlyInUse, currentIndexPointersCurrentlyInUse + 1,
+            bufferObjectsCurrentlyInUse, currentIndexbufferObjectsCurrentlyInUse + 1,
+            vertexArraysCurrentlyInUse, currentIndexvertexArraysCurrentlyInUse,
+            (GLuint[]) {
+            primaryShaderProgram
+        },
+            1,
+            formatString("Memory Copy of viewMatrix to viewMatrix_previous failed with error code: %d (main() (Main.c)))\n", success)
+        );
+        return 1;
+    }
     camX = sin(camCurrentOrbitAngle) * radius;
     camZ = cos(camCurrentOrbitAngle) * radius;
     glm_lookat(
@@ -370,8 +444,8 @@ int main(int argc, char **argv)
 
     mat4 perspectiveProjectionMatrix = {0};
     float aspectRatio = (float)windowWidth / (float)windowHeight;
-    float nearZ = 0.04f;
-    float farZ = 6'000'000.0f;
+    float nearZ = 0.1f;
+    float farZ = 7'000'000.0f;
     glm_perspective( glm_rad(fovY), aspectRatio, nearZ, farZ, perspectiveProjectionMatrix );
     GLuint perspectiveProjectionMatrixUniformLocation = glGetUniformLocation(primaryShaderProgram, "projectionMatrix");
     glUniformMatrix4fv(perspectiveProjectionMatrixUniformLocation, 1, GL_FALSE, (float*)perspectiveProjectionMatrix);
@@ -385,17 +459,18 @@ int main(int argc, char **argv)
     };
     glfwSetWindowUserPointer(primaryWindow, &parametersForCglmPerspectiveTemporary);
 	parametersFor_cglm_perspective* parametersForCglmPerspective = 0; // Initialize the variable for later use
-
-    // Uniforms for physics
+	
+    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // 
+    // Set up uniforms for physics
+    // 
+    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     GLuint distanceMaximumUniformLocation = glGetUniformLocation(primaryShaderProgram, "distanceMaximum"); // TODO abstract physics into a method
     distanceMaximum = sqrtf( (GRAVITATIONAL_CONSTANT_FLOAT * mass) / accelerationMinimum ); // a = F / m;  F = G * (m1 * m2) / (d^2);  a = (G * m^2 / d^2) / m  <=>  a = G * m / d^2;  Solve for d:  <=>  a * d^2 = G * m  <=>  d^2 = (G * m) / a 
     glUniform1f(distanceMaximumUniformLocation, distanceMaximum);                           // <=>  d = sqrt( (G * m) / a )    
                                                                                             //Note: m1 = m2 here since all objects have the same mass, therefore m1 * m2 = m1^2 or m^2 for short
-    GLuint dragUniformLocation = glGetUniformLocation(primaryShaderProgram, "drag");
-    glUniform1f(dragUniformLocation, drag);
-	
-	GLuint deltaTimeUniformLocation = glGetUniformLocation(primaryShaderProgram, "deltaTime");
-	glUniform1f(deltaTimeUniformLocation, deltaTime);
+	GLuint deltaTimeUniformLocation = glGetUniformLocation(primaryShaderProgram, "deltaTime_Seconds");
+	glUniform1f(deltaTimeUniformLocation, deltaTime_Seconds);
 
     GLuint forceMinumUniformLocation = glGetUniformLocation(primaryShaderProgram, "forceMinimum");
     forceMinimum = getGravitationalForce_32(mass, mass, distanceMaximum);
@@ -409,25 +484,46 @@ int main(int argc, char **argv)
 	
 	GLuint timeWarpUniformLocation = glGetUniformLocation(primaryShaderProgram, "timeWarp");
 	glUniform1f(timeWarpUniformLocation, timeWarp);
-    
-    // Uniforms for both
+
+    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // 
+    // Set up uniforms for physics and graphics
+    // 
+    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     GLuint amountStarsUniformLocation = glGetUniformLocation(primaryShaderProgram, "amountStars");
     glUniform1ui(amountStarsUniformLocation, amountStars);
 
-    // Make sure everything is bound technically unnecessary
+    GLuint FPSminimumUniformLocation = glGetUniformLocation(primaryShaderProgram, "FPSminimum");
+    glUniform1f(FPSminimumUniformLocation, FPSminimum);
+
+    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // 
+    // Bind required resources and enable OpenGL features
+    // 
+    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     glBindBuffer(GL_ARRAY_BUFFER, primaryVBO);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBO);
     glUseProgram(primaryShaderProgram);
-    
+
+    glEnable(GL_DEPTH_TEST);
+
     printf_s("Starting render-loop\n\n");
 
-    // ### Render loop ###
+    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // 
+    // Render loop
+    // 
+    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     while (!glfwWindowShouldClose(primaryWindow))
     {
         // Set up for next frame
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
-        // ### Process User Input ###
+        // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        // 
+        // Process User Input
+        // 
+        // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
         // Camera radius
         if (glfwGetKey(primaryWindow, GLFW_KEY_W)) radius = max( radius - cameraUserInputSpeed, 0.0f);
         if (glfwGetKey(primaryWindow, GLFW_KEY_S)) radius += cameraUserInputSpeed;
@@ -467,10 +563,6 @@ int main(int argc, char **argv)
             glUniform1f(forceMinumUniformLocation, forceMinimum);
         }
 
-        // Drag
-        if (glfwGetKey(primaryWindow, GLFW_KEY_F)) drag = min(FLT_MAX, drag * 1.000'002f);
-        if (glfwGetKey(primaryWindow, GLFW_KEY_G)) drag = max(1.0f, drag / 1.000'002f);
-
         // Velocity cap
         if (glfwGetKey(primaryWindow, GLFW_KEY_1)) speedCap = min(FLT_MAX, speedCap * 1.002f);
         if (glfwGetKey(primaryWindow, GLFW_KEY_2)) speedCap = max(FLT_MIN, speedCap / 1.002f);
@@ -489,12 +581,53 @@ int main(int argc, char **argv)
             (vec3) { 0.0f, 1.0f, 0.0f },
             viewMatrix
         );
-        // Send updated uniforms to GPU
-        glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, (GLfloat*)viewMatrix);
-        glUniform1f(dragUniformLocation, drag);
-        glUniform1f(deltaTimeUniformLocation, timeWarp * deltaTime);
-		glUniform1f(massUniformLocation, mass);
-		glUniform1f(speedCapUniformLocation, speedCap);
+
+        // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        // 
+        // Send updated uniforms to GPU, if their values changed
+        // 
+        // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        if (viewMatrix != viewMatrix_previous)
+        {
+            glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, (GLfloat*)viewMatrix);
+            errno_t success = memcpy_s(viewMatrix_previous, sizeof(mat4), viewMatrix, sizeof(mat4));
+            if (success != 0)
+            {
+                quitProgramOnError(pointersCurrentlyInUse, currentIndexPointersCurrentlyInUse + 1,
+                    bufferObjectsCurrentlyInUse, currentIndexbufferObjectsCurrentlyInUse + 1,
+                    vertexArraysCurrentlyInUse, currentIndexvertexArraysCurrentlyInUse,
+                    (GLuint[]) {
+                    primaryShaderProgram
+                },
+                    1,
+                    formatString("Memory Copy of viewMatrix to viewMatrix_previous failed with error code: %d (main() (Main.c)))\n", success)
+                );
+                return 1;
+            }
+        }
+        if (mass != mass_previous)
+        {
+            glUniform1f(massUniformLocation, mass);
+            mass_previous = mass;
+        }
+        if (speedCap != speedCap_previous)
+        {
+            glUniform1f(speedCapUniformLocation, speedCap);
+            speedCap_previous = speedCap;
+        }
+
+        // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        // 
+        // Send updated uniforms to GPU whose values are always different
+        // 
+        // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        accelerationMinimum *= frameRate >= targetFrameRate - FPSLossTolerance ? 0.9f : 1.1f ; // >= Because with Vsync the frameRate can never be more than the target frame rate
+        accelerationMinimum = min(accelerationMinimum, accelerationMinimum_Maximum);
+        distanceMaximum = sqrtf((GRAVITATIONAL_CONSTANT_FLOAT * mass) / accelerationMinimum); // a = F / m;  F = G * (m1 * m2) / (d^2);  a = (G * m^2 / d^2) / m  <=>  a = G * m / d^2;  Solve for d:  <=>  a * d^2 = G * m  <=>  d^2 = (G * m) / a 
+        glUniform1f(distanceMaximumUniformLocation, distanceMaximum);                         // <=>  d = sqrt( (G * m) / a )      Note: m1 = m2 here since all objects have the same mass, therefore m1 * m2 = m1^2 or m^2 for short
+        forceMinimum = getGravitationalForce_32(mass, mass, distanceMaximum);
+        glUniform1f(forceMinumUniformLocation, forceMinimum);
+        glUniform1f(deltaTimeUniformLocation, timeWarp * deltaTime_Seconds);
 
 		parametersForCglmPerspective = glfwGetWindowUserPointer(primaryWindow);
 		if (parametersForCglmPerspective->matrixGotChanged)
@@ -503,33 +636,51 @@ int main(int argc, char **argv)
 			parametersForCglmPerspective->matrixGotChanged = false;
 		}
 
+        // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        // 
         // Main draw call
+        // 
+        // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
         glDrawArrays(GL_POINTS, 0, amountStars); //TODO find way to make this not need a VBO and make it just draw amountStars GL_POINTS in a way that doesn't waste RAM with an unused VBO, since all the is in the SSBO anyways!
 
         glfwSwapBuffers(primaryWindow);
         glfwPollEvents();
 
+        // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        // 
         // Output
+        // 
+        // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
         if (secondsToWaitForInfoOutputUpdate <= secondWaitedForInfoOutPutUpdate) // Limit the amount of times output get's printed
         {
             frameRate = 1 / (glfwGetTime() - timeLastFrame);
-            printf_s("\rFPS: %-4.0lf Delta time: %-4.5f Time warp: %-6.4f Particle mass: %-7.2g  Drag: %-10f  Speed cap: %-12.1f  Camera speed: %-8.1f", frameRate, deltaTime, timeWarp, mass, drag, speedCap, cameraUserInputSpeed);
+            printf_s("\rFPS: %-4.0lf  Delta time: %-4.5f  Time warp: %-6.4f  Particle mass: %-g  Speed cap: %-12.1f  Camera speed: %-8.1f  Acceleration Minimum: %-g", 
+                frameRate, deltaTime_Seconds, timeWarp, mass, speedCap, cameraUserInputSpeed, accelerationMinimum);
             secondWaitedForInfoOutPutUpdate = 0;
         }
         else
         {
             secondWaitedForInfoOutPutUpdate += glfwGetTime() - timeLastFrame;
         }
-		deltaTime = glfwGetTime() - timeLastFrame;
+		deltaTime_Seconds = glfwGetTime() - timeLastFrame;
         timeLastFrame = glfwGetTime();
+
+        if (deltaTime_Seconds >= 1.0f / FPSminimum)
+        {
+            printf_s("%s your device cannot currently achieve the minimum framerate required by the simulation.\nConsider lowering physics accuracy or lowering particle amount if you want the simulation to compute if you consistently don't meet the frame rate minimum.\nIf this is transient it is not an issue", WARNING_TAG);
+        }
     }
 
-    // Exit program
+    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // 
+    // Exit program on completion
+    // 
+    // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     GLuint buffersToDelete[] = {
         primaryVBO,
         SSBO
     };
-    glDeleteBuffers(2, buffersToDelete);
+    glDeleteBuffers(2, buffersToDelete); //TODO make version of quitProgramOnError from DebugUtils.c for just quitting the program
     glDeleteVertexArrays(1, &VAO1);
     glDeleteProgram(primaryShaderProgram);
     glfwTerminate();

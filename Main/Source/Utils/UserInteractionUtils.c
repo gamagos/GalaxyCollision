@@ -21,8 +21,6 @@ void printKeybinds()
 	printf_s("##  Rotate camera counter-clockwise:  D                      ##\n");
 	printf_s("##  Increase particle mass:           X                      ##\n");
 	printf_s("##  Decrease particle mass:           C                      ##\n");
-	printf_s("##  Increase drag:                    F                      ##\n");
-	printf_s("##  Decrease drag:                    G                      ##\n");
 	printf_s("##  Increase velocity cap:            1                      ##\n");
 	printf_s("##  Decrease velocity cap:            2                      ##\n");
 	printf_s("##  Increase timewarp:                9                      ##\n");

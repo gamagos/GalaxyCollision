@@ -1,3 +1,5 @@
+// (C) Sebastian Fiault
+
 // Vertex Shader
 
 #version 460 core
@@ -28,12 +30,11 @@ uniform mat4 projectionMatrix;
 
 // Uniforms for physics
 uniform float distanceMaximum;
-uniform float drag;
-uniform float deltaTime;
+uniform float deltaTime_Seconds;
 uniform float forceMinimum;
+uniform float FPSminimum;
 uniform float mass;
 uniform float speedCap;
-//uniform float timeWarp;
 
 // Uniforms for both
 uniform uint amountStars;
@@ -66,18 +67,22 @@ vec3 normalizedDirectionVector = vec3(0.0f, 0.0f, 0.0f);
 vec3 origin = vec3(0.0f, 0.0f, 0.0f);
 float distanceBodies = 0.0f;
 float force = 0.0f;
-float originGravityFactor = 0.001f;
+float originGravityFactor = 0.0000001f;
 
 void main()
 {
-	if (deltaTime != 0)
+	if (deltaTime_Seconds != 0 && deltaTime_Seconds < 1.0f / FPSminimum) // This is to prevent major physics glitches. If delta time is 0 all velocities effectively get reset and if delta time is too big a major loss of accuracy occurs. This prevents both the physics from breaking and transient frame drops from ruining physical accuracy
 	{
 		// Update positions based on velocities
-		data[gl_VertexID].position.x += (data[gl_VertexID].velocity.x * deltaTime); //TODO fix deltaTime / actually implement deltaTime
-		data[gl_VertexID].position.y += (data[gl_VertexID].velocity.y * deltaTime);
-		data[gl_VertexID].position.z += (data[gl_VertexID].velocity.z * deltaTime);
+		data[gl_VertexID].position.x += (data[gl_VertexID].velocity.x * deltaTime_Seconds); //TODO fix deltaTime_Seconds / actually implement deltaTime_Seconds
+		data[gl_VertexID].position.y += (data[gl_VertexID].velocity.y * deltaTime_Seconds);
+		data[gl_VertexID].position.z += (data[gl_VertexID].velocity.z * deltaTime_Seconds);
 
-		// ### Do physics ###
+		// -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+		//
+		// Do physics
+		//
+		// -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 		for (uint i = 0; i < amountStars; i ++)
 		{
 			if (i == gl_VertexID) continue; // Skip if current point is self
@@ -86,9 +91,9 @@ void main()
 			force = getGravitationalForce(mass, mass, distanceBodies);
 			normalizedDirectionVector = data[i].position - data[gl_VertexID].position;
 			normalizedDirectionVector = normalize(normalizedDirectionVector);
-			data[gl_VertexID].velocity.x += ( getAcceleration(force * normalizedDirectionVector.x, mass) * deltaTime );
-			data[gl_VertexID].velocity.y += ( getAcceleration(force * normalizedDirectionVector.y, mass) * deltaTime );
-			data[gl_VertexID].velocity.z += ( getAcceleration(force * normalizedDirectionVector.z, mass) * deltaTime );
+			data[gl_VertexID].velocity.x += ( getAcceleration(force * normalizedDirectionVector.x, mass) * deltaTime_Seconds ); //TODO maybe make this use GLSL native support for vectors and matrices so that this can become a one liner
+			data[gl_VertexID].velocity.y += ( getAcceleration(force * normalizedDirectionVector.y, mass) * deltaTime_Seconds );
+			data[gl_VertexID].velocity.z += ( getAcceleration(force * normalizedDirectionVector.z, mass) * deltaTime_Seconds );
 		}
 
 		// Cap velocity
@@ -102,17 +107,12 @@ void main()
 			min(data[gl_VertexID].velocity.z, speedCap) :
 			max(data[gl_VertexID].velocity.z, -speedCap);
 
-		// Apply drag
-		// data[gl_VertexID].velocity.x /= ( drag * (1 + deltaTime) ); // TMP fix by commenting out drag
-		// data[gl_VertexID].velocity.y /= ( drag * (1 + deltaTime) );
-		// data[gl_VertexID].velocity.z /= ( drag * (1 + deltaTime) );
-
 		// Apply gravity to origin(0, 0, 0) to keep particles centered and to keep particles returning if they are to far away and the force applied to them is bellow the force minimum
 		normalizedDirectionVector = origin - data[gl_VertexID].position;
 		normalizedDirectionVector = normalize(normalizedDirectionVector);
-		data[gl_VertexID].velocity.x += ( getAcceleration(forceMinimum * normalizedDirectionVector.x, mass) * originGravityFactor * deltaTime );
-		data[gl_VertexID].velocity.y += ( getAcceleration(forceMinimum * normalizedDirectionVector.y, mass) * originGravityFactor * deltaTime );
-		data[gl_VertexID].velocity.z += ( getAcceleration(forceMinimum * normalizedDirectionVector.z, mass) * originGravityFactor * deltaTime );
+		data[gl_VertexID].velocity.x += ( getAcceleration(forceMinimum * normalizedDirectionVector.x, mass) * originGravityFactor * deltaTime_Seconds );
+		data[gl_VertexID].velocity.y += ( getAcceleration(forceMinimum * normalizedDirectionVector.y, mass) * originGravityFactor * deltaTime_Seconds );
+		data[gl_VertexID].velocity.z += ( getAcceleration(forceMinimum * normalizedDirectionVector.z, mass) * originGravityFactor * deltaTime_Seconds );
 	}
 
 	// Set variables that get passed down pipeline
