@@ -40,7 +40,7 @@ size_t currentIndexvertexArraysCurrentlyInUse = 0;
 
 int windowWidth = 1'000;
 int windowHeight = 1'000;
-long unsigned int amountStars = 15'100;
+long unsigned int amountStars = 20'000;
 
 float timeSinceStart_PetaSeconds_Float = 0.0f;
 double timeSinceStart_PetaSeconds_Double = 0.0;
@@ -212,8 +212,8 @@ int main(int argc, char **argv)
     //! Temporary
     //TODO make a method for this
     // Separate the positions into two separate blocks so that those can collide and look cool
-    float offsetXposition = 100.0f;
-    float offsetYposition = 20.0f;
+    float offsetXposition = 60.0f;
+    float offsetYposition = 60.0f;
     float offsetZposition = 0.0f;
     for (size_t i = 0; i < ( (amountStars * 4) / 2 ); i += incrementForForLoop) // first half
     {
@@ -269,8 +269,8 @@ int main(int argc, char **argv)
     //! Temporary
     //TODO make a method for this
     // Give the 2 clusters velocities that make them collide
-    float offsetXvelocity = -5.0f;
-    float offsetYvelocity = 0.0f;
+    float offsetXvelocity = -2.0f;
+    float offsetYvelocity = -3.8f;
     float offsetZvelocity = 0.0f;
     for (size_t i = 0; i < ((amountStars * 4) / 2); i += incrementForForLoop) // first half
     {
@@ -349,7 +349,7 @@ int main(int argc, char **argv)
     }
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * amountStars, colors, GL_STATIC_DRAW); // Copy the newly generated galaxy into VRAM
-    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(vec3) * 2 * amountStars, bufferData, GL_DYNAMIC_DRAW);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(float) * 8 * amountStars, bufferData, GL_DYNAMIC_DRAW);
     safer_free((void**)& positions);
     safer_free((void**)& velocities);
     safer_free((void**)& colors);
@@ -367,18 +367,18 @@ int main(int argc, char **argv)
     // Variables for physics
     // ==================================================================================
     double timeLastFrame = glfwGetTime();
-    float accelerationMinimum = 0.000'000'01f;
-    float accelerationMinimum_Maximum = 0.000'1f; //? debugging why the one particle blob is smaller than the other and implementing my new clean way to comment (+-+-+-+-+ and ========)
+    float accelerationMinimum = 0.000'01f;
+    float accelerationMinimum_Maximum = 0.000'1f; //? debugging why the one particle blob is smaller than the other and implementing my new clean way to comment (+-+-+-+-+ and ========) and also making the perspective proj matrix only be sent when updated the same way I did with the view matrix
     float distanceMaximum = 0.0f;
     float distanceMaximum_previous = distanceMaximum;
 	float deltaTime_Seconds = 0.1f; // Deltatime being zero on first frame causes issues
     float force = 0.0f;
-    float forceMinimum = 0.0f;
     float mass = 5'999'999'999.0f; // All bodies weight the same for now
     float mass_previous = mass;
     float speedCap = 9'091.0f; //TODO make this be a cap on acceleration instead and make calculate what acceleration to use with distance, preferably the radius of the largest star!
     float speedCap_previous = speedCap;
 	float timeWarp = 1.0f;
+    float timeWarp_previous = timeWarp;
     size_t bufferDataIndex = 0;
     vec3 normalizedDirectionVector = { 0.0f }; //! This vector must remain normalized [1.0f; -1.0f]!
 
@@ -472,10 +472,6 @@ int main(int argc, char **argv)
 	GLuint deltaTimeUniformLocation = glGetUniformLocation(primaryShaderProgram, "deltaTime_Seconds");
 	glUniform1f(deltaTimeUniformLocation, deltaTime_Seconds);
 
-    GLuint forceMinumUniformLocation = glGetUniformLocation(primaryShaderProgram, "forceMinimum");
-    forceMinimum = getGravitationalForce_32(mass, mass, distanceMaximum);
-    glUniform1f(forceMinumUniformLocation, forceMinimum);
-
     GLuint massUniformLocation = glGetUniformLocation(primaryShaderProgram, "mass");
     glUniform1f(massUniformLocation, mass);
     
@@ -551,16 +547,12 @@ int main(int argc, char **argv)
             mass = min(FLT_MAX, mass * 1.01f);
             distanceMaximum = sqrtf((GRAVITATIONAL_CONSTANT_FLOAT * mass) / accelerationMinimum); // a = F / m;  F = G * (m1 * m2) / (d^2);  a = (G * m^2 / d^2) / m  <=>  a = G * m / d^2;  Solve for d:  <=>  a * d^2 = G * m  <=>  d^2 = (G * m) / a 
             glUniform1f(distanceMaximumUniformLocation, distanceMaximum);                         // <=>  d = sqrt( (G * m) / a )      Note: m1 = m2 here since all objects have the same mass, therefore m1 * m2 = m1^2 or m^2 for short 
-            forceMinimum = getGravitationalForce_32(mass, mass, distanceMaximum);
-            glUniform1f(forceMinumUniformLocation, forceMinimum);
         }
         if (glfwGetKey(primaryWindow, GLFW_KEY_C))
         {
             mass = max(FLT_MIN, mass / 1.01f);
             distanceMaximum = sqrtf((GRAVITATIONAL_CONSTANT_FLOAT * mass) / accelerationMinimum); // a = F / m;  F = G * (m1 * m2) / (d^2);  a = (G * m^2 / d^2) / m  <=>  a = G * m / d^2;  Solve for d:  <=>  a * d^2 = G * m  <=>  d^2 = (G * m) / a 
             glUniform1f(distanceMaximumUniformLocation, distanceMaximum);                         // <=>  d = sqrt( (G * m) / a )      Note: m1 = m2 here since all objects have the same mass, therefore m1 * m2 = m1^2 or m^2 for short
-            forceMinimum = getGravitationalForce_32(mass, mass, distanceMaximum);
-            glUniform1f(forceMinumUniformLocation, forceMinimum);
         }
 
         // Velocity cap
@@ -587,6 +579,7 @@ int main(int argc, char **argv)
         // Send updated uniforms to GPU, if their values changed
         // 
         // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        // View matrix
         if (viewMatrix != viewMatrix_previous)
         {
             glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, (GLfloat*)viewMatrix);
@@ -605,28 +598,42 @@ int main(int argc, char **argv)
                 return 1;
             }
         }
+        // Mass
         if (mass != mass_previous)
         {
             glUniform1f(massUniformLocation, mass);
             mass_previous = mass;
         }
+        // Speed cap
         if (speedCap != speedCap_previous)
         {
             glUniform1f(speedCapUniformLocation, speedCap);
             speedCap_previous = speedCap;
         }
-
+        // Time warp
+        if (timeWarp != timeWarp_previous)
+        {
+            glUniform1f(timeWarpUniformLocation, timeWarp);
+            timeWarp_previous = timeWarp;
+        }
         // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
         // 
         // Send updated uniforms to GPU whose values are always different
         // 
         // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-        accelerationMinimum *= frameRate >= targetFrameRate - FPSLossTolerance ? 0.9f : 1.1f ; // >= Because with Vsync the frameRate can never be more than the target frame rate
+        // Distance maximum
+        accelerationMinimum *= frameRate >= targetFrameRate - FPSLossTolerance ? 0.99f : 1.01f ; // >= Because with Vsync the frameRate can never be more than the target frame rate
         accelerationMinimum = min(accelerationMinimum, accelerationMinimum_Maximum);
+        accelerationMinimum = max(accelerationMinimum, FLT_MIN);
         distanceMaximum = sqrtf((GRAVITATIONAL_CONSTANT_FLOAT * mass) / accelerationMinimum); // a = F / m;  F = G * (m1 * m2) / (d^2);  a = (G * m^2 / d^2) / m  <=>  a = G * m / d^2;  Solve for d:  <=>  a * d^2 = G * m  <=>  d^2 = (G * m) / a 
         glUniform1f(distanceMaximumUniformLocation, distanceMaximum);                         // <=>  d = sqrt( (G * m) / a )      Note: m1 = m2 here since all objects have the same mass, therefore m1 * m2 = m1^2 or m^2 for short
-        forceMinimum = getGravitationalForce_32(mass, mass, distanceMaximum);
-        glUniform1f(forceMinumUniformLocation, forceMinimum);
+        
+        // Delta time
+        if (deltaTime_Seconds > 1.0f / FPSminimum)
+        {
+            deltaTime_Seconds = 1.0f / FPSminimum;
+            printf_s("%s Frame rate too low, slowing down physics\n", WARNING_TAG);
+        }
         glUniform1f(deltaTimeUniformLocation, timeWarp * deltaTime_Seconds);
 
 		parametersForCglmPerspective = glfwGetWindowUserPointer(primaryWindow);
@@ -654,7 +661,7 @@ int main(int argc, char **argv)
         if (secondsToWaitForInfoOutputUpdate <= secondWaitedForInfoOutPutUpdate) // Limit the amount of times output get's printed
         {
             frameRate = 1 / (glfwGetTime() - timeLastFrame);
-            printf_s("\rFPS: %-4.0lf  Delta time: %-4.5f  Time warp: %-6.4f  Particle mass: %-g  Speed cap: %-12.1f  Camera speed: %-8.1f  Acceleration Minimum: %-g", 
+            printf_s("\rFPS: %-4.0lf  Delta time: %-4.5f  Time warp: %-6.4f  Particle mass: %-g  Speed cap: %-12.1f  Camera speed: %-8.1f  Acceleration Minimum: %-g    ", 
                 frameRate, deltaTime_Seconds, timeWarp, mass, speedCap, cameraUserInputSpeed, accelerationMinimum);
             secondWaitedForInfoOutPutUpdate = 0;
         }
@@ -665,9 +672,9 @@ int main(int argc, char **argv)
 		deltaTime_Seconds = glfwGetTime() - timeLastFrame;
         timeLastFrame = glfwGetTime();
 
-        if (deltaTime_Seconds >= 1.0f / FPSminimum)
+        if (deltaTime_Seconds > 1.0f / FPSminimum)
         {
-            printf_s("%s your device cannot currently achieve the minimum framerate required by the simulation.\nConsider lowering physics accuracy or lowering particle amount if you want the simulation to compute if you consistently don't meet the frame rate minimum.\nIf this is transient it is not an issue", WARNING_TAG);
+            printf_s("\n\n%s your device cannot currently achieve the minimum framerate required by the simulation.\nConsider lowering physics accuracy or lowering particle amount if you consistently don't meet the frame rate minimum.\nIf this is transient it is not an issue.\n", WARNING_TAG);
         }
     }
 
@@ -695,6 +702,7 @@ int main(int argc, char **argv)
 //TODO make config for initial values of simulation be read in via json for better usability
 //TODO add more camera controls maybe with mouse? But keep orbiting mode!
 //TODO add adaptive physics calculation capping. Specifically make accelerationMinimum adaptive
+//TODO seperate physics "frame rate" from graphical frame rate to allow for more precision if there is compute to spare and for more accurate physics at low framerates and also to make graphical frame rate more stable
 
 // Stuff to do at school
 //TODO in cmake make sure target_sources also get ALL non std header files
