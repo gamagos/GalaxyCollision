@@ -149,3 +149,85 @@ const char* getBuildPlatform() // Get current architecture, detects nearly every
     #endif
 }
 
+const char* getOS()
+{
+    // ======================
+    // Microsoft
+    // ======================
+    #ifdef _WIN16
+        return "Windows 16 bit";
+    #elifdef _WIN32
+        return "Windows 32 bit";
+    #elifdef _WIN64
+        return "Windows 64 bit";
+    #elifdef MSDOS
+        return "MSDOS";
+
+    // ===============================
+    // Open Source Operating Systems
+    // ===============================
+    #elifdef __ANDROID__
+        return "Android";
+    #elifdef __bsdi__
+        return "BSD/OS";
+    #elifdef __DragonFly__
+        return "Dragonfly";
+    #elifdef __FreeBSD__
+        return "FreeBSD";
+    #elifdef __GNU__
+        return "GNU";
+    #elifdef __gnu_linux__
+        return "GNU Linux";
+    #elifdef __linux__
+        return "Linux";
+    #elifdef __NetBSD__
+        return "NetBSD";
+    #elifdef __unix__
+        return "Unix";
+    #elif BSD
+        return "BSD (specifics unknown)";
+
+    // ===================
+    // Apple
+    // ===================
+    #elifdef __APPLE__
+        return "Mac OS X+";
+    #elifdef __MACH__
+        return "Mac OS X+";
+    #elifdef macintosh
+        return "Mac OS <=9";
+    #elifdef Macintosh
+        return "Mac OS <=9";
+    // ======================================
+    // Other, possibly Open Source idk
+    // ======================================
+    #elifdef _AIX
+        return "AIX";
+    #elifdef AMIGA
+        return "AmigaOS";
+    #elifdef aegis
+        return "Appollo Aegis";
+    #elifdef __BEOS__
+        return "BeOS";
+    #elifdef __bg__
+        return "Blue Gene";
+    #elifdef __convex__
+        return "ConvexOS";
+    #elifdef __CYGWIN__
+        return "Cygwin";
+    #elifdef __DGUX__
+        return "DG/UX";
+    #elifdef __EMX__
+        return "EMX";
+    #elifdef __sun
+        return "Solaris";
+    #elifdef _SEQUENT_
+        return "DYNIX/ptx";
+    #elifdef UTS
+        return "Amdahl UTS";
+    #elifdef 
+    #else
+        return "Unknown";
+    #endif
+    //TODO this does not contain all operating systems yet, complete some other time
+}

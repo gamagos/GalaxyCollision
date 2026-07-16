@@ -63,14 +63,22 @@ const char* getCompiler();
 // Retrieved 2026-06-23, License - CC BY-SA 4.0
 // Slightly modified by gamagos a.k.a. Sebastian Fiault
 /*
-    SYNOPSIS:
-        Get a string with architecture that the project was built for
-    DESCRIPTION:
-        Uses macros to determine the architecture that this project was built for to select different return statements,
-        which contain strings with the different architecture names
-    RETURNS:
-        A char array with the name of the architecture the project was built for
+SYNOPSIS:
+    Get a string with architecture that the project was built for
+DESCRIPTION:
+    Uses macros to determine the architecture that this project was built for to select different return statements,
+    which contain strings with the different architecture names
+RETURNS:
+    A char array with the name of the architecture the project was built for
 */
 const char* getBuildPlatform(); // Get current architecture, detects nearly every architecture. Coded by Freak
+
+/*
+SYNOPSIS:
+    Gets a string with the name of the operating System this program was compiledd for
+RETURNS:
+    A string with the name of the operating System this program was compiled for
+*/
+const char* getOS();
 
 #endif

@@ -58,7 +58,8 @@ int main(int argc, char **argv)
     printf_s("Compiled with: %s\n", usedCompiler);
     const char* projectTargetPlatform = getBuildPlatform();
     printf_s("Compiled for Platform: %s\n", projectTargetPlatform);
-    printf_s("This Project Was Built for Microsoft Windows\n"); //TODO make this adapt for different OSs
+    const char* projectTargetOS = getOS();
+    printf_s("Compiled for OS: %s\n", projectTargetOS);
     printf_s("System default integer size is %llu bytes (%llu bits)\n", sizeof(int), sizeof(int) * 8);
     printf_s("System default pointer size is %llu bits\n", sizeof(size_t) * 8);
     
@@ -270,7 +271,7 @@ int main(int argc, char **argv)
     //TODO make a method for this
     // Give the 2 clusters velocities that make them collide
     float offsetXvelocity = -2.0f;
-    float offsetYvelocity = -3.75f;
+    float offsetYvelocity = -3.78f;
     float offsetZvelocity = 0.0f;
     for (size_t i = 0; i < ((amountStars * 4) / 2); i += incrementForForLoop) // first half
     {
