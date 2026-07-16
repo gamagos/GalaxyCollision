@@ -1,5 +1,5 @@
 {
-	"version": 10,
+	"version": 11,
 	"cmakeMinimumRequired": {
 		"major": 4,
 		"minor": 3,
@@ -7,50 +7,109 @@
 	},
 	"configurePresets": [
 		{
-			"name": "x64-Debug",
-			"displayName": "x64-Debug",
-			"description": "The standard config for building the x64 debug build",
+			"name": "x64-Windows-Debug",
+			"displayName": "x64-Windows-Debug",
+			"description": "The standard cmake config for building the x64 Windows debug build",
 			"generator": "Visual Studio 18 2026",
 			"architecture": "x64",
-			"binaryDir": "${sourceDir}/out/build/x64-Debug/",
+			"binaryDir": "${sourceDir}/out/build/x64-Win-Debug/",
+			"toolchainFile": "Dev/CMake Toolchain Files/x64_win_toolchain.cmake",
 			"trace": {
 				"mode": "off"
 			},
 			"cacheVariables": {
 				"CMAKE_BUILD_TYPE": "Debug",
-				"CMAKE_C_STANDARD": "23"
+				"CMAKE_C_STANDARD": "23",
+				"CMAKE_SYSTEM_NAME": "Windows"
 			}
 		},
 		{
-			"name": "x64-Release",
-			"displayName": "x64-Release",
-			"description": "The standard config for building the x64 release build",
+			"name": "x64-Windows-Release",
+			"displayName": "x64-Windows-Release",
+			"description": "The standard cmake config for building the x64 Windows release build",
 			"generator": "Visual Studio 18 2026",
 			"architecture": "x64",
-			"binaryDir": "${sourceDir}/out/build/x64-Release/",
+			"binaryDir": "${sourceDir}/out/build/x64-Win-Release/",
+			"toolchainFile": "Dev/CMake Toolchain Files/x64_win_toolchain.cmake",
 			"trace": {
 				"mode": "off"
 			},
 			"cacheVariables": {
 				"CMAKE_BUILD_TYPE": "Release",
-				"CMAKE_C_STANDARD": "23"
+				"CMAKE_C_STANDARD": "23",
+				"CMAKE_SYSTEM_NAME": "Windows"
+			}
+		},
+
+		{
+			"$comment": "Might want to seperate Linux into Arch and Debian later. And also we need to find a way to specify the target CPU architecture on Linux, since VS is only available on Windows",
+			"name": "Linux-Debug",
+			"displayName": "Linux-Debug",
+			"description": "The standard cmake config for building the Linux debug build",
+			"binaryDir": "${sourceDir}/out/build/Linux-Debug/",
+			"toolchainFile": "Dev/CMake Toolchain Files/linux_toolchain.cmake",
+			"trace": {
+				"mode": "off"
+			},
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Debug",
+				"CMAKE_C_STANDARD": "23",
+				"CMAKE_SYSTEM_NAME": "Linux"
+			}
+		},
+		{
+			"$comment": "Might want to seperate Linux into Arch and Debian later. And also we need to find a way to specify the target CPU architecture on Linux, since VS is only available on Windows",
+			"name": "Linux-Release",
+			"displayName": "Linux-Release",
+			"description": "The standard cmake config for building the Linux release build",
+			"binaryDir": "${sourceDir}/out/build/Linux-Release/",
+			"toolchainFile": "Dev/CMake Toolchain Files/linux_toolchain.cmake",
+			"trace": {
+				"mode": "off"
+			},
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Release",
+				"CMAKE_C_STANDARD": "23",
+				"CMAKE_SYSTEM_NAME": "Linux"
 			}
 		}
 	],
+
 	"buildPresets": [
 		{
-			"name": "x64-Debug",
-			"displayName": "x64-Debug",
-			"configurePreset": "x64-Debug",
+			"name": "x64-Windows-Debug",
+			"displayName": "x64-Windows-Debug",
+			"configurePreset": "x64-Windows-Debug",
+			"description": "The standard build config for build the x64 Windows debug build",
 			"verbose": true,
 			"$comment": "Since threads don't seem to be dynamically adjustable the value for jobs is set very high to ensure generally good usage of all threads on the CPU",
 			"jobs": 36
 		},
 		{
-			"name": "x64-Release_build",
-			"displayName": "x64-Release",
-			"configurePreset": "x64-Release",
-			"verbose":  true,
+			"name": "x64-Windows-Release",
+			"displayName": "x64-Windows-Release",
+			"configurePreset": "x64-Windows-Release",
+			"description": "The standard build config for build the x64 Windows release build",
+			"verbose": true,
+			"$comment": "Since threads don't seem to be dynamically adjustable the value for jobs is set very high to ensure generally good usage of all threads on the CPU",
+			"jobs": 36
+		},
+
+		{
+			"name": "Linux-Debug",
+			"displayName": "Linux-Debug",
+			"configurePreset": "Linux-Debug",
+			"description": "The standard build config for build the Linux debug build",
+			"verbose": true,
+			"$comment": "Since threads don't seem to be dynamically adjustable the value for jobs is set very high to ensure generally good usage of all threads on the CPU",
+			"jobs": 36
+		},
+		{
+			"name": "Linux-Release",
+			"displayName": "Linux-Release",
+			"configurePreset": "Linux-Release",
+			"description": "The standard build config for build the Linux release build",
+			"verbose": true,
 			"$comment": "Since threads don't seem to be dynamically adjustable the value for jobs is set very high to ensure generally good usage of all threads on the CPU",
 			"jobs": 36
 		}

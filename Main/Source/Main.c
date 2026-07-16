@@ -270,7 +270,7 @@ int main(int argc, char **argv)
     //TODO make a method for this
     // Give the 2 clusters velocities that make them collide
     float offsetXvelocity = -2.0f;
-    float offsetYvelocity = -3.8f;
+    float offsetYvelocity = -3.75f;
     float offsetZvelocity = 0.0f;
     for (size_t i = 0; i < ((amountStars * 4) / 2); i += incrementForForLoop) // first half
     {

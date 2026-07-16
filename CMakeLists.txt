@@ -1,12 +1,11 @@
 ﻿# (C) Sebastian Fiault 2026
 
 cmake_minimum_required (VERSION 4.2.3)
-message("[WARNING]  This project must be built for x86_64 for debugging with GPU debugging software to work")
+message("[WARNING]  This project must be built for x86_64 for debugging with GPU debugging software to work!")
 message ("Using CMake Version: ${CMAKE_VERSION}")
-set(CMAKE_GENERATOR_PLATFORM x64) # Force 64 bit build, which is required for this project
 project(GalaxyCollision
 	HOMEPAGE_URL "https://github.com/gamagos/GalaxyCollision" 
-	VERSION 0.2
+	VERSION 0.3
 	DESCRIPTION "A physics simulation of two galaxies colliding"
 	LANGUAGES C
 )
