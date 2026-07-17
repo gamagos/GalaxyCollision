@@ -158,6 +158,8 @@ const char* getOS()
         return "Windows 16 bit";
     #elifdef _WIN32
         return "Windows 32 bit";
+    #elifdef _WIN32_WCE
+        return "Windows CE";
     #elifdef _WIN64
         return "Windows 64 bit";
     #elifdef MSDOS
@@ -173,7 +175,11 @@ const char* getOS()
     #elifdef __DragonFly__
         return "Dragonfly";
     #elifdef __FreeBSD__
-        return "FreeBSD";
+        #ifdef __GLIBC__
+            return "GNU/kFreeBSD"
+        #else
+            return "FreeBSD";
+        #endif
     #elifdef __GNU__
         return "GNU";
     #elifdef __gnu_linux__
@@ -219,13 +225,78 @@ const char* getOS()
         return "DG/UX";
     #elifdef __EMX__
         return "EMX";
+    #elifdef __hiuxmpp
+        return "HI-UX MPP";
+    #elifdef __hpux
+        return "HP-UX";
+    #elifdef __INTEGRITY
+        return "INTEGRITY";
+    #elifdef __INTERIX
+        return "INTERIX";
+    #elifdef __Lynx__
+        return "LynxOS";
+    #elifdef __minix
+        return "MINIX";
+    #elifdef __MORPHOS__
+        return "MorphOS";
+    #elifdef __mpexl
+        return "MPE/iX";
+    #elifdef __MVS__
+        return "z/OS";
+    #elifdef __nucleus__
+        return "Nucleus RTOS";
+    #elifdef __OS2__
+        return "OS/2";
+    #elifdef __OS400_
+        return "IBM OS 400";
+    #elifdef __OS9000
+        return "Microware OS-9";
+    #elifdef __osf__
+        return "Tru64 (OSF/1)";
+    #elifdef __palmos__
+        return "Palm OS";
+    #elifdef __QNX__
+        return "QNX";
+    #elifdef __sgi
+        return "IRIX";
     #elifdef __sun
         return "Solaris";
+    #elifdef __SVR4
+        return "SVR4";
+    #elifdef __SYLLABLE__
+        return "Syllable";
+    #elifdef __SYMBIAN32__
+        return "Symbian OS";
+    #elifdef __TANDEM
+        return "NonStop";
+    #elifdef __ultrix__
+        return "Ultrix";
+    #elifdef __VMS
+        return "VMS";
+    #elifdef __VOS__
+        return "Stratus VOS";
+    #elifdef _CRAY
+        return "UNICOS/mp";
+    #elifdef _SCO_DS
+        return "SCO OpenServer";
     #elifdef _SEQUENT_
         return "DYNIX/ptx";
+    #elifdef _UNICOS
+        return "UNICOS";
+    #elifdef _UNIXWARE
+        return "UnixWare";
+    #elifdef _UWIN
+        return "U/Win";
+    #elifdef _WINDU_SOURCE
+        return "Wind/U";
+    #elifdef EPLAN9
+        return "Plan 9";
+    #elifdef pyr
+        return "Pyramid DC/OSx";
+    #elifdef sinux
+        return "Reliant UNIX";
     #elifdef UTS
         return "Amdahl UTS";
-    #elifdef 
     #else
         return "Unknown";
     #endif
