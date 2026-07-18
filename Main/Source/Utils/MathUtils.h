@@ -382,7 +382,7 @@ EXAMPLE:
 	Vector3Int64 a = {1, 2, 3,}, b = {3, 2, 1};
 	Vector3Int64 crossProduct = Vector3Int64CrossProduct(a, b); ==> {-4, 8, -4}
 */
-Vector3_Int64 Vector3Int64CrossProduct(Vector3_Int64 vectorA, Vector3_Int64 vectorB)
+Vector3_Int64 Vector3Int64CrossProduct(Vector3_Int64 vectorA, Vector3_Int64 vectorB);
 
 /*
 SYNOPSIS:
