@@ -20,7 +20,11 @@ char* getAbsolutePath(const char* relativePath)
 		perror("Failed to allocate memory for result (FileUtils.c, getAbsolutePath)");
 		return NULL;
 	}
-	result = _fullpath(result, relativePath, _MAX_PATH);
+    #if defined(__linux__)
+		result = _fullpath(result, relativePath, PATH_MAX);
+    #elifdef gamagos_OS_IS_WINDOWS
+		result = _fullpath(result, relativePath, _MAX_PATH);
+    #endif
 	if (!result)
 	{
 		perror("Something went wrong with absolute path retrieval (FileUtils.c, getAbsolutePath)");
@@ -40,10 +44,11 @@ char* readFileAsCharArray(const char* path)
 	FILE* file = 0;
     #ifdef gamagos_OS_IS_WINDOWS
 		errno_t failure = fopen_s(&file, path, "r");
+		if (failure)
     #elif defined(__linux__)
         file = fopen(path, "r");
+		if (!file)
     #endif
-	if (failure)
 	{
 		perror( formatString("\nFailed to open file \"%s\"", path) );
 		return (char*)NULL;

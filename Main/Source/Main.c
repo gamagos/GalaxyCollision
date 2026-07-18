@@ -1,15 +1,16 @@
 // (C) Sebastian Fiault 2026
 
-#include <process.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <Windows.h>
+#ifdef gamagos_OS_IS_WINDOWS
+    #include <Windows.h>
+#endif
 
-#include <cglm/cglm.h>
+#include <cglm/cglm.h> //TODO these are not standard libraries, make them be included with "" again
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
