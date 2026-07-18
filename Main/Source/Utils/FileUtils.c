@@ -1,5 +1,4 @@
 // (C) Sebastian Fiault
-#include <conio.h>
 #include <corecrt.h> // For errno_t
 #include <direct.h>
 #include <limits.h>
