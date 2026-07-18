@@ -1,4 +1,5 @@
 // (C) Sebastian Fiault 2026
+#include <limits.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -239,18 +240,6 @@ Vector3_Int32 Vector3Int32CrossProduct(Vector3_Int32 vectorA, Vector3_Int32 vect
 	return result;
 }
 
-/*
-SYNOPSIS:
-	Calculates the cross product of 2 Vector3s in a 3d coordinate system
-ARGS:
-	vectorA, vectorB:
-		The 2 vectors to get the cross product for
-RETURNS:
-	The cross product of vectorA and vectorB
-EXAMPLE:
-	Vector3Int64 a = {1, 2, 3,}, b = {3, 2, 1};
-	Vector3Int64 crossProduct = Vector3Int64CrossProduct(a, b); ==> {-4, 8, -4}
-*/
 Vector3_Int64 Vector3Int64CrossProduct(Vector3_Int64 vectorA, Vector3_Int64 vectorB)
 {
 	Vector3_Int64 result = { 0 };

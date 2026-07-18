@@ -1,4 +1,8 @@
 // (C) Sebastian Fiault
+#include <conio.h>
+#include <corecrt.h> // For errno_t
+#include <direct.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,7 +12,11 @@
 
 char* getAbsolutePath(const char* relativePath)
 {
-	char* result = calloc( _MAX_PATH, sizeof(char) );
+	#if defined(__linux__)
+		char* result = calloc(PATH_MAX, sizeof(char));
+    #elifdef gamagos_OS_IS_WINDOWS
+		char* result = calloc( _MAX_PATH, sizeof(char) );
+    #endif
 	if (!result)
 	{
 		perror("Failed to allocate memory for result (FileUtils.c, getAbsolutePath)");
@@ -24,16 +32,19 @@ char* getAbsolutePath(const char* relativePath)
 	return result;
 }
 
-#ifndef chunkSize
-#define chunkSize 512U
+#ifndef CHUNK_SIZE
+#define CHUNK_SIZE 512U
 #endif
 char* readFileAsCharArray(const char* path)
 {
 	size_t sizeResult = 1024;
 	const size_t sizeResultIncrement = 1024;
 	FILE* file = 0;
-	errno_t failure = fopen_s(&file, path, "r");
-	
+    #ifdef gamagos_OS_IS_WINDOWS
+		errno_t failure = fopen_s(&file, path, "r");
+    #elif defined(__linux__)
+        file = fopen(path, "r");
+    #endif
 	if (failure)
 	{
 		perror( formatString("\nFailed to open file \"%s\"", path) );
@@ -47,12 +58,12 @@ char* readFileAsCharArray(const char* path)
 		return (char*)NULL;
 	}
 
-	char temporaryCharArray[chunkSize];
+	char temporaryCharArray[CHUNK_SIZE];
 	size_t bytesRead = 0;
 
-	while (fgets(temporaryCharArray, chunkSize, file)) // TODO maybe split this up into more functions, getting too nested
+	while (fgets(temporaryCharArray, CHUNK_SIZE, file)) // TODO maybe split this up into more functions, getting too nested
 	{
-		if (sizeResult < bytesRead + chunkSize) // Allocate more memory to buffer if buffer is getting to small
+		if (sizeResult < bytesRead + CHUNK_SIZE) // Allocate more memory to buffer if buffer is getting to small
 		{
 			sizeResult += sizeResultIncrement;
 			char* temporaryPointer = realloc(result, sizeResult * sizeof(char));
@@ -69,8 +80,11 @@ char* readFileAsCharArray(const char* path)
 				result[i] = 0;
 			}
 		}
-		memcpy_s(result + bytesRead, sizeResult - bytesRead, temporaryCharArray, chunkSize);
-
+        #ifdef gamagos_OS_IS_WINDOWS
+			memcpy_s(result + bytesRead, sizeResult - bytesRead, temporaryCharArray, CHUNK_SIZE);
+		#elif defined(__linux__)
+			memcpy(result + bytesRead, temporaryCharArray, CHUNK_SIZE);
+        #endif
 		bytesRead += strlen(temporaryCharArray);
 	}
 

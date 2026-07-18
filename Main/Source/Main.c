@@ -201,7 +201,7 @@ int main(int argc, char **argv)
 
     // Copying data from galaxy to custom buffers and doing some normalization on the data
     size_t incrementForForLoop = 4;
-    for (size_t i = 0; i < (amountStars * 4); i += incrementForForLoop )
+    for (size_t i = 0; i < ((unsigned long long)amountStars * 4); i += incrementForForLoop )
     {
         size_t galaxyIndex = i / incrementForForLoop;
 		positions[i]     = galaxy[galaxyIndex].position_Terameters.x; //DELETME: This does not work for some random reason
@@ -216,20 +216,20 @@ int main(int argc, char **argv)
     float offsetXposition = 60.0f;
     float offsetYposition = 60.0f;
     float offsetZposition = 0.0f;
-    for (size_t i = 0; i < ( (amountStars * 4) / 2 ); i += incrementForForLoop) // first half
+    for (size_t i = 0; i < ( ((unsigned long long)amountStars * 4) / 2 ); i += incrementForForLoop) // first half
     {
         positions[i] += offsetXposition;
         positions[i + 1] += offsetYposition;
         positions[i + 2] += offsetZposition;
     }
-    for (size_t i = ((amountStars * 4) / 2); i < (amountStars * 4); i += incrementForForLoop) // second half
+    for (size_t i = (((unsigned long long)amountStars * 4) / 2); i < ((unsigned long long)amountStars * 4); i += incrementForForLoop) // second half
     {
         positions[i] -= offsetXposition;
         positions[i + 1] -= offsetYposition;
         positions[i + 2] -= offsetZposition;
     }
 
-    for (size_t i = 0; i < (amountStars * 4); i += incrementForForLoop)
+    for (size_t i = 0; i < ((unsigned long long)amountStars * 4); i += incrementForForLoop)
     {
         size_t galaxyIndex = i / incrementForForLoop;
         velocities[i]     = galaxy[galaxyIndex].velocity_KilometersPerSecond.x;
@@ -238,7 +238,7 @@ int main(int argc, char **argv)
         velocities[i + 3] = 0; // for padding bytes
     }
     
-    for (size_t i = 0; i < (amountStars * 4); i += 4)
+    for (size_t i = 0; i < ((unsigned long long)amountStars * 4); i += 4)
     {
         size_t galaxyIndex = i / 4;
         colors[i]     = (float)(galaxy[galaxyIndex].color.Red)   / 255.0f;
@@ -273,13 +273,13 @@ int main(int argc, char **argv)
     float offsetXvelocity = -2.0f;
     float offsetYvelocity = -3.78f;
     float offsetZvelocity = 0.0f;
-    for (size_t i = 0; i < ((amountStars * 4) / 2); i += incrementForForLoop) // first half
+    for (size_t i = 0; i < (((unsigned long long)amountStars * 4) / 2); i += incrementForForLoop) // first half
     {
         velocities[i] += offsetXvelocity;
         velocities[i + 1] += offsetYvelocity;
         velocities[i + 2] += offsetZvelocity;
     }
-    for (size_t i = ((amountStars * 4) / 2); i < (amountStars * 4); i += incrementForForLoop) // second half
+    for (size_t i = (((unsigned long long)amountStars * 4) / 2); i < ((unsigned long long)amountStars * 4); i += incrementForForLoop) // second half
     {
         velocities[i] -= offsetXvelocity;
         velocities[i + 1] -= offsetYvelocity;

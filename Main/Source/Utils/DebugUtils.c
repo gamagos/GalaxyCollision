@@ -154,7 +154,7 @@ const char* getOS()
     // ======================
     // Microsoft
     // ======================
-    #ifdef _WIN64
+    #ifdef _WIN64 // 64 bit should be put first, because for it can happen, that _WIN64 and _WIN32 are defined, meaning that if the order were the other way round we would falsely be told we are for example on a 32 bit Windows System while we really are on a 64 bit system
         return "Windows 64 bit";
     #elifdef _WIN32
         return "Windows 32 bit";
