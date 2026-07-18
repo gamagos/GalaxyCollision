@@ -3,7 +3,6 @@
 #define GENERATION_UTILS_H
 
 #include <math.h>
-#include <process.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
