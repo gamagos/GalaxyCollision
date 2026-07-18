@@ -6,9 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#ifdef gamagos_OS_IS_WINDOWS
-    #include <Windows.h>
-#endif
 
 #include <cglm/cglm.h> //TODO these are not standard libraries, make them be included with "" again
 #include <glad/glad.h>
@@ -22,6 +19,10 @@
 #include "Utils/OpenGLUtils.h"
 #include "Utils/PhysicsUtils.h"
 #include "Utils/UserInterActionUtils.h"
+
+#ifdef gamagos_OS_IS_WINDOWS
+    #include <Windows.h>
+#endif
 
 // THIS PROGRAM ONLY WORKS FOR WINDOWS
 

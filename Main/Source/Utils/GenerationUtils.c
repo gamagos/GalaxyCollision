@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <Windows.h>
 
 #include "../Constants.h"
 #include "../GalaxyCollision.h"
@@ -12,6 +11,10 @@
 #include "DataUtils.h"
 #include "PhysicsUtils.h"
 #include "MathUtils.h"
+
+#ifdef gamagos_OS_IS_WINDOWS
+    #include <Windows.h>
+#endif
 
 Vector3_Int32 generatePosition32(
     int32_t maxX, int32_t maxY, int32_t maxZ, // max
