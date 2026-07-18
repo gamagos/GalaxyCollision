@@ -1,5 +1,4 @@
 // (C) Sebastian Fiault
-#include <direct.h>
 #include <errno.h>
 #include <limits.h>
 #include <stdio.h>
