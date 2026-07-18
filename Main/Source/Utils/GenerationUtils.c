@@ -1,16 +1,17 @@
 // (C) Sebastian Fiault 2026
+#include <limits.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "../Constants.h"
-#include "../GalaxyCollision.h"
-#include "../Types.h"
-#include "DataUtils.h"
-#include "PhysicsUtils.h"
-#include "MathUtils.h"
+#include "../../Include/Constants.h"
+#include "../../Include/GalaxyCollision.h"
+#include "../../Include/Types.h"
+#include "../../Include/Utils/DataUtils.h"
+#include "../../Include/Utils/PhysicsUtils.h"
+#include "../../Include/Utils/MathUtils.h"
 
 #ifdef gamagos_OS_IS_WINDOWS
     #include <Windows.h>
@@ -245,7 +246,7 @@ Star_32* generateStars32Galaxy(uint32_t amount, BlackHole_32 parentBlackHole)
         //    free(otherStarsTemporary);
         //} //! This is the original code!
         //! This is a temporary bypass!!!!!!!!!!!!!!!
-        stars[i].position_Terameters.x = ( (rand() + 1) % (maxX - minX)) + minX; // + 1 to prevent zero devision
+        stars[i].position_Terameters.x = ( (rand() + 1) % (maxX - minX)) + minX; // + 1 to prevent zero division
         stars[i].position_Terameters.y = ( (rand() + 1) % (maxY - minY)) + minY;
         stars[i].position_Terameters.z = ( (rand() + 1) % (maxZ - minZ)) + minZ;
         stars[i].position_Terameters.x *= (rand() % 2) == 1 ? 1 : -1;// Randomize sign

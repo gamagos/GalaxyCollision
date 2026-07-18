@@ -4,8 +4,9 @@
 
 #include <stdlib.h>
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+// Third Party Libraries
+#include "../../Libraries/glad/include/glad/glad.h"
+#include "../../Libraries/glfw-3.4/include/GLFW/glfw3.h"
 
 #include "../Constants.h"
 #include "../GalaxyCollision.h"
@@ -38,7 +39,7 @@ REMARKS:
     Generally you can always use NULL if you have no objects to pass to one of this methods parameters.
     This function automatically adds newlines behind the string extrainfo!
 */
-int quitProgramOnError(
+void quitProgramOnError(
     void* pointersToFree[],
     size_t amountPointers,
     GLuint buffersToDelete[],

@@ -7,11 +7,11 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "../Constants.h"
-#include "../GalaxyCollision.h"
-#include "../Types.h"
-#include "DataUtils.h"
-#include "MathUtils.h"
+#include "../../Include/Constants.h"
+#include "../../Include/GalaxyCollision.h"
+#include "../../Include/Types.h"
+#include "../../Include/Utils/DataUtils.h"
+#include "../../Include/Utils/MathUtils.h"
 
 double logCustomBase(double base, double _X)
 {

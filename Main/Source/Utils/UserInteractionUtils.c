@@ -1,7 +1,7 @@
 // (C) Sebastian Fiault 2026
 #include <stdio.h>
 
-#include "../GalaxyCollision.h"
+#include "../../Include/GalaxyCollision.h"
 
 void printKeybinds()
 {

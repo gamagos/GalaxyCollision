@@ -182,7 +182,7 @@ typedef struct BlackHole_32
     Vector3_Int32 position_Terameters;
     Vector3_Float32 velocity_KilometersPerSecond;
     float mass_10_BillionQuettagrams;
-    float standardGravitationalParameter_TerametersCubedPerPetaecondSquared;
+    float standardGravitationalParameter_TerametersCubedPerPetasecondSquared;
 
     // Additional values for galaxy generation
     Vector3_Float32 rotationAxis;

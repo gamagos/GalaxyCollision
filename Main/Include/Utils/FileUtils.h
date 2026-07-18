@@ -5,8 +5,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../GalaxyCollision.h"
-#include "DataUtils.h"
+#include "../../Include/GalaxyCollision.h"
+#include "../../Include/Utils/DataUtils.h"
+
+#ifdef __linux__
+	#include <linux/limits.h>
+#endif
 
 /*
 SYNOPSIS:
@@ -15,7 +19,8 @@ ARGS:
 	relativePath:
 		The relative path of the path you want to get the absolute path of
 RETURNS:
-	The absolute path of the relative path provided or NULL if an error occurs
+	The absolute path of the relative path provided or NULL if an error occurs.
+	[Warning] this buffer needs to be deallocated using free()!
 REMARKS:
 	Does not work with paths longer than "_MAX_PATH"!
 	You have to free() the char array after use!

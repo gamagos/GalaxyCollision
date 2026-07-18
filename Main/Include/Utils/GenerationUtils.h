@@ -2,12 +2,12 @@
 #ifndef GENERATION_UTILS_H
 #define GENERATION_UTILS_H
 
+#include <limits.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <Windows.h>
 
 #include "../Constants.h"
 #include "../GalaxyCollision.h"
@@ -15,6 +15,10 @@
 #include "DataUtils.h"
 #include "PhysicsUtils.h"
 #include "MathUtils.h"
+
+#ifdef gamagos_OS_IS_WINDOWS
+    #include <Windows.h>
+#endif
 
 /*
 SYNOPSIS:
@@ -202,7 +206,7 @@ ARGS:
 RETURNS:
     An array of Star64 stars, with it's fields adjusted so that all the stars together look like a galaxy
 EXAMPLE:
-    Star64* starsGalaxyA = generateStars(25'000, sagitatiusA);
+    Star64* starsGalaxyA = generateStars(25'000, sagittariusA);
 */
 Star_64* generateStars64Galaxy(uint64_t amount, BlackHole_64 parentBlackHole);
 

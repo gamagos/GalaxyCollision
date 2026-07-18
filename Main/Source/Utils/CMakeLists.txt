@@ -1,62 +1,50 @@
 # (C) Sebastian Fiault 2026
+# DataUtils
 add_library(DataUtils STATIC)
 target_sources(DataUtils
 	PRIVATE 
 		DataUtils.c
 
 	PUBLIC
-		../Constants.h
-		../GalaxyCollision.h
-		DataUtils.h
-		${GALAXY_COLLISION_HEADER_FILE}
+		../../Include/Utils/DataUtils.h
 )
 
+# DebugUtils
 add_library(DebugUtils STATIC)
-target_include_directories(DebugUtils
-	PUBLIC
-		${GLAD_INCLUDE_DIRECTORY}
-		${GLFW_INCLUDE_DIRECTORY}
-)
 target_sources(DebugUtils
 	PRIVATE 
 		DebugUtils.c
 
 	PUBLIC
-	    ../Constants.h
-		../GalaxyCollision.h
-		DebugUtils.h
-		${GLAD_INCLUDE_DIRECTORY}
-		${GLFW_INCLUDE_DIRECTORY}
-		${GALAXY_COLLISION_HEADER_FILE}
+		../../Include/Utils/DebugUtils.h
 )
 target_link_libraries(DebugUtils
 	PRIVATE
 		DataUtils
 )
 
+# FileUtils
 add_library(FileUtils STATIC)
 target_sources(FileUtils
 	PRIVATE
 		FileUtils.c
 	
 	PUBLIC
-		../GalaxyCollision.h
-		FileUtils.h
-		${GALAXY_COLLISION_HEADER_FILE}
+		../../Include/Utils/FileUtils.h
 )
 target_link_libraries(FileUtils
 	PRIVATE
 		DataUtils
 )
 
+# Generation Utils
 add_library(GenerationUtils STATIC)
 target_sources(GenerationUtils
 	PRIVATE 
 		GenerationUtils.c
 
 	PUBLIC
-		GenerationUtils.h
-		${GALAXY_COLLISION_HEADER_FILE}
+		../../Include/Utils/GenerationUtils.h
 )
 target_link_libraries(GenerationUtils
 	PRIVATE
@@ -65,34 +53,27 @@ target_link_libraries(GenerationUtils
 		MathUtils
 )
 
+# MathUtils
 add_library(MathUtils STATIC)
 target_sources(MathUtils
 	PRIVATE 
 		MathUtils.c
 
 	PUBLIC
-		MathUtils.h
-		${GALAXY_COLLISION_HEADER_FILE}
+		../../Include/Utils/MathUtils.h
 )
 target_link_libraries(MathUtils
 	PRIVATE
 		DataUtils
 )
 
+# OpenGLUtils
 add_library(OpenGLUtils STATIC)
-target_include_directories(OpenGLUtils
-	PUBLIC
-		${GLAD_INCLUDE_DIRECTORY} # OpenGLUtils depends on glad and glfw
-		${GLFW_INCLUDE_DIRECTORY}
-)
 target_sources(OpenGLUtils
 	PRIVATE
 		OpenGLUtils.c
 	PUBLIC
-		OpenGLUtils.h
-		${GLAD_INCLUDE_DIRECTORY}
-		${GLFW_INCLUDE_DIRECTORY}
-		${GALAXY_COLLISION_HEADER_FILE}
+		../../Include/Utils/OpenGLUtils.h
 )
 target_link_libraries(OpenGLUtils
 	PRIVATE
@@ -103,22 +84,22 @@ target_link_libraries(OpenGLUtils
 		FileUtils
 )
 
+# PhysicsUtils
 add_library(PhysicsUtils STATIC)
 target_sources(PhysicsUtils
 	PRIVATE 
 		PhysicsUtils.c
 
 	PUBLIC
-		PhysicsUtils.h
-		${GALAXY_COLLISION_HEADER_FILE}
+		../../Include/Utils/PhysicsUtils.h
 )
 
+# UserInteractionUtils
 add_library(UserInteractionUtils STATIC)
 target_sources(UserInteractionUtils
 	PRIVATE 
 		UserInteractionUtils.c
 
 	PUBLIC
-		UserInteractionUtils.h
-		${GALAXY_COLLISION_HEADER_FILE}
+		../../Include/Utils/UserInteractionUtils.h
 )

@@ -5,26 +5,22 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../GalaxyCollision.h"
-#include "DataUtils.h"
+#include "../../Include/GalaxyCollision.h"
+#include "../../Include/Utils/DataUtils.h"
+
+#ifdef __linux__
+	#include <linux/limits.h>
+#endif
 
 char* getAbsolutePath(const char* relativePath)
 {
-	#if defined(__linux__)
-		char* result = calloc(PATH_MAX, sizeof(char));
-    #elifdef gamagos_OS_IS_WINDOWS
-		char* result = calloc( _MAX_PATH, sizeof(char) );
-    #endif
+	char* result = calloc( _MAX_PATH, sizeof(char) );
 	if (!result)
 	{
 		perror("Failed to allocate memory for result (FileUtils.c, getAbsolutePath)");
 		return NULL;
 	}
-    #if defined(__linux__)
-		result = _fullpath(result, relativePath, PATH_MAX);
-    #elifdef gamagos_OS_IS_WINDOWS
-		result = _fullpath(result, relativePath, _MAX_PATH);
-    #endif
+	result = _fullpath(result, relativePath, _MAX_PATH);
 	if (!result)
 	{
 		perror("Something went wrong with absolute path retrieval (FileUtils.c, getAbsolutePath)");
@@ -83,11 +79,7 @@ char* readFileAsCharArray(const char* path)
 				result[i] = 0;
 			}
 		}
-        #ifdef gamagos_OS_IS_WINDOWS
-			memcpy_s(result + bytesRead, sizeResult - bytesRead, temporaryCharArray, CHUNK_SIZE);
-		#elif defined(__linux__)
-			memcpy(result + bytesRead, temporaryCharArray, CHUNK_SIZE);
-        #endif
+		gamagos_memcpy_s(result + bytesRead, sizeResult - bytesRead, temporaryCharArray, CHUNK_SIZE);
 		bytesRead += strlen(temporaryCharArray);
 	}
 

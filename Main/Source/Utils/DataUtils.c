@@ -1,4 +1,4 @@
-    // (C) Sebastian Fiault 2026
+// (C) Sebastian Fiault 2026
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -6,16 +6,20 @@
 #include <string.h>
 #include <time.h>
 
-#include "../Constants.h"
-#include "../GalaxyCollision.h"
-#include "../Types.h"
-#include "DataUtils.h"
+#include "../../Include/Constants.h"
+#include "../../Include/GalaxyCollision.h"
+#include "../../Include/Types.h"
+#include "../../Include/Utils/DataUtils.h"
 
 char* formatString(const char* toFormat, ...)
 {
     va_list args;
     va_start(args, toFormat);
-    size_t amountCharacters = _vscprintf(toFormat, args) + 1U; //! There needs to be +1 because _vscprintf just doesn't count null-terminators for some reason
+    #ifdef gamagos_OS_IS_WINDOWS //TODO consider defining function _vscprintf and vsprintf_s in GalaxyCollision.h if not defined in std libraries for cleaner code!
+        size_t amountCharacters = _vscprintf(toFormat, args) + 1U; //* There needs to be +1 because _vscprintf just doesn't count null-terminators for some reason
+    #elif defined(__linux__)
+        size_t amountCharacters = vsnprintf(NULL, 0, toFormat, args) + 1U; //* There needs to be +1 because _vscprintf just doesn't count null-terminators for some reason;
+    #endif
     char* result = calloc(amountCharacters, sizeof(char));
     if (!result)
     {
@@ -23,7 +27,11 @@ char* formatString(const char* toFormat, ...)
         va_end(args);
         return (char*)NULL;
     }
-    vsprintf_s(result, amountCharacters * sizeof(char), toFormat, args);
+    #ifdef gamagos_OS_IS_WINDOWS //TODO consider defining function _vscprintf and vsprintf_s in GalaxyCollision.h if not defined in std libraries for cleaner code!
+        vsprintf_s(result, amountCharacters * sizeof(char), toFormat, args);
+    #elif defined(__linux__)
+        vsprintf(result, toFormat, args);
+    #endif
     va_end(args);
 
     return result;
@@ -33,26 +41,6 @@ void safer_free(void** pointer)
 {
     free(*pointer);
     *pointer = 0;
-}
-
-unsigned long long buildWideIntFromNarrowInts(void* narrowInts, size_t intSize, unsigned long long intCount)
-{
-    if (intCount * intSize > 8)
-    {
-        perror( formatString("%s %s maximum allowed size for narrowInts is 8 bytes \t buildWideIntFromNarrowInts int GeneratorUtils.c", FATAL_TAG, ERROR_TAG) );
-        exit(EXIT_FAILURE);
-        return (unsigned long long)NULL;
-    }
-
-    unsigned long long result = 0;
-    for (unsigned long long i = 0; i < intCount; i++)
-    {
-        unsigned long long value = 0;
-        unsigned long long readOffset = (intSize * i);
-        memcpy_s(&value, sizeof(value), (char*)narrowInts + readOffset, intSize);
-        result = result | value << (i * intSize);
-    }
-    return result;
 }
 
 unsigned long long wideRandint(short int size)
@@ -75,7 +63,7 @@ unsigned long long wideRandint(short int size)
     if (intArray == NULL)
     {
         fprintf(stderr,
-            "%s %s Failed to allocate memory for intArray \t in wideRanint() in GeneratorUtils.c",
+            "%s %s Failed to allocate memory for intArray \t in wideRandint() in GeneratorUtils.c",
             FATAL_TAG,
             ERROR_TAG);
         exit(EXIT_FAILURE);
@@ -142,5 +130,65 @@ Vector3_Double64 Vector3Int64_To_Vector3Double64(Vector3_Int64 vectorToConvert)
     result.y = (double)vectorToConvert.y;
     result.z = (double)vectorToConvert.z;
 
+    return result;
+}
+
+errno_t gamagos_memcpy_s(void* destination, size_t destinationSize, void* source, size_t count)
+{
+    errno_t success = 0; // 0 means no error
+    
+    // ============================
+    // Some error handling
+    // ============================
+
+    // When copying would result in overflow
+    if (destinationSize < count)
+    {
+        perror("You cannot copy buffers that are larger than destinationSize into destination, this would cause an overflow (gamagos_memcpy_s, DataUtils.c)");
+        return 1;
+    }
+
+    // ----------------------------
+    // Check for null pointers
+    // ----------------------------
+    if (!destination){
+        perror("destination cannot be null (gamagos_memcpy_s, DataUtils.c)");
+        return 1;
+    }
+    if (!source){
+        perror("source cannot be null (gamagos_memcpy_s, DataUtils.c)");
+        return 1;
+    }
+
+    // ============================
+    // Actual memcpy logic
+    // ============================
+    #ifdef gamagos_OS_IS_WINDOWS // Uses the safer memcpy_s if on windows
+        success = memcpy_s(destination, destinationSize, source, count);
+    #elif defined(__linux__) // Uses normal memcpy if on linux
+    success = (errno_t)(size_t)memcpy(destination, source, count);
+    success = success == 0 ? 1 : 0;
+    #endif
+    
+    return success;
+}
+
+unsigned long long buildWideIntFromNarrowInts(void* narrowInts, size_t intSize, unsigned long long intCount)
+{
+    if (intCount * intSize > 8)
+    {
+        perror( formatString("%s %s maximum allowed size for narrowInts is 8 bytes \t buildWideIntFromNarrowInts int GeneratorUtils.c", FATAL_TAG, ERROR_TAG) );
+        exit(EXIT_FAILURE);
+        return (unsigned long long)NULL;
+    }
+
+    unsigned long long result = 0;
+    for (unsigned long long i = 0; i < intCount; i++)
+    {
+        unsigned long long value = 0;
+        unsigned long long readOffset = (intSize * i);
+        gamagos_memcpy_s(&value, sizeof(value), (char*)narrowInts + readOffset, intSize);
+        result = result | value << (i * intSize);
+    }
     return result;
 }

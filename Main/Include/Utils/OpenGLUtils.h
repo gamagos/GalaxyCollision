@@ -2,13 +2,17 @@
 #ifndef OPENGL_UTILS_H
 #define OPENGL_UTILS_H
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <stdio.h>
 #include <stdbool.h>
 
+// Third party libraries
+#include "../../Libraries/cglm-0.9.6/include/cglm/cglm.h"
+#include "../../Libraries/glad/include/glad/glad.h"
+#include "../../Libraries/glfw-3.4/include/GLFW/glfw3.h"
+
 #include "../Constants.h"
 #include "../GalaxyCollision.h"
+#include "../Types.h"
 #include "DataUtils.h"
 #include "FileUtils.h"
 

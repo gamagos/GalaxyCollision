@@ -6,7 +6,10 @@
 
 #include "../GalaxyCollision.h"
 
-// Prints the keybindings in a pretty format
+/*
+SYNOPSIS:
+    Prints the keybindings for the simulation's control in a pretty format
+*/ 
 void printKeybinds();
 
 #endif

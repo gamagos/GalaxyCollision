@@ -1,12 +1,14 @@
 // (C) Sebastian Fiault 2026
 #include <stdlib.h>
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+// Third Party Libraries
+#include "../../Libraries/glad/include/glad/glad.h"
+#include "../../Libraries/glfw-3.4/include/GLFW/glfw3.h"
 
-#include "../Constants.h"
-#include "../GalaxyCollision.h"
-#include "DataUtils.h"
+#include "../../Include/Constants.h"
+#include "../../Include/GalaxyCollision.h"
+#include "../../Include/Utils/DataUtils.h"
+#include "../../Include/Utils/DebugUtils.h"
 
 // Quit the program as if an error happened
 void quitProgramOnError( 

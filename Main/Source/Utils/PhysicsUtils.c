@@ -1,8 +1,8 @@
 // (C) Sebastian Fiault 2026
 #include <math.h>
 
-#include "../Constants.h"
-#include "../GalaxyCollision.h"
+#include "../../Include/Constants.h"
+#include "../../Include/GalaxyCollision.h"
 
 float getAcceleration_32(float force, float mass)
 {

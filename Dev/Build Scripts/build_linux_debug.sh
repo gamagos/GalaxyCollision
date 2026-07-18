@@ -2,10 +2,15 @@
 
 # (C) Sebastian Fiault
 
-echo "[WARNING] This Script needs to be run from GalaxyCollision/Dev/Build Scripts/ to funtion properly!\n Running from different locations will result in improper behaviour" #TODO find way to make script automatically cd to it's location
+echo "[WARNING] This Script needs to be run from GalaxyCollision/Dev/Build Scripts/ to function properly!"
+echo "Running from different locations will result in improper behavior" #TODO find way to make script automatically cd to it's location
+echo " "
 
 cd ../..
 cmake --preset Linux-Debug --fresh
+echo "==============================================================="
+echo "CMake Configured. Build starts here"
+echo "==============================================================="
 cmake --build --preset Linux-Debug
 cd "Dev/Build Scripts"
 

@@ -1,5 +1,6 @@
 // (C) Sebastian Fiault 2026
-
+#include <errno.h>
+#include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -7,18 +8,19 @@
 #include <string.h>
 #include <time.h>
 
-#include <cglm/cglm.h> //TODO these are not standard libraries, make them be included with "" again
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+// Third party libraries
+#include "../Libraries/cglm-0.9.6/include/cglm/cglm.h"
+#include "../Libraries/glad/include/glad/glad.h"
+#include "../Libraries/glfw-3.4/include/GLFW/glfw3.h"
 
-#include "GalaxyCollision.h"
-#include "Types.h"
-#include "Utils/DebugUtils.h"
-#include "Utils/FileUtils.h"
-#include "Utils/GenerationUtils.h"
-#include "Utils/OpenGLUtils.h"
-#include "Utils/PhysicsUtils.h"
-#include "Utils/UserInterActionUtils.h"
+#include "../Include/GalaxyCollision.h"
+#include "../Include/Types.h"
+#include "../Include/Utils/DebugUtils.h"
+#include "../Include/Utils/FileUtils.h"
+#include "../Include/Utils/GenerationUtils.h"
+#include "../Include/Utils/OpenGLUtils.h"
+#include "../Include/Utils/PhysicsUtils.h"
+#include "../Include/Utils/UserInteractionUtils.h"
 
 #ifdef gamagos_OS_IS_WINDOWS
     #include <Windows.h>
@@ -38,7 +40,7 @@ size_t currentIndexPointersCurrentlyInUse = 0;
 GLuint bufferObjectsCurrentlyInUse[1024];
 size_t currentIndexbufferObjectsCurrentlyInUse = 0;
 GLuint vertexArraysCurrentlyInUse[1024];
-size_t currentIndexvertexArraysCurrentlyInUse = 0;
+size_t currentIndexVertexArraysCurrentlyInUse = 0;
 
 int windowWidth = 1'000;
 int windowHeight = 1'000;
@@ -55,15 +57,15 @@ int main(int argc, char **argv)
     // 
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     printf_s("Starting Program\n");
-    printf_s("Compiled for C Version: %ld\n", __STDC_VERSION__);
+    printf_s("Compiled for C Version: %ld\n", (long)__STDC_VERSION__);
     const char* usedCompiler = getCompiler();
     printf_s("Compiled with: %s\n", usedCompiler);
     const char* projectTargetPlatform = getBuildPlatform();
     printf_s("Compiled for Platform: %s\n", projectTargetPlatform);
     const char* projectTargetOS = getOS();
     printf_s("Compiled for OS: %s\n", projectTargetOS);
-    printf_s("System default integer size is %llu bytes (%llu bits)\n", sizeof(int), sizeof(int) * 8);
-    printf_s("System default pointer size is %llu bits\n", sizeof(size_t) * 8);
+    printf_s( "System default integer size is %llu bytes (%llu bits)\n", (long long unsigned)sizeof(int), (long long unsigned)(sizeof(int) * 8) );
+    printf_s( "System default pointer size is %llu bits\n", (long long unsigned)(sizeof(size_t) * 8) );
     
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     // 
@@ -111,7 +113,7 @@ int main(int argc, char **argv)
     GLuint VAO1;
     glGenVertexArrays(1, &VAO1);
     glBindVertexArray(VAO1);
-    vertexArraysCurrentlyInUse[currentIndexvertexArraysCurrentlyInUse++] = VAO1;
+    vertexArraysCurrentlyInUse[currentIndexVertexArraysCurrentlyInUse++] = VAO1;
     
     GLuint primaryVBO; //! Only holds color, because physics are on SSBO!
     glGenBuffers(1, &primaryVBO);
@@ -152,11 +154,11 @@ int main(int argc, char **argv)
         .position_Terameters = (Vector3_Int32){0, 0, 0},
         .velocity_KilometersPerSecond = (Vector3_Float32){0.0f, 0.0f, 0.0f},
         .mass_10_BillionQuettagrams = 10'000.0f,
-        .standardGravitationalParameter_TerametersCubedPerPetaecondSquared = 0.0f, // Assigned later
+        .standardGravitationalParameter_TerametersCubedPerPetasecondSquared = 0.0f, // Assigned later
         .rotationAxis = (Vector3_Float32){0.0f, 1.0f, 0.0f},
         .rotatesClockwise = true
     };
-    parentBlackHole.standardGravitationalParameter_TerametersCubedPerPetaecondSquared = GRAVITATIONAL_CONSTANT_FLOAT * parentBlackHole.mass_10_BillionQuettagrams;
+    parentBlackHole.standardGravitationalParameter_TerametersCubedPerPetasecondSquared = GRAVITATIONAL_CONSTANT_FLOAT * parentBlackHole.mass_10_BillionQuettagrams;
 
     Star_32* galaxy = generateStars32Galaxy(amountStars, parentBlackHole);
     pointersCurrentlyInUse[currentIndexPointersCurrentlyInUse++] = galaxy;
@@ -170,7 +172,7 @@ int main(int argc, char **argv)
     {
         quitProgramOnError(pointersCurrentlyInUse, currentIndexPointersCurrentlyInUse + 1,
                            bufferObjectsCurrentlyInUse, currentIndexbufferObjectsCurrentlyInUse + 1,
-                           vertexArraysCurrentlyInUse, currentIndexvertexArraysCurrentlyInUse,
+                           vertexArraysCurrentlyInUse, currentIndexVertexArraysCurrentlyInUse,
                            (GLuint[]) {primaryShaderProgram}, 1,
                            "Failed to allocate memory for positions (Main.c, main())");
         return 1; //TODO make buffer that has all pointers that should be freed on quit
@@ -183,7 +185,7 @@ int main(int argc, char **argv)
     {
         quitProgramOnError(pointersCurrentlyInUse, currentIndexPointersCurrentlyInUse + 1,
                            bufferObjectsCurrentlyInUse, currentIndexbufferObjectsCurrentlyInUse + 1,
-                           vertexArraysCurrentlyInUse, currentIndexvertexArraysCurrentlyInUse,
+                           vertexArraysCurrentlyInUse, currentIndexVertexArraysCurrentlyInUse,
                            (GLuint[]) {primaryShaderProgram}, 1,           
                            "Failed to allocate memory for velocities (Main.c, main())");
         return 1;
@@ -195,7 +197,7 @@ int main(int argc, char **argv)
     {
         quitProgramOnError(pointersCurrentlyInUse, currentIndexPointersCurrentlyInUse + 1,
                            bufferObjectsCurrentlyInUse, currentIndexbufferObjectsCurrentlyInUse + 1,
-                           vertexArraysCurrentlyInUse, currentIndexvertexArraysCurrentlyInUse,
+                           vertexArraysCurrentlyInUse, currentIndexVertexArraysCurrentlyInUse,
                            (GLuint[]) {primaryShaderProgram}, 1,
                            "Failed to allocate memory for colors (Main.c, main())");
         return 1;
@@ -301,16 +303,17 @@ int main(int argc, char **argv)
     {
         quitProgramOnError(pointersCurrentlyInUse, currentIndexPointersCurrentlyInUse + 1,
                            bufferObjectsCurrentlyInUse, currentIndexbufferObjectsCurrentlyInUse + 1,
-                           vertexArraysCurrentlyInUse, currentIndexvertexArraysCurrentlyInUse,
+                           vertexArraysCurrentlyInUse, currentIndexVertexArraysCurrentlyInUse,
                            (GLuint[]) {primaryShaderProgram}, 1,
                            "Failed to allocate memory for bufferData (Main.c, main())");
         return 1;
     }
 
     size_t i4 = 0;
+    errno_t success = 0;
     for (size_t i = 0; i < amountStars; i++)
     {
-        errno_t success = memcpy_s( // Positions 
+        success = gamagos_memcpy_s( // Positions 
             &bufferData[i].position, 
             sizeof(float) * 4,
             &positions[i4],
@@ -320,7 +323,7 @@ int main(int argc, char **argv)
         {
             quitProgramOnError(pointersCurrentlyInUse, currentIndexPointersCurrentlyInUse + 1, //TODO make better abstraction for this
                 bufferObjectsCurrentlyInUse, currentIndexbufferObjectsCurrentlyInUse + 1,
-                vertexArraysCurrentlyInUse, currentIndexvertexArraysCurrentlyInUse,
+                vertexArraysCurrentlyInUse, currentIndexVertexArraysCurrentlyInUse,
                 (GLuint[]) {primaryShaderProgram},
                 1,
                 formatString("Memory Copy of positions into bufferData failed with Code %d (main() Main.c))\n", success)
@@ -328,7 +331,7 @@ int main(int argc, char **argv)
             return 1;
         }
 
-        success = memcpy_s( // Velocities
+        success = gamagos_memcpy_s( // Velocities
             &bufferData[i].velocity,
             sizeof(float) * 4,
             &velocities[i4],
@@ -338,7 +341,7 @@ int main(int argc, char **argv)
         {
             quitProgramOnError(pointersCurrentlyInUse, currentIndexPointersCurrentlyInUse + 1,
                 bufferObjectsCurrentlyInUse, currentIndexbufferObjectsCurrentlyInUse + 1,
-                vertexArraysCurrentlyInUse, currentIndexvertexArraysCurrentlyInUse,
+                vertexArraysCurrentlyInUse, currentIndexVertexArraysCurrentlyInUse,
                 (GLuint[]) {
                 primaryShaderProgram
             },
@@ -420,12 +423,13 @@ int main(int argc, char **argv)
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     mat4 viewMatrix = {0};
     mat4 viewMatrix_previous = {0};
-    errno_t success = memcpy_s(viewMatrix_previous, sizeof(mat4), viewMatrix, sizeof(mat4));
+    success = 0;
+    success = gamagos_memcpy_s(viewMatrix_previous, sizeof(mat4), viewMatrix, sizeof(mat4));
     if (success != 0)
     {
         quitProgramOnError(pointersCurrentlyInUse, currentIndexPointersCurrentlyInUse + 1,
             bufferObjectsCurrentlyInUse, currentIndexbufferObjectsCurrentlyInUse + 1,
-            vertexArraysCurrentlyInUse, currentIndexvertexArraysCurrentlyInUse,
+            vertexArraysCurrentlyInUse, currentIndexVertexArraysCurrentlyInUse,
             (GLuint[]) {
             primaryShaderProgram
         },
@@ -586,12 +590,12 @@ int main(int argc, char **argv)
         if (viewMatrix != viewMatrix_previous)
         {
             glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, (GLfloat*)viewMatrix);
-            errno_t success = memcpy_s(viewMatrix_previous, sizeof(mat4), viewMatrix, sizeof(mat4));
+            errno_t success = gamagos_memcpy_s(viewMatrix_previous, sizeof(mat4), viewMatrix, sizeof(mat4));
             if (success != 0)
             {
                 quitProgramOnError(pointersCurrentlyInUse, currentIndexPointersCurrentlyInUse + 1,
                     bufferObjectsCurrentlyInUse, currentIndexbufferObjectsCurrentlyInUse + 1,
-                    vertexArraysCurrentlyInUse, currentIndexvertexArraysCurrentlyInUse,
+                    vertexArraysCurrentlyInUse, currentIndexVertexArraysCurrentlyInUse,
                     (GLuint[]) {
                     primaryShaderProgram
                 },
