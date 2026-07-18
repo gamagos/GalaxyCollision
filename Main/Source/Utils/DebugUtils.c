@@ -154,14 +154,14 @@ const char* getOS()
     // ======================
     // Microsoft
     // ======================
-    #ifdef _WIN16
-        return "Windows 16 bit";
+    #ifdef _WIN64
+        return "Windows 64 bit";
     #elifdef _WIN32
         return "Windows 32 bit";
     #elifdef _WIN32_WCE
         return "Windows CE";
-    #elifdef _WIN64
-        return "Windows 64 bit";
+    #elifdef _WIN16
+        return "Windows 16 bit";
     #elifdef MSDOS
         return "MSDOS";
 

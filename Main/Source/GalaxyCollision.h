@@ -8,4 +8,10 @@
 #define NULL ((void*)0i)
 #endif
 
+#if defined(_WIN16) || defined(_WIN32) || defined(_WIN64)
+	#ifndef gamagos_OS_IS_WINDOWS
+	#define gamagos_OS_IS_WINDOWS
+	#endif
+#endif
+
 #endif
