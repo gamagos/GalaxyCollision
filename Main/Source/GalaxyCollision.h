@@ -8,9 +8,21 @@
 #define NULL ((void*)0i)
 #endif
 
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+// 
+// Macros enabling cross platform support
+// 
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 #if defined(_WIN16) || defined(_WIN32) || defined(_WIN64)
 	#ifndef gamagos_OS_IS_WINDOWS
 	#define gamagos_OS_IS_WINDOWS true
+	#endif
+#endif
+
+#if !defined(gamagos_OS_IS_WINDOWS)
+	#ifndef printf_s
+        #include <stdio.h>
+		#define printf_s(x) printf(x) // Since this method is only defined in Windows
 	#endif
 #endif
 
