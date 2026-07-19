@@ -6,7 +6,7 @@ add_library(glad)
 # Include headers of glad and glfw
 target_include_directories(glad
 	PUBLIC
-		${GLAD_INCLUDE_DIRECTORY}
+		"${CMAKE_SOURCE_DIR}/Main/Libraries/glad/include/"
 )
 
 target_sources(glad

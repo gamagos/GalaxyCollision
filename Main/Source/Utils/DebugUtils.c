@@ -27,7 +27,9 @@ void quitProgramOnError(
 
     if (extraInfo) 
     {
-        perror(formatString("%s %s; %s\n",ERROR_TAG, stringToPrint, extraInfo));
+        const char* message = formatString("%s %s; %s\n", ERROR_TAG, stringToPrint, extraInfo);
+        perror(message);
+        safer_free((void**)&message);
     }
     else
     {
@@ -43,7 +45,9 @@ void quitProgramOnError(
     }
     else if (pointersToFree)
     {
-        perror( formatString("%s You specified \"pointersToFree\" but forgot to specify the amount \"amountPointers\" (DebugUtils.c quitProgram())\n", ERROR_TAG) );
+        const char* message = formatString("%s You specified \"pointersToFree\" but forgot to specify the amount \"amountPointers\" (DebugUtils.c quitProgram())\n", ERROR_TAG);
+        perror(message);
+        safer_free((void**)&message);
     }
 
     if (buffersToDelete && amountBuffers)
@@ -52,7 +56,9 @@ void quitProgramOnError(
     }
     else if (buffersToDelete)
     {
-        perror( formatString("%s You specified \"buffersToDelete\" but forgot to specify the amount \"amountBuffers\" (DebugUtils.c quitProgram())\n", ERROR_TAG));
+        const char* message = formatString("%s You specified \"buffersToDelete\" but forgot to specify the amount \"amountBuffers\" (DebugUtils.c quitProgram())\n", ERROR_TAG);
+        perror(message);
+        safer_free((void**)&message);
     }
 
     if (vertexArraysToDelete && amountVertexArrays)
@@ -61,7 +67,8 @@ void quitProgramOnError(
     }
     else if (vertexArraysToDelete)
     {
-        perror(formatString("%s You specified \"vertexArraysToDelete\" but forgot to specify the amount \"amountVertexArrays\" (DebugUtils.c quitProgram())\n", ERROR_TAG));
+        const char* message = formatString("%s You specified \"vertexArraysToDelete\" but forgot to specify the amount \"amountVertexArrays\" (DebugUtils.c quitProgram())\n", ERROR_TAG);
+        perror(message);
     }
 
     if (shaderProgramsToDelete && amountShaderPrograms)
@@ -73,7 +80,9 @@ void quitProgramOnError(
     }
     else if (shaderProgramsToDelete)
     {
-        perror(formatString("%s You specified \"shaderProgramsToDelete\" but forgot to specify the amount \"amountShaderPrograms\" (DebugUtils.c quitProgram())\n", ERROR_TAG));
+        const char* message = formatString("%s You specified \"shaderProgramsToDelete\" but forgot to specify the amount \"amountShaderPrograms\" (DebugUtils.c quitProgram())\n", ERROR_TAG);
+        perror(message);
+        safer_free((void**)&message);
     }
 
     glfwTerminate();
@@ -156,14 +165,14 @@ const char* getOS()
     // ======================
     // Microsoft
     // ======================
-    #ifdef _WIN64 // 64 bit should be put first, because for it can happen, that _WIN64 and _WIN32 are defined, meaning that if the order were the other way round we would falsely be told we are for example on a 32 bit Windows System while we really are on a 64 bit system
-        return "Windows 64 bit";
+    #ifdef _WIN16
+        return "Windows 16 bit";
     #elifdef _WIN32
         return "Windows 32 bit";
     #elifdef _WIN32_WCE
         return "Windows CE";
-    #elifdef _WIN16
-        return "Windows 16 bit";
+    #elifdef _WIN64
+        return "Windows 64 bit";
     #elifdef MSDOS
         return "MSDOS";
 

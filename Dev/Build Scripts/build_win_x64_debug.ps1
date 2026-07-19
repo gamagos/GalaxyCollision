@@ -6,7 +6,9 @@ Write-Host "[INFO] To build on Windows you need to have Visual Studio 2026 insta
 $ProjectRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 
 cmake -S $ProjectRoot --preset x64-Windows-Debug --fresh
-
-cmake --build --preset x64-Windows-Debug
+Write-Host "===============================================================" 
+Write-Host "CMake Configured. Build starts here"                            
+Write-Host "===============================================================" 
+cmake --build --preset x64-Windows-Debug --clean-first
 
 #TODO document this so that people can build it on GitHub

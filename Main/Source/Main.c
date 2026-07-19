@@ -376,17 +376,13 @@ int main(int argc, char **argv)
     float accelerationMinimum = 0.000'01f;
     float accelerationMinimum_Maximum = 0.000'1f; //? debugging why the one particle blob is smaller than the other and implementing my new clean way to comment (+-+-+-+-+ and ========) and also making the perspective proj matrix only be sent when updated the same way I did with the view matrix
     float distanceMaximum = 0.0f;
-    float distanceMaximum_previous = distanceMaximum;
 	float deltaTime_Seconds = 0.1f; // Deltatime being zero on first frame causes issues
-    float force = 0.0f;
     float mass = 5'999'999'999.0f; // All bodies weight the same for now
     float mass_previous = mass;
     float speedCap = 9'091.0f; //TODO make this be a cap on acceleration instead and make calculate what acceleration to use with distance, preferably the radius of the largest star!
     float speedCap_previous = speedCap;
 	float timeWarp = 1.0f;
     float timeWarp_previous = timeWarp;
-    size_t bufferDataIndex = 0;
-    vec3 normalizedDirectionVector = { 0.0f }; //! This vector must remain normalized [1.0f; -1.0f]!
 
     // ==================================================================================
     // Variables for camera
@@ -587,7 +583,7 @@ int main(int argc, char **argv)
         // 
         // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
         // View matrix
-        if (viewMatrix != viewMatrix_previous)
+        if (*viewMatrix != *viewMatrix_previous)
         {
             glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, (GLfloat*)viewMatrix);
             errno_t success = gamagos_memcpy_s(viewMatrix_previous, sizeof(mat4), viewMatrix, sizeof(mat4));

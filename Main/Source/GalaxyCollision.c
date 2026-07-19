@@ -40,6 +40,6 @@ void printf_s(const char* _format, ...)
 {
     va_list args;
     va_start(args, _format);
-    printf(_format, args);
+    vprintf(_format, args);
     va_end(args);
 }

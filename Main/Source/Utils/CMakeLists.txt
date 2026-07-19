@@ -1,6 +1,6 @@
 # (C) Sebastian Fiault 2026
 # DataUtils
-add_library(DataUtils STATIC)
+add_library(DataUtils)
 target_sources(DataUtils
 	PRIVATE 
 		DataUtils.c
@@ -10,7 +10,7 @@ target_sources(DataUtils
 )
 
 # DebugUtils
-add_library(DebugUtils STATIC)
+add_library(DebugUtils)
 target_sources(DebugUtils
 	PRIVATE 
 		DebugUtils.c
@@ -21,10 +21,11 @@ target_sources(DebugUtils
 target_link_libraries(DebugUtils
 	PRIVATE
 		DataUtils
+		glad
 )
 
 # FileUtils
-add_library(FileUtils STATIC)
+add_library(FileUtils)
 target_sources(FileUtils
 	PRIVATE
 		FileUtils.c
@@ -38,7 +39,7 @@ target_link_libraries(FileUtils
 )
 
 # Generation Utils
-add_library(GenerationUtils STATIC)
+add_library(GenerationUtils)
 target_sources(GenerationUtils
 	PRIVATE 
 		GenerationUtils.c
@@ -54,7 +55,7 @@ target_link_libraries(GenerationUtils
 )
 
 # MathUtils
-add_library(MathUtils STATIC)
+add_library(MathUtils)
 target_sources(MathUtils
 	PRIVATE 
 		MathUtils.c
@@ -68,7 +69,7 @@ target_link_libraries(MathUtils
 )
 
 # OpenGLUtils
-add_library(OpenGLUtils STATIC)
+add_library(OpenGLUtils)
 target_sources(OpenGLUtils
 	PRIVATE
 		OpenGLUtils.c
@@ -85,7 +86,7 @@ target_link_libraries(OpenGLUtils
 )
 
 # PhysicsUtils
-add_library(PhysicsUtils STATIC)
+add_library(PhysicsUtils)
 target_sources(PhysicsUtils
 	PRIVATE 
 		PhysicsUtils.c
@@ -95,7 +96,7 @@ target_sources(PhysicsUtils
 )
 
 # UserInteractionUtils
-add_library(UserInteractionUtils STATIC)
+add_library(UserInteractionUtils)
 target_sources(UserInteractionUtils
 	PRIVATE 
 		UserInteractionUtils.c

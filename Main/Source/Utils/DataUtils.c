@@ -30,6 +30,8 @@ char* formatString(const char* toFormat, ...)
     #ifdef gamagos_OS_IS_WINDOWS //TODO consider defining function _vscprintf and vsprintf_s in GalaxyCollision.h if not defined in std libraries for cleaner code!
         vsprintf_s(result, amountCharacters * sizeof(char), toFormat, args);
     #elif defined(__linux__)
+        va_end(args);
+        va_start(args, toFormat);
         vsprintf(result, toFormat, args);
     #endif
     va_end(args);

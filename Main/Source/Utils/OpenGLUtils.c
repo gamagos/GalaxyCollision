@@ -15,7 +15,9 @@
 
 void glfw_error_callback(int code, const char* description)
 {
-	perror( formatString("\nGLFW error %d: %s", code, description) );
+	const char* message = formatString("\nGLFW error %d: %s", code, description);
+	perror(message);
+	safer_free((void**)&message);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)

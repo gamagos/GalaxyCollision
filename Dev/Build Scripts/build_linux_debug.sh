@@ -11,7 +11,7 @@ cmake --preset Linux-Debug --fresh
 echo "==============================================================="
 echo "CMake Configured. Build starts here"
 echo "==============================================================="
-cmake --build --preset Linux-Debug
+cmake --build --preset Linux-Debug --clean-first
 cd "Dev/Build Scripts"
 
 #TODO document this so that people can build it on GitHub
