@@ -152,3 +152,4 @@ Use only SI Units or we loose computation on conversions!
 
 - **Always divide with drag NOT subtract!!**
 - **Include GalaxyCollision.h in all our project files!!**
+- **Prefer to use clang for builds of this project!!!!**
