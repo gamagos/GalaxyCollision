@@ -72,6 +72,9 @@ GLuint createShaderFromPath(char* path, bool pathIsRelativePath, GLenum shaderTy
 		perror( formatString("\n%s Compilation was not successful of shader with source:\n%s\nfrom %s\n", WARNING_TAG, shaderSource, shaderSourcePath));
 		glGetShaderInfoLog(shader, infoLogSizeShader, NULL, infoLog);
 		perror( formatString("\nShader compilation log:\n%s\n", infoLog) );
+		if(shaderSourcePath) { safer_free( (void**)&shaderSourcePath ); }
+		if(shaderSource) { safer_free( (void**)&shaderSource ); }
+
 		return (GLuint)(uintptr_t)NULL;
 	}
 	printf("Compilation of shader was successful\n");
