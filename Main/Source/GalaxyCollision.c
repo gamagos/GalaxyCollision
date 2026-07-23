@@ -16,30 +16,33 @@
 
 #if defined(__linux__)
 	#include <linux/limits.h>
+
+    char* _fullpath(char* absolutePath, const char* relativePath, size_t maxSize)
+    {
+        char* result = 0;
+
+        if (absolutePath)
+        {
+            result = absolutePath; // NOSONAR
+        }
+        else
+        {
+            result = calloc(maxSize, sizeof(char)); // NOSONAR
+        }
+
+        result = realpath(relativePath, NULL);
+
+        return result;
+    }
+
+    void printf_s(const char* _format, ...)
+    {
+        va_list args;
+        va_start(args, _format);
+        vprintf(_format, args);
+        va_end(args);
+    }
+
 #endif
 
-char* _fullpath(char* absolutePath, const char* relativePath, size_t maxSize)
-{
-    char* result = 0;
-
-    if (absolutePath)
-    {
-        result = absolutePath;
-    }
-    else
-    {
-        result = calloc(maxSize, sizeof(char));
-    }
-
-    result = realpath(relativePath, NULL);
-
-    return result;
-}
-
-void printf_s(const char* _format, ...)
-{
-    va_list args;
-    va_start(args, _format);
-    vprintf(_format, args);
-    va_end(args);
-}
+//TODO make linux wrapper functions for _vscprintf and vsprintf_s 

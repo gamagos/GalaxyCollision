@@ -2,5 +2,6 @@
     "C_Cpp.errorSquiggles": "enabled",
     "cSpell.words": [
         "ifndef"
-    ]
+    ],
+    "sonarlint.pathToCompileCommands": "${workspaceFolder}/out/build/Linux-Debug/compile_commands.json"
 }

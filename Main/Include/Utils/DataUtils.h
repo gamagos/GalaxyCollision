@@ -3,15 +3,19 @@
 #define DATA_UTILS_H
 
     #include <stdarg.h>
+    #include <stdbool.h>
     #include <stdio.h>
     #include <stdint.h>
     #include <stdlib.h>
     #include <string.h>
     #include <time.h>
 
-    #include "../Constants.h"
-    #include "../GalaxyCollision.h"
-    #include "../Types.h"
+    // Third Party Libraries
+    #include "../../Libraries/cglm-0.9.6/include/cglm/cglm.h"
+
+    #include "../../Include/Constants.h"
+    #include "../../Include/GalaxyCollision.h"
+    #include "../../Include/Types.h"
 
     /*
     SYNOPSIS:
@@ -154,6 +158,19 @@
         How many bytes should be copied from source to destination
     */
     errno_t gamagos_memcpy_s(void* destination, size_t destinationSize, void* source, size_t count);
+
+    /*
+    SYNOPSIS:
+        Compares to matrices and checks if they are identical or not
+    ARGS:
+        matrix1:
+            The first matrix that will be compared with the second matrix
+        matrix2:
+            The second matrix, that will be compared with the first matrix
+    RETURNS:
+        True if the matrices are identical, false if they are not
+    */
+    bool gamagos_compare_mat4(mat4 matrix1, mat4 matrix2);
 
     /*
     SYNOPSIS:

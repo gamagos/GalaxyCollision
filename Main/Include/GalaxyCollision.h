@@ -61,6 +61,11 @@
 			/*
 			SYNOPSIS:
 				Definition of _fullpath if not defined by standard libraries.
+				Usage is identical to the standard _fullpath
+			RETURNS:
+				The absolute path of the relative path in a malloc allocated buffer. Do not forget to free the buffer after use!
+			REMARKS:
+				Do not forget to free the resulting buffer that contains the full path after you do not need it anymore!!
 			*/
 			char* _fullpath(char* absolutePath, const char* relativePath, size_t maxSize);
 		#endif

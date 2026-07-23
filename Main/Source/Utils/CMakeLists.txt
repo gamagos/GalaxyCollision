@@ -1,6 +1,10 @@
 # (C) Sebastian Fiault 2026
 # DataUtils
-add_library(DataUtils)
+if (CMAKE_BUILD_TYPE MATCHES "Release")
+	add_library(DataUtils STATIC)
+else()	
+	add_library(DataUtils)
+endif()
 target_sources(DataUtils
 	PRIVATE 
 		DataUtils.c
@@ -8,9 +12,17 @@ target_sources(DataUtils
 	PUBLIC
 		../../Include/Utils/DataUtils.h
 )
+target_link_libraries(DataUtils
+	PRIVATE
+		cglm
+)
 
 # DebugUtils
-add_library(DebugUtils)
+if (CMAKE_BUILD_TYPE MATCHES "Release")
+	add_library(DebugUtils STATIC)
+else()	
+	add_library(DebugUtils)
+endif()
 target_sources(DebugUtils
 	PRIVATE 
 		DebugUtils.c
@@ -25,7 +37,11 @@ target_link_libraries(DebugUtils
 )
 
 # FileUtils
-add_library(FileUtils)
+if (CMAKE_BUILD_TYPE MATCHES "Release")
+	add_library(FileUtils STATIC)
+else()	
+	add_library(FileUtils)
+endif()
 target_sources(FileUtils
 	PRIVATE
 		FileUtils.c
@@ -39,7 +55,11 @@ target_link_libraries(FileUtils
 )
 
 # Generation Utils
-add_library(GenerationUtils)
+if (CMAKE_BUILD_TYPE MATCHES "Release")
+	add_library(GenerationUtils STATIC)
+else()	
+	add_library(GenerationUtils)
+endif()
 target_sources(GenerationUtils
 	PRIVATE 
 		GenerationUtils.c
@@ -55,7 +75,11 @@ target_link_libraries(GenerationUtils
 )
 
 # MathUtils
-add_library(MathUtils)
+if (CMAKE_BUILD_TYPE MATCHES "Release")
+	add_library(MathUtils STATIC)
+else()	
+	add_library(MathUtils)
+endif()
 target_sources(MathUtils
 	PRIVATE 
 		MathUtils.c
@@ -69,7 +93,11 @@ target_link_libraries(MathUtils
 )
 
 # OpenGLUtils
-add_library(OpenGLUtils)
+if (CMAKE_BUILD_TYPE MATCHES "Release")
+	add_library(OpenGLUtils STATIC)
+else()	
+	add_library(OpenGLUtils)
+endif()
 target_sources(OpenGLUtils
 	PRIVATE
 		OpenGLUtils.c
@@ -86,7 +114,11 @@ target_link_libraries(OpenGLUtils
 )
 
 # PhysicsUtils
-add_library(PhysicsUtils)
+if (CMAKE_BUILD_TYPE MATCHES "Release")
+	add_library(PhysicsUtils STATIC)
+else()	
+	add_library(PhysicsUtils)
+endif()
 target_sources(PhysicsUtils
 	PRIVATE 
 		PhysicsUtils.c
@@ -96,7 +128,11 @@ target_sources(PhysicsUtils
 )
 
 # UserInteractionUtils
-add_library(UserInteractionUtils)
+if (CMAKE_BUILD_TYPE MATCHES "Release")
+	add_library(UserInteractionUtils STATIC)
+else()	
+	add_library(UserInteractionUtils)
+endif()
 target_sources(UserInteractionUtils
 	PRIVATE 
 		UserInteractionUtils.c

@@ -1,10 +1,14 @@
 // (C) Sebastian Fiault 2026
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
+// Third Party Libraries
+#include "../../Libraries/cglm-0.9.6/include/cglm/cglm.h"
 
 #include "../../Include/Constants.h"
 #include "../../Include/GalaxyCollision.h"
@@ -73,7 +77,7 @@ unsigned long long wideRandint(short int size)
 
     for (short unsigned int i = 0; i < amountInts; i++)
     {
-        intArray[i] = rand();
+        intArray[i] = rand(); // NOSONAR
     }
 
     unsigned long long result = buildWideIntFromNarrowInts(intArray, sizeof(int), amountInts);
@@ -173,6 +177,20 @@ errno_t gamagos_memcpy_s(void* destination, size_t destinationSize, void* source
     #endif
     
     return success;
+}
+
+bool gamagos_compare_mat4(mat4 matrix1, mat4 matrix2)
+{
+    bool result = false;
+    bool tmp = false;
+
+    for (size_t i = 0; i < 4; i++)
+    {
+        tmp = !memcmp(matrix1[i], matrix2[i], sizeof(vec4));
+        if (tmp) { result = true; }
+    }
+
+    return result;
 }
 
 unsigned long long buildWideIntFromNarrowInts(void* narrowInts, size_t intSize, unsigned long long intCount)

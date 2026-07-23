@@ -57,7 +57,7 @@ int main(int argc, char **argv)
     // 
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     printf_s("Starting Program\n");
-    printf_s("Compiled for C Version: %ld\n", (long)__STDC_VERSION__);
+    printf_s("Compiled for C Version: %ld\n", (long)__STDC_VERSION__); //NOSONAR, it says to remove redundant cast, but this creates safety if the type is different on different operating systems
     const char* usedCompiler = getCompiler();
     printf_s("Compiled with: %s\n", usedCompiler);
     const char* projectTargetPlatform = getBuildPlatform();
@@ -160,7 +160,7 @@ int main(int argc, char **argv)
     };
     parentBlackHole.standardGravitationalParameter_TerametersCubedPerPetasecondSquared = GRAVITATIONAL_CONSTANT_FLOAT * parentBlackHole.mass_10_BillionQuettagrams;
 
-    Star_32* galaxy = generateStars32Galaxy(amountStars, parentBlackHole);
+    Star_32* galaxy = generateStars32Galaxy((uint32_t)amountStars, parentBlackHole);
     pointersCurrentlyInUse[currentIndexPointersCurrentlyInUse++] = galaxy;
 
     // ==================================================================================
@@ -208,9 +208,9 @@ int main(int argc, char **argv)
     for (size_t i = 0; i < ((unsigned long long)amountStars * 4); i += incrementForForLoop )
     {
         size_t galaxyIndex = i / incrementForForLoop;
-		positions[i]     = galaxy[galaxyIndex].position_Terameters.x; //DELETME: This does not work for some random reason
-        positions[i + 1] = galaxy[galaxyIndex].position_Terameters.y;
-        positions[i + 2] = galaxy[galaxyIndex].position_Terameters.z;
+		positions[i]     = (float)galaxy[galaxyIndex].position_Terameters.x; //DELETME: This does not work for some random reason
+        positions[i + 1] = (float)galaxy[galaxyIndex].position_Terameters.y;
+        positions[i + 2] = (float)galaxy[galaxyIndex].position_Terameters.z;
         positions[i + 3] = 0; // for padding bytes
     }
 
@@ -260,9 +260,9 @@ int main(int argc, char **argv)
         averageVelocity[1] += velocities[i + 1];
         averageVelocity[2] += velocities[i + 2];
     }
-    averageVelocity[0] /= amountStars;
-    averageVelocity[1] /= amountStars;
-    averageVelocity[2] /= amountStars;
+    averageVelocity[0] /= (float)amountStars;
+    averageVelocity[1] /= (float)amountStars;
+    averageVelocity[2] /= (float)amountStars;
     for (size_t i = 0; i < (size_t)(amountStars * 4); i += incrementForForLoop) // Apply the opposite of the average velocity of all particles
     {                                                         // to all particles to set their average velocity to 0 so that they do not drift away from the center
         velocities[i]     -= averageVelocity[0];
@@ -419,7 +419,7 @@ int main(int argc, char **argv)
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     mat4 viewMatrix = {0};
     mat4 viewMatrix_previous = {0};
-    success = 0;
+    success = 0; // NOSONAR, setting the value to zero is a safety measure to avoid garbage data causing issues
     success = gamagos_memcpy_s(viewMatrix_previous, sizeof(mat4), viewMatrix, sizeof(mat4));
     if (success != 0)
     {
@@ -434,8 +434,8 @@ int main(int argc, char **argv)
         );
         return 1;
     }
-    camX = sin(camCurrentOrbitAngle) * radius;
-    camZ = cos(camCurrentOrbitAngle) * radius;
+    camX = (float)sin(camCurrentOrbitAngle) * radius;
+    camZ = (float)cos(camCurrentOrbitAngle) * radius;
     glm_lookat(
         (vec3){ camX, camY, camZ },
         (vec3){ 0.0f, 0.0f, 0.0f },
@@ -490,10 +490,10 @@ int main(int argc, char **argv)
     // 
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     GLuint amountStarsUniformLocation = glGetUniformLocation(primaryShaderProgram, "amountStars");
-    glUniform1ui(amountStarsUniformLocation, amountStars);
+    glUniform1ui(amountStarsUniformLocation, (GLuint)amountStars);
 
     GLuint FPSminimumUniformLocation = glGetUniformLocation(primaryShaderProgram, "FPSminimum");
-    glUniform1f(FPSminimumUniformLocation, FPSminimum);
+    glUniform1f(FPSminimumUniformLocation, (GLfloat)FPSminimum);
 
     // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     // 
@@ -567,9 +567,9 @@ int main(int argc, char **argv)
         if (glfwGetKey(primaryWindow, GLFW_KEY_0)) timeWarp = max(FLT_MIN, timeWarp / 1.002f);
 
         // Move camera
-        mat4 viewMatrix = { 0 };
-        camX = sin(camCurrentOrbitAngle) * radius;
-        camZ = cos(camCurrentOrbitAngle) * radius;
+        glm_mat4_identity(viewMatrix);
+        camX = (float)sin(camCurrentOrbitAngle) * radius;
+        camZ = (float)cos(camCurrentOrbitAngle) * radius;
         glm_lookat(
             (vec3) { camX, camY, camZ },
             (vec3) { 0.0f, 0.0f, 0.0f },
@@ -583,10 +583,10 @@ int main(int argc, char **argv)
         // 
         // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
         // View matrix
-        if (*viewMatrix != *viewMatrix_previous)
+        if (gamagos_compare_mat4(viewMatrix, viewMatrix_previous))
         {
             glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, (GLfloat*)viewMatrix);
-            errno_t success = gamagos_memcpy_s(viewMatrix_previous, sizeof(mat4), viewMatrix, sizeof(mat4));
+            success = gamagos_memcpy_s(viewMatrix_previous, sizeof(mat4), viewMatrix, sizeof(mat4));
             if (success != 0)
             {
                 quitProgramOnError(pointersCurrentlyInUse, currentIndexPointersCurrentlyInUse + 1,
@@ -632,9 +632,9 @@ int main(int argc, char **argv)
         glUniform1f(distanceMaximumUniformLocation, distanceMaximum);                         // <=>  d = sqrt( (G * m) / a )      Note: m1 = m2 here since all objects have the same mass, therefore m1 * m2 = m1^2 or m^2 for short
         
         // Delta time
-        if (deltaTime_Seconds > 1.0f / FPSminimum)
+        if (deltaTime_Seconds > 1.0f / (float)FPSminimum)
         {
-            deltaTime_Seconds = 1.0f / FPSminimum;
+            deltaTime_Seconds = 1.0f / (float)FPSminimum;
             printf_s("%s Frame rate too low, slowing down physics\n", WARNING_TAG);
         }
         glUniform1f(deltaTimeUniformLocation, timeWarp * deltaTime_Seconds);
@@ -651,7 +651,7 @@ int main(int argc, char **argv)
         // Main draw call
         // 
         // -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-        glDrawArrays(GL_POINTS, 0, amountStars); //TODO find way to make this not need a VBO and make it just draw amountStars GL_POINTS in a way that doesn't waste RAM with an unused VBO, since all the is in the SSBO anyways!
+        glDrawArrays(GL_POINTS, 0, (GLsizei)amountStars); //TODO find way to make this not need a VBO and make it just draw amountStars GL_POINTS in a way that doesn't waste RAM with an unused VBO, since all the is in the SSBO anyways!
 
         glfwSwapBuffers(primaryWindow);
         glfwPollEvents();
@@ -672,7 +672,7 @@ int main(int argc, char **argv)
         {
             secondWaitedForInfoOutPutUpdate += glfwGetTime() - timeLastFrame;
         }
-		deltaTime_Seconds = glfwGetTime() - timeLastFrame;
+		deltaTime_Seconds = (float)( glfwGetTime() - timeLastFrame );
         timeLastFrame = glfwGetTime();
 
         if (deltaTime_Seconds > 1.0f / FPSminimum)
@@ -706,6 +706,7 @@ int main(int argc, char **argv)
 //TODO add more camera controls maybe with mouse? But keep orbiting mode!
 //TODO add adaptive physics calculation capping. Specifically make accelerationMinimum adaptive
 //TODO seperate physics "frame rate" from graphical frame rate to allow for more precision if there is compute to spare and for more accurate physics at low framerates and also to make graphical frame rate more stable
+//TODO do major code cleanup and lots of abstractions
 
 // Stuff to do at school
 //TODO in cmake make sure target_sources also get ALL non std header files
